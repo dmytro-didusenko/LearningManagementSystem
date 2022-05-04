@@ -11,8 +11,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
     public interface IBaseService<TModel> where TModel : class
     {
         public Task AddAsync(TModel model);
-        public void Update(TModel model);
-        public void Remove(TModel model);
+        public Task Update(TModel model);
+        public Task Remove(TModel model);
         public IEnumerable<TModel> GetAll();
 
         //TODO: Implement filtering

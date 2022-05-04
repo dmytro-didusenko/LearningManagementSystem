@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.AutoMapper;
 using LearningManagementSystem.Domain.Contexes;
@@ -30,7 +31,7 @@ namespace LearningManagementSystem.API.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
 
-            services.AddScoped<IUserService, IUserService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

@@ -22,18 +22,21 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
             await _context.AddAsync(_mapper.Map<User>(model));
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(UserModel model)
+        public async Task Update(UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
             _context.Users.Update(_mapper.Map<User>(model));
+            await _context.SaveChangesAsync();
         }
 
-        public void Remove(UserModel model)
+        public async Task Remove(UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
             _context.Users.Remove(_mapper.Map<User>(model));
+            await _context.SaveChangesAsync();
         }
 
         public IEnumerable<UserModel> GetAll()

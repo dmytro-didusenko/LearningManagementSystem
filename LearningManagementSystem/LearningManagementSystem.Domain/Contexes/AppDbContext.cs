@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.Domain.Contexes
 {
-    internal class AppDbContext: DbContext
+    public class AppDbContext: DbContext
     {
 
         public DbSet<User> Users { get; set; } = null!;
@@ -16,7 +16,8 @@ namespace LearningManagementSystem.Domain.Contexes
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
+
         }
 
     }

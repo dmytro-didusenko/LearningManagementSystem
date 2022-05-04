@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LearningManagementSystem.Core.Services.Implementation;
+using LearningManagementSystem.Domain.Entities;
+using LearningManagementSystem.Domain.Models;
 
 namespace LearningManagementSystem.Core.Services.Interfaces
 {
-    internal interface IUserService
+    public interface IUserService : IBaseService<UserModel>
     {
+
     }
 }

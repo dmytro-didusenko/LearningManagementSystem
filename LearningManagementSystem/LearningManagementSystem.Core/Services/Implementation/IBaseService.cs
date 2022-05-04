@@ -13,6 +13,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public Task AddAsync(TModel model);
         public Task Update(TModel model);
         public Task Remove(TModel model);
+
+        //TODO: Remove this
         public IEnumerable<TModel> GetAll();
 
         //TODO: Implement filtering

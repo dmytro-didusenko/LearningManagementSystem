@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LearningManagementSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LearningManagementSystem.Domain.Contexes
+namespace LearningManagementSystem.Domain.Contextes
 {
     public class AppDbContext: DbContext
     {
@@ -17,6 +17,21 @@ namespace LearningManagementSystem.Domain.Contexes
         {
             //Database.EnsureDeleted();
             Database.EnsureCreated();
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(i => i.UserName)
+                .IsUnique(true);
+
+            modelBuilder.Entity<User>()
+                .Property(p => p.UserName)
+                .IsRequired()
+                .HasMaxLength(60);
 
         }
 

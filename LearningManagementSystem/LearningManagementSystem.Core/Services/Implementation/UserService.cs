@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Contexes;
+using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models;
 
@@ -21,6 +21,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task AddAsync(UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
+
             await _context.AddAsync(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
         }

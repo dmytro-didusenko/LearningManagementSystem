@@ -2,7 +2,7 @@
 using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.AutoMapper;
-using LearningManagementSystem.Domain.Contexes;
+using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Extensions

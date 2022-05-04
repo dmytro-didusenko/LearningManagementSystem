@@ -1,5 +1,4 @@
 ﻿using LearningManagementSystem.Core.Services.Implementation;
-using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models;
 
 namespace LearningManagementSystem.Core.Services.Interfaces

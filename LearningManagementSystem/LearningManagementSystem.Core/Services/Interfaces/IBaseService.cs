@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LearningManagementSystem.Domain.Models;
 
-namespace LearningManagementSystem.Core.Services.Implementation
+namespace LearningManagementSystem.Core.Services.Interfaces
 {
     public interface IBaseService<TModel> where TModel : class
     {

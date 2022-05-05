@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LearningManagementSystem.API.Controllers
 {
     [ApiController]
+    [Produces("application/json")]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
@@ -15,9 +16,8 @@ namespace LearningManagementSystem.API.Controllers
             _userService = userService;
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] UserModel user)
+        public async Task<IActionResult> AddUserAsync([FromBody] UserModel user)
         {
             ArgumentNullException.ThrowIfNull(user);
 
@@ -29,15 +29,16 @@ namespace LearningManagementSystem.API.Controllers
             return CreatedAtRoute("GetUserById", new {Id = res.Data.Id}, res.Data);
         }
 
-        //[HttpPut("{id}")]
-        //public Task<IActionResult> UpdateUser(Guid id, [FromBody] UserModel model)
-        //{
-
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserModel model)
+        {
+            await _userService.UpdateAsync(id, model);
+            return NoContent();
+        }
 
 
         [HttpGet("{id}", Name = "GetUserById")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetAsync(Guid id)
         {
             var res = await _userService.GetByIdAsync(id);
             if (!res.IsSuccessful)
@@ -49,7 +50,7 @@ namespace LearningManagementSystem.API.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers([FromQuery] UserQueryModel? query = null)
+        public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {
             ArgumentNullException.ThrowIfNull(query);
 

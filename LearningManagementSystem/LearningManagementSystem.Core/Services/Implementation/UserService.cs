@@ -53,15 +53,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
 
-            var userExist = await _context.Users.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            var userExist = await _context.Users.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id));
+            
             if (userExist is null)
             {
                 throw new Exception($"User id:{id} does not exist!");
             }
 
+            model.Id = id;
             _context.Users.Update(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
-            _logger.LogInformation("New User[id]:{0} has been added", model.Id);
+            _logger.LogInformation("User[id]:{0} has been updated", model.Id);
         }
 
         public async Task RemoveAsync(UserModel model)

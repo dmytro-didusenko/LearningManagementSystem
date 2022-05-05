@@ -86,25 +86,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger.LogInformation("User {0} has changed status to inactive", model.Id);
         }
 
-        public async Task<Response<UserModel>> GetByIdAsync(Guid id)
+        public async Task<UserModel> GetByIdAsync(Guid id)
         {
             var entity = await _context.Users.SingleOrDefaultAsync(u => u.Id.Equals(id));
             if (entity is null)
             {
-                return new Response<UserModel>()
-                {
-                    IsSuccessful = false,
-                    Error = $"User with id:{id} does not exist"
-                };
+                throw new Exception("User does not exist!");
             }
 
             var model = _mapper.Map<UserModel>(entity);
             _logger.LogInformation("Get user by id:{0}", model.Id);
-            return new Response<UserModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return model;
         }
 
         public async Task<List<UserModel>> GetByFilterAsync(UserQueryModel? query = null)

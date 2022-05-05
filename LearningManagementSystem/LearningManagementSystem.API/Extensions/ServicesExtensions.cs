@@ -10,7 +10,7 @@ namespace LearningManagementSystem.API.Extensions
     public static class ServicesExtensions
     {
 
-        public static IServiceCollection AddDatabaseContext(this IServiceCollection services, IConfiguration cfg)
+        public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration cfg)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(cfg.GetConnectionString("DefaultConnection")));
             return services;

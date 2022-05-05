@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDatabaseContext(builder.Configuration);
+builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
 builder.Services.AddServices();
 

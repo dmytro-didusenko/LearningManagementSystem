@@ -41,10 +41,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> GetAsync(Guid id)
         {
             var res = await _userService.GetByIdAsync(id);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
+            
             return Ok(res);
         }
 

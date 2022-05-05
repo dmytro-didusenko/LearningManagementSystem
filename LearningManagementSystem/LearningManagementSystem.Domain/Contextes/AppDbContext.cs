@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.Domain.Contextes
 {
-    public class AppDbContext: DbContext
+    public class AppDbContext : DbContext
     {
 
         public DbSet<User> Users { get; set; } = null!;
@@ -16,17 +16,13 @@ namespace LearningManagementSystem.Domain.Contextes
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             //Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
 
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<User>()
-                .HasIndex(i => i.UserName)
-                .IsUnique(true);
 
             modelBuilder.Entity<User>()
                 .Property(p => p.UserName)

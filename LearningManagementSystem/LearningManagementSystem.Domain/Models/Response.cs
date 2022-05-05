@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LearningManagementSystem.Domain.Models
 {
-    public class ApiResponse<T> 
+    public class Response<T> 
     {
         public bool IsSuccessful { get; set; }
-        public T Data { get; set; } = default!;
+        public T? Data { get; set; } = default!;
         public string? Error { get; set; }
     }
 }

@@ -10,16 +10,12 @@ namespace LearningManagementSystem.Core.Services.Interfaces
 {
     public interface IBaseService<TModel> where TModel : class
     {
-        public Task AddAsync(TModel model);
-        public Task Update(TModel model);
+        public Task<Response<TModel>> AddAsync(TModel model);
+        public Task Update(Guid id, TModel model);
         public Task Remove(TModel model);
+        public Task<Response<TModel>> GetById(Guid id);
 
-        //TODO: Remove this
+        //TODO: Remove this, make pagination
         public IEnumerable<TModel> GetAll();
-
-        //TODO: Implement filtering
-        //public IEnumerable<TModel> GetModels();
-        //public Task<TModel> GetModelAsync();
-
     }
 }

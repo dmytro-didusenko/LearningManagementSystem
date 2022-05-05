@@ -10,14 +10,12 @@ namespace LearningManagementSystem.Domain.Contextes
 {
     public class AppDbContext : DbContext
     {
-
         public DbSet<User> Users { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             //Database.EnsureDeleted();
             //Database.EnsureCreated();
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +27,9 @@ namespace LearningManagementSystem.Domain.Contextes
                 .IsRequired()
                 .HasMaxLength(60);
 
+            modelBuilder.Entity<User>()
+                .Property(p => p.Email)
+                .IsRequired();
         }
 
     }

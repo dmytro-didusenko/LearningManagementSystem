@@ -10,7 +10,6 @@ builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.ConfigAutoMapper();
 builder.Services.AddServices();
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

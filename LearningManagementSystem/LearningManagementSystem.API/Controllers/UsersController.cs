@@ -29,17 +29,17 @@ namespace LearningManagementSystem.API.Controllers
             return CreatedAtRoute("GetUserById", new {Id = res.Data.Id}, res.Data);
         }
 
-        [HttpPut("{id}")]
-        public Task<IActionResult> UpdateUser(Guid id, [FromBody] UserModel model)
-        {
+        //[HttpPut("{id}")]
+        //public Task<IActionResult> UpdateUser(Guid id, [FromBody] UserModel model)
+        //{
 
-        }
+        //}
 
 
         [HttpGet("{id}", Name = "GetUserById")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var res = await _userService.GetById(id);
+            var res = await _userService.GetByIdAsync(id);
             if (!res.IsSuccessful)
             {
                 return BadRequest(res);
@@ -49,9 +49,11 @@ namespace LearningManagementSystem.API.Controllers
 
 
         [HttpGet]
-        public IActionResult GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery] UserQueryModel? query = null)
         {
-            return Ok(_userService.GetAll());
+            ArgumentNullException.ThrowIfNull(query);
+
+            return Ok(await _userService.GetByFilterAsync(query));
         }
 
     }

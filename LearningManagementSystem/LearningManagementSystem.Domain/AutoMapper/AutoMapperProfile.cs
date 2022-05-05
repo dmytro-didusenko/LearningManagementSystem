@@ -8,7 +8,7 @@ namespace LearningManagementSystem.Domain.AutoMapper
     {
         public AutoMapperProfile()
         {
-            CreateMap<User, UserModel>().ReverseMap();
+            CreateMap<UserModel, User>().ReverseMap();
             
         }
     }

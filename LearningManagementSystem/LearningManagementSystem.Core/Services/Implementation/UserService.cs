@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using AutoMapper;
+﻿using AutoMapper;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -27,7 +26,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             ArgumentNullException.ThrowIfNull(model);
 
             //TODO: change this
-            var userExist = _context.Users.FirstOrDefaultAsync(f =>
+            var userExist = await _context.Users.FirstOrDefaultAsync(f =>
                 f.UserName.Equals(model.UserName) || f.Email.Equals(model.Email));
 
             if (userExist is not null)
@@ -50,7 +49,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             };
         }
 
-        public async Task Update(Guid id, UserModel model)
+        public async Task UpdateAsync(Guid id, UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -62,10 +61,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             _context.Users.Update(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
-            _logger.LogInformation("User {0} has been added", model.Id);
+            _logger.LogInformation("New User[id]:{0} has been added", model.Id);
         }
 
-        public async Task Remove(UserModel model)
+        public async Task RemoveAsync(UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
             var user = await _context.Users.SingleOrDefaultAsync(i => i.Id.Equals(
@@ -85,7 +84,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger.LogInformation("User {0} has changed status to inactive", model.Id);
         }
 
-        public async Task<Response<UserModel>> GetById(Guid id)
+        public async Task<Response<UserModel>> GetByIdAsync(Guid id)
         {
             var entity = await _context.Users.SingleOrDefaultAsync(u => u.Id.Equals(id));
             if (entity is null)
@@ -106,9 +105,44 @@ namespace LearningManagementSystem.Core.Services.Implementation
             };
         }
 
-        public IEnumerable<UserModel> GetAll()
+        public async Task<List<UserModel>> GetByFilterAsync(UserQueryModel? query = null)
         {
-            return _mapper.Map<IEnumerable<UserModel>>(_context.Users.AsEnumerable());
+
+            var queryable = _context.Users.AsQueryable();
+
+            if (query is null)
+            {
+                return _mapper.Map<List<UserModel>>(await queryable.ToListAsync());
+            }
+
+            if (query.UserName is not null)
+            {
+                queryable = queryable.Where(i => i.UserName.Contains(query.UserName));
+            }
+
+            if (query.FirstName is not null)
+            {
+                queryable = queryable.Where(i => i.UserName.Contains(query.FirstName));
+            }
+
+            if (query.LastName is not null)
+            {
+                queryable = queryable.Where(i => i.UserName.Contains(query.LastName));
+            }
+            
+            if (query.BirthdayLessThan is not null)
+            {
+                queryable = queryable.Where(i => i.Birthday<query.BirthdayLessThan);
+            } 
+            
+            if (query.BirthdayGreaterThan is not null)
+            {
+                queryable = queryable.Where(i => i.Birthday > query.BirthdayGreaterThan);
+            }
+
+            var res =  await queryable.ToListAsync();
+
+            return _mapper.Map<List<UserModel>>(res);
         }
     }
 }

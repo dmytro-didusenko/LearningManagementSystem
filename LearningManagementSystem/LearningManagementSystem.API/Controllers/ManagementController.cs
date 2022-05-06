@@ -17,8 +17,6 @@ namespace LearningManagementSystem.API.Controllers
             _managementService = managementService;
         }
 
-
-
         [HttpPost("create-group")]
         public async Task<IActionResult> CreateGroup([FromBody] GroupModel group)
         {
@@ -32,8 +30,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-
-        [HttpGet]
+        [HttpGet("get-groups")]
         public IActionResult Get()
         {
             return Ok(_managementService.GetAll());

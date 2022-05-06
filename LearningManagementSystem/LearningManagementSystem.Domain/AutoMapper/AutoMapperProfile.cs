@@ -10,7 +10,9 @@ namespace LearningManagementSystem.Domain.AutoMapper
         {
             CreateMap<UserModel, User>().ReverseMap();
             CreateMap<Student, StudentModel>().ReverseMap();
-            CreateMap<Group, GroupModel>().ReverseMap();
+            CreateMap<Group, GroupModel>().ForMember(m=>m.StudentsIds,
+                opt=>
+                    opt.MapFrom(req=>req.Students.Select(s=>s.Id))).ReverseMap();
         }
     }
 }

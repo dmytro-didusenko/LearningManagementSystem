@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -42,6 +37,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     Error = "Group is already exist!"
                 };
             }
+
+            //TODO: implement student attachment to group
 
             await _context.Groups.AddAsync(_mapper.Map<Group>(group));
             await _context.SaveChangesAsync();

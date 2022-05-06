@@ -11,6 +11,8 @@ namespace LearningManagementSystem.Domain.Contextes
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Student> Students { get; set; } = null!;
+        public DbSet<Group> Groups { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -30,6 +32,9 @@ namespace LearningManagementSystem.Domain.Contextes
             modelBuilder.Entity<User>()
                 .Property(p => p.Email)
                 .IsRequired();
+
+            modelBuilder.Entity<Student>().ToTable("Student");
+
         }
 
     }

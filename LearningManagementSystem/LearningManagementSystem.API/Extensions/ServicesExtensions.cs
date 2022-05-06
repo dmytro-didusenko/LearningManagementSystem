@@ -31,6 +31,7 @@ namespace LearningManagementSystem.API.Extensions
         {
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IManagementService, ManagementService>();
 
             return services;
         }

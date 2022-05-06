@@ -34,7 +34,6 @@ namespace LearningManagementSystem.Domain.Contextes
                 .IsRequired();
 
             modelBuilder.Entity<Student>().ToTable("Student");
-
         }
 
     }

@@ -1,9 +1,6 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -20,7 +17,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost("create-group")]
-        public async Task<IActionResult> CreateGroup([FromBody] GroupModel group)
+        public async Task<IActionResult> CreateGroup([FromBody] GroupCreationModel group)
         {
             ArgumentNullException.ThrowIfNull(group);
             var res = await _managementService.CreateGroupAsync(group);
@@ -32,8 +29,23 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPost("add-student-to-group/{groupId}/{userId}")]
-        public async Task<IActionResult> AddStudentToGroup(Guid groupId, Guid userId)
+
+        [HttpPost("move-student-to-group/{studentId}/{groupId}")]
+        public async Task<IActionResult> MoveStudentToGroup(Guid studentId, Guid groupId)
+        {
+            await _managementService.MoveStudentToOtherGroupAsync(studentId, groupId);
+            return Ok();
+        }
+
+        [HttpPut("update-group/{id}")]
+        public async Task<IActionResult> UpdateUser(Guid groupId, [FromBody] GroupModel group)
+        {
+            await _managementService.UpdateGroupAsync(groupId, group);
+            return NoContent();
+        }
+
+        [HttpPost("add-student-to-group/{userId}/{groupId}")]
+        public async Task<IActionResult> AddStudentToGroup(Guid userId, Guid groupId)
         {
             await _managementService.AddStudentToGroupAsync(groupId, userId);
             return Ok();
@@ -44,6 +56,5 @@ namespace LearningManagementSystem.API.Controllers
         {
             return Ok(_managementService.GetAll());
         }
-
     }
 }

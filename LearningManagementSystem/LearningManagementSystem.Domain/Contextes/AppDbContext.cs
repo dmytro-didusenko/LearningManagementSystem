@@ -19,7 +19,6 @@ namespace LearningManagementSystem.Domain.Contextes
             //Database.EnsureDeleted();
             //Database.EnsureCreated();
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -33,6 +32,5 @@ namespace LearningManagementSystem.Domain.Contextes
                 .Property(p => p.Email)
                 .IsRequired();
         }
-
     }
 }

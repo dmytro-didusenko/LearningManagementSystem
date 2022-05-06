@@ -11,12 +11,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
     public class ManagementService : IManagementService
     {
         private readonly AppDbContext _context;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly ILogger<ManagementService> _logger;
 
-        public ManagementService(AppDbContext context, IMapper mapper, ILogger<ManagementService> logger)
+        public ManagementService(AppDbContext context, IUserService userService, IMapper mapper, ILogger<ManagementService> logger)
         {
             _context = context;
+            _userService = userService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -50,16 +52,43 @@ namespace LearningManagementSystem.Core.Services.Implementation
             };
         }
 
-        public Task AddStudentToGroup(Guid groupId, StudentModel student)
+        public async Task AddStudentToGroupAsync(Guid groupId, Guid userId)
         {
-            throw new NotImplementedException();
+           var user = await _userService.GetByIdAsync(userId);
+           if (user is null)
+           {
+               throw new Exception("User does not exist!");
+           }
+           var group = await GetGroupByIdAsync(groupId);
+           if (group is null)
+           {
+               throw new Exception("User does not exist!");
+           }
+
+           var student = new Student()
+           {
+               Id = userId,
+               GroupId = groupId
+           };
+           await _context.AddAsync(student);
+           await _context.SaveChangesAsync();
+        }
+
+        public async Task<GroupModel> GetGroupByIdAsync(Guid groupId)
+        {
+            var group = await _context.Groups.Include(i=>i.Students).SingleOrDefaultAsync(f => f.Id.Equals(groupId));
+            if (group is null)
+            {
+                throw new Exception("Group does not exist");
+            }
+            return _mapper.Map<GroupModel>(group);
         }
 
         public IEnumerable<GroupModel> GetAll()
         {
-            var entites =  _context.Groups.AsEnumerable();
-
-            return _mapper.Map<IEnumerable<GroupModel>>(entites);
+            var entities =  _context.Groups.Include(i=>i.Students)
+                .ThenInclude(t=>t.User).AsEnumerable();
+            return _mapper.Map<IEnumerable<GroupModel>>(entities);
         }
     }
 }

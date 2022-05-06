@@ -32,8 +32,6 @@ namespace LearningManagementSystem.Domain.Contextes
             modelBuilder.Entity<User>()
                 .Property(p => p.Email)
                 .IsRequired();
-
-            modelBuilder.Entity<Student>().ToTable("Student");
         }
 
     }

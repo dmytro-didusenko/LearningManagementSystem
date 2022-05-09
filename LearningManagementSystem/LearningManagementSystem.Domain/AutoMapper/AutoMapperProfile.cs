@@ -12,6 +12,7 @@ namespace LearningManagementSystem.Domain.AutoMapper
 
             CreateMap<Group, GroupCreationModel>().ReverseMap();
 
+
             CreateMap<Student, StudentModel>()
                 .ForMember(m => m.UserName, opt => opt.MapFrom(f => f.User.UserName))
                 .ForMember(m => m.FirstName, opt => opt.MapFrom(f => f.User.FirstName))

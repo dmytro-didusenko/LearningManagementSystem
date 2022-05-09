@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace LearningManagementSystem.Domain.Models
 {
-    public class StudentModel: UserModel
+    public class StudentCreationModel
     {
+        public Guid UserId { get; set; }
         public string ContractNumber { get; set; } = string.Empty;
-        public Guid? GroupId { get; set; }
+
     }
 }

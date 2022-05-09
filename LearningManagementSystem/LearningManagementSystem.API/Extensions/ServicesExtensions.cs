@@ -13,6 +13,7 @@ namespace LearningManagementSystem.API.Extensions
         public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration cfg)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(cfg.GetConnectionString("DefaultConnection")));
+            
             return services;
         }
 
@@ -32,7 +33,7 @@ namespace LearningManagementSystem.API.Extensions
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IManagementService, ManagementService>();
-
+            services.AddScoped<IStudentService, StudentService>();
             return services;
         }
     }

@@ -16,8 +16,6 @@ namespace LearningManagementSystem.Domain.Contextes
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            //Database.EnsureDeleted();
-            //Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +29,12 @@ namespace LearningManagementSystem.Domain.Contextes
             modelBuilder.Entity<User>()
                 .Property(p => p.Email)
                 .IsRequired();
+
+            modelBuilder.Entity<Student>()
+                .HasOne(o => o.Group)
+                .WithMany(m => m.Students)
+                .HasForeignKey(f => f.GroupId);
+            
         }
     }
 }

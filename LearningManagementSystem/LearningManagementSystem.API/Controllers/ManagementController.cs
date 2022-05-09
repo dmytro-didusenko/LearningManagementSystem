@@ -38,7 +38,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPut("update-group/{id}")]
-        public async Task<IActionResult> UpdateUser(Guid groupId, [FromBody] GroupModel group)
+        public async Task<IActionResult> UpdateGroup(Guid groupId, [FromBody] GroupModel group)
         {
             await _managementService.UpdateGroupAsync(groupId, group);
             return NoContent();

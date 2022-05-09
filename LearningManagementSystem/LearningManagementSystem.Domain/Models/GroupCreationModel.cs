@@ -12,6 +12,5 @@ namespace LearningManagementSystem.Domain.Models
         public string Name { get; set; } = null!;
         public DateTime StartEducation { get; set; }
         public DateTime EndEducation { get; set; }
-        //public ICollection<Guid>? StudentsIds { get; set; } = null;
     }
 }

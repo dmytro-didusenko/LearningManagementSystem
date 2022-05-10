@@ -1,5 +1,7 @@
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
+using LearningManagementSystem.Core.Jobs;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +12,19 @@ builder.Services.AddControllers();
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
 builder.Services.AddServices();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Adding Quartz
+builder.Services.AddQuartz(cfg =>
+{
+    cfg.UseMicrosoftDependencyInjectionJobFactory();
+    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
+});
+
+builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
+
+
 
 var app = builder.Build();
 

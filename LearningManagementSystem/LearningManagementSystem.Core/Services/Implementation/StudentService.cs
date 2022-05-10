@@ -15,7 +15,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
         private readonly IMapper _mapper;
         private readonly ILogger<StudentService> _logger;
 
-
         public StudentService(AppDbContext context, IUserService userService, IMapper mapper, ILogger<StudentService> logger)
         {
             _context = context;
@@ -23,7 +22,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task CreateStudentAsync(StudentCreationModel model)
+        public async Task AddAsync(StudentCreationModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
             var userExist = await _userService.GetByIdAsync(model.UserId);
@@ -36,16 +35,29 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 Id = model.UserId,
                 ContractNumber = model.ContractNumber,
-
             };
             await _context.AddAsync(student);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Adding new student");
         }
 
+        public async Task<StudentModel> GetByIdAsync(Guid id)
+        {
+            var entity = await _context.Students.Include(i => i.User).SingleOrDefaultAsync(u => u.Id.Equals(id));
+            if (entity is null)
+            {
+                throw new Exception("Student does not exist!");
+            }
+
+            var model = _mapper.Map<StudentModel>(entity);
+            _logger.LogInformation("Get student by id:{0}", model.Id);
+            return model;
+        }
 
         public IEnumerable<StudentModel> GetAll()
         {
-            var res = _context.Students.Include(i=>i.User).AsEnumerable();
+            _logger.LogInformation("Getting all students");
+            var res = _context.Students.Include(i => i.User).AsEnumerable();
             return _mapper.Map<IEnumerable<StudentModel>>(res);
         }
     }

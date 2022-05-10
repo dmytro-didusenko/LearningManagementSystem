@@ -25,7 +25,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
 
-            //TODO: change this
             var userExist = await _context.Users.FirstOrDefaultAsync(f =>
                 f.UserName.Equals(model.UserName) || f.Email.Equals(model.Email));
 
@@ -116,12 +115,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (query.FirstName is not null)
             {
-                queryable = queryable.Where(i => i.UserName.Contains(query.FirstName));
+                queryable = queryable.Where(i => i.FirstName.Contains(query.FirstName));
             }
 
             if (query.LastName is not null)
             {
-                queryable = queryable.Where(i => i.UserName.Contains(query.LastName));
+                queryable = queryable.Where(i => i.LastName.Contains(query.LastName));
             }
             
             if (query.BirthdayLessThan is not null)

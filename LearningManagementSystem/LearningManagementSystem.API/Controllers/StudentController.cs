@@ -20,7 +20,7 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateStudent(StudentCreationModel model)
         {
-            await _studentService.CreateStudentAsync(model);
+             await _studentService.AddAsync(model);
             return Ok();
         }
 
@@ -28,6 +28,12 @@ namespace LearningManagementSystem.API.Controllers
         public IActionResult GetAll()
         {
             return Ok(_studentService.GetAll());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            return Ok(await _studentService.GetByIdAsync(id));
         }
     }
 }

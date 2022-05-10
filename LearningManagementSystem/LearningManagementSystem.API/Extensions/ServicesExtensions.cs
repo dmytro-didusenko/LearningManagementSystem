@@ -15,7 +15,6 @@ namespace LearningManagementSystem.API.Extensions
 
             return services;
         }
-
         public static IServiceCollection ConfigAutoMapper(this IServiceCollection services)
         {
             var mappperCfg = new MapperConfiguration(c =>

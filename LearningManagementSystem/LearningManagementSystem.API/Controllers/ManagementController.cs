@@ -15,5 +15,12 @@ namespace LearningManagementSystem.API.Controllers
         {
             _managementService = managementService;
         }
+
+        [HttpPost("AddStudent/{studentId}/ToGroup/{groupId}")]
+        public async Task<IActionResult> AddStudentToGroup(Guid studentId, Guid groupId)
+        {
+            await _managementService.AddStudentToGroupAsync(studentId, groupId);
+            return Ok();
+        }
     }
 }

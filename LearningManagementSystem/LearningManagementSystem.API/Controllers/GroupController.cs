@@ -1,16 +1,15 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class GroupController : ControllerBase
     {
         private readonly IGroupService _groupService;
-
         public GroupController(IGroupService groupService)
         {
             _groupService = groupService;
@@ -24,7 +23,7 @@ namespace LearningManagementSystem.API.Controllers
             {
                 return BadRequest(res);
             }
-            return Ok(res);
+            return CreatedAtRoute("GetById", new { Id = res.Data.Id }, res.Data);
         }
 
         [HttpGet]
@@ -33,7 +32,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(_groupService.GetAll());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetById")]
         public async Task<IActionResult> GetById(Guid id)
         {
             return Ok(await _groupService.GetByIdAsync(id));

@@ -9,6 +9,7 @@ namespace LearningManagementSystem.Core.Services.Interfaces
 {
     public interface IManagementService
     {
-
+        public Task AddStudentToGroupAsync(Guid studentId, Guid groupId);
+        
     }
 }

@@ -74,7 +74,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<GroupModel> GetByIdAsync(Guid id)
         {
-            var group = await _context.Groups.SingleOrDefaultAsync(s => s.Id.Equals(id));
+            var group = await _context.Groups.Include(i=>i.Students).ThenInclude(t=>t.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (group is null)
             {
                 throw new Exception($"Group with id: {id} does not exist");
@@ -84,7 +84,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<GroupModel> GetAll()
         {
-            return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups.AsEnumerable());
+            return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups
+                .Include(i=>i.Students).ThenInclude(t=>t.User).AsEnumerable());
         }
     }
 }

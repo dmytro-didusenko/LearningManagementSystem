@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220506074951_Added-Student-Teacher-Entities")]
+    partial class AddedStudentTeacherEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,25 +43,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ContractNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>
@@ -101,19 +84,31 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
                 {
+                    b.HasBaseType("LearningManagementSystem.Domain.Entities.User");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("Student", (string)null);
+                });
+
+            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
+                {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Group", "Group")
                         .WithMany("Students")
-                        .HasForeignKey("GroupId");
-
-                    b.HasOne("LearningManagementSystem.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("Id")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Group");
+                    b.HasOne("LearningManagementSystem.Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("LearningManagementSystem.Domain.Entities.Student", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>

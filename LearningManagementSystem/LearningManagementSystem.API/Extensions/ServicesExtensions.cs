@@ -9,13 +9,12 @@ namespace LearningManagementSystem.API.Extensions
 {
     public static class ServicesExtensions
     {
-
         public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration cfg)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(cfg.GetConnectionString("DefaultConnection")));
+
             return services;
         }
-
         public static IServiceCollection ConfigAutoMapper(this IServiceCollection services)
         {
             var mappperCfg = new MapperConfiguration(c =>
@@ -29,8 +28,10 @@ namespace LearningManagementSystem.API.Extensions
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IManagementService, ManagementService>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IGroupService, GroupService>();
 
             return services;
         }

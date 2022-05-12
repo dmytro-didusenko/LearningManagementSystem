@@ -1,6 +1,5 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -20,7 +19,7 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateStudent(StudentCreationModel model)
         {
-             await _studentService.AddAsync(model);
+            await _studentService.AddAsync(model);
             return Ok();
         }
 
@@ -36,4 +35,5 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _studentService.GetByIdAsync(id));
         }
     }
+
 }

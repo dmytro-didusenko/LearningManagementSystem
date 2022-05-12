@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.4.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.3.0" />
   </ItemGroup>
 
   <ItemGroup>

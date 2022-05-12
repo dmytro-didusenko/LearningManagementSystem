@@ -1,7 +1,9 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using System.Text;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -36,4 +38,5 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _studentService.GetByIdAsync(id));
         }
     }
+    
 }

@@ -1,7 +1,11 @@
+using System.Text;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
+using LearningManagementSystem.Core.RabbitMqServices;
 using Quartz;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +19,9 @@ builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IMessageProducer, RabbitMqProducer>();
+builder.Services.AddHostedService<RabbitMqConsumer>();
+
 //Adding Quartz
 builder.Services.AddQuartz(cfg =>
 {
@@ -23,8 +30,6 @@ builder.Services.AddQuartz(cfg =>
 });
 
 builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
-
-
 
 var app = builder.Build();
 
@@ -37,10 +42,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+

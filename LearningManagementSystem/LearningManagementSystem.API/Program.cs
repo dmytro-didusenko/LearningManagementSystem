@@ -1,12 +1,8 @@
-using System.Text;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
-using LearningManagementSystem.Core.RabbitMqServices;
-using LearningManagementSystem.Core.Services.Implementation;
+using MassTransit;
 using Quartz;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,18 +16,23 @@ builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<IMessageConsumer, RabbitMqConsumer>();
-builder.Services.AddScoped<IMessageProducer, RabbitMqProducer>();
-builder.Services.AddHostedService<RabbitMqListener>();
 
+//configuring MassTransit
+builder.Services.AddMassTransit(cfg =>
+{
+    cfg.UsingRabbitMq((context, x) =>
+    {
+        x.Host(new Uri(builder.Configuration["RabbitMQ:Uri"]));
+    });
+});
 //Adding Quartz
 builder.Services.AddQuartz(cfg =>
 {
     cfg.UseMicrosoftDependencyInjectionJobFactory();
     cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
 });
-
 builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
+
 
 var app = builder.Build();
 
@@ -44,7 +45,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

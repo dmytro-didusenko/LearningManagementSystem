@@ -1,6 +1,7 @@
 ﻿using System.Text;
-using LearningManagementSystem.Core.RabbitMqServices;
 using LearningManagementSystem.Domain.Contextes;
+using LearningManagementSystem.Domain.Models;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,37 +13,35 @@ namespace LearningManagementSystem.Core.Jobs
     public class BirthdayGreetingJob : IJob
     {
         private readonly ILogger<BirthdayGreetingJob> _logger;
-        private readonly IMessageProducer _messageProducer;
-        private readonly IConfiguration _configuration;
+        private readonly IPublishEndpoint _publisher;
         private readonly AppDbContext _context;
-        private readonly string _queue;
 
-        public BirthdayGreetingJob(AppDbContext context, ILogger<BirthdayGreetingJob> logger, 
-            IMessageProducer messageProducer,
-            IConfiguration configuration)
+        public BirthdayGreetingJob(AppDbContext context, ILogger<BirthdayGreetingJob> logger,
+            IConfiguration configuration, IPublishEndpoint publisher)
         {
             _logger = logger;
-            _messageProducer = messageProducer;
-            _configuration = configuration;
+            _publisher = publisher;
             _context = context;
-            _queue = _configuration["RabbitMQ:Queues:BirthdayQueue"];
         }
 
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             var today = DateTime.Today;
             var toGreat = _context.Users.AsNoTracking().Where(i => i.Birthday.Day.Equals(today.Day)
                                                                    && i.Birthday.Month.Equals(today.Month)).AsEnumerable();
             if (toGreat is not null && toGreat.Any())
             {
-                //Create RabbitMQMessage Producer here?
                 foreach (var user in toGreat)
                 {
-                    var message = $"Happy Birthday: {user.FirstName} {user.LastName}!";
-                    _messageProducer.SendMessage(_queue , message);
+                    var msg = new GreetingMessage()
+                    {
+                        FIO = user.FirstName + " " + user.LastName,
+                        Message = "Happy Birthday"
+                    };
+                    await _publisher.Publish(msg);
+                    _logger.LogInformation("Message has been successfully sent!");
                 }
             }
-            return Task.CompletedTask;
         }
     }
 

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -14,8 +10,8 @@ namespace LearningManagementSystem.Core.RabbitMqServices
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<RabbitMqProducer> _logger;
-        private IConnection _connection;
-        private IModel _channel;
+        private readonly IConnection _connection;
+        private readonly IModel _channel;
 
         public RabbitMqProducer(IConfiguration configuration, ILogger<RabbitMqProducer> logger)
         {

@@ -3,6 +3,7 @@ using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Core.RabbitMqServices;
+using LearningManagementSystem.Core.Services.Implementation;
 using Quartz;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -19,8 +20,9 @@ builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<IMessageConsumer, RabbitMqConsumer>();
 builder.Services.AddScoped<IMessageProducer, RabbitMqProducer>();
-builder.Services.AddHostedService<RabbitMqConsumer>();
+builder.Services.AddHostedService<RabbitMqListener>();
 
 //Adding Quartz
 builder.Services.AddQuartz(cfg =>

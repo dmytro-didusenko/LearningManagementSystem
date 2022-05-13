@@ -9,9 +9,9 @@ namespace LearningManagementSystem.Domain.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<UserModel, User>().ReverseMap();
-
             CreateMap<Group, GroupCreationModel>().ReverseMap();
 
+            CreateMap<Course, CourseModel>().ReverseMap();
 
             CreateMap<Student, StudentModel>()
                 .ForMember(m => m.UserName, opt => opt.MapFrom(f => f.User.UserName))
@@ -20,7 +20,6 @@ namespace LearningManagementSystem.Domain.AutoMapper
                 .ForMember(m => m.Birthday, opt => opt.MapFrom(f => f.User.Birthday))
                 .ForMember(m => m.Email, opt => opt.MapFrom(f => f.User.Email))
                 .ForMember(m => m.About, opt => opt.MapFrom(f => f.User.About)).ReverseMap();
-
             CreateMap<Group, GroupModel>().ReverseMap();
         }
     }

@@ -8,7 +8,6 @@ IConfiguration configuration = new ConfigurationBuilder()
     .AddCommandLine(args)
     .Build();
 
-
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {

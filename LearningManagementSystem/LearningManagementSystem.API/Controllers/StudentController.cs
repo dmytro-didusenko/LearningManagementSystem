@@ -22,7 +22,7 @@ namespace LearningManagementSystem.API.Controllers
             await _studentService.AddAsync(model);
             return Ok();
         }
-
+        
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -35,5 +35,4 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _studentService.GetByIdAsync(id));
         }
     }
-
 }

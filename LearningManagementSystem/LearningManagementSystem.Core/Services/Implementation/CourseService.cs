@@ -31,12 +31,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
             var entity = _mapper.Map<Course>(model);
-            if (model.Image is not null)
+            if (model.ImageFile is not null)
             {
-                var path = await _fileHelper.UploadFileAsync(model.Image);
+                var path = await _fileHelper.UploadFileAsync(model.ImageFile);
                 entity.ImagePath = path;
             }
-
             await _context.Courses.AddAsync(entity);
             await _context.SaveChangesAsync();
             return new Response<CourseModel>()
@@ -56,23 +55,34 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 throw new Exception($"Course id:{id} does not exist!");
             }
-
-            var entityToUpdate = _mapper.Map<Course>(model);
-            if (model.Image is not null)
+            if (model.ImageFile is not null)
             {
-                var path = await _fileHelper.UploadFileAsync(model.Image);
-                entityToUpdate.ImagePath = path;
+                var path = await _fileHelper.UploadFileAsync(model.ImageFile);
+                model.ImagePath = path;
             }
 
+            var entityToUpdate = _mapper.Map<Course>(model);
             model.Id = id;
             _context.Courses.Update(entityToUpdate);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Course[id]:{0} has been updated", model.Id);
         }
 
-        public Task RemoveAsync(CourseModel model)
+        public async Task RemoveAsync(CourseModel model)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(model);
+            var course = await _context.Courses.SingleOrDefaultAsync(i => i.Id.Equals(
+                model.Id));
+
+            if (course is null)
+            {
+                _logger.LogInformation("Course with id:{0} does not exist", model.Id);
+                throw new Exception("Course does not exist");
+            }
+
+            _context.Courses.Remove(course);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Course {0} has been removed", model.Id);
         }
 
         public async Task<CourseModel> GetByIdAsync(Guid id)

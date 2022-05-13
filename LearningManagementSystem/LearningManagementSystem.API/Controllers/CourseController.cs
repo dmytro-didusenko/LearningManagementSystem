@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.Core.Helpers;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,27 +12,36 @@ namespace LearningManagementSystem.API.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
+        private readonly FileHelper _fileHelper;
 
-        public CourseController(ICourseService courseService)
+        public CourseController(ICourseService courseService, FileHelper fileHelper)
         {
             _courseService = courseService;
+            _fileHelper = fileHelper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCourse([FromForm] CourseModel course)
+        public async Task<IActionResult> CreateCourse([FromForm]CourseModel course)
         {
             var res = await _courseService.AddAsync(course);
             if (!res.IsSuccessful)
             {
                 return BadRequest(res);
             }
-            return CreatedAtRoute("GetCourseById", new {Id = res.Data.Id}, res.Data);
+            return CreatedAtRoute("GetCourseById", new { Id = res.Data.Id }, res.Data);
         }
 
         [HttpGet("{id}", Name = "GetCourseById")]
         public async Task<IActionResult> GetCourse(Guid id)
         {
             return Ok(await _courseService.GetByIdAsync(id));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCourse(Guid id, [FromBody]CourseModel model)
+        {
+            await _courseService.UpdateAsync(id,model);
+            return NoContent();
         }
 
         [HttpGet]

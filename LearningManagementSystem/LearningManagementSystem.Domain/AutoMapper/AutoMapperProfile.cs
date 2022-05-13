@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models;
 
@@ -23,4 +24,6 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<Group, GroupModel>().ReverseMap();
         }
     }
+
+   
 }

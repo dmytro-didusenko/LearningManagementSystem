@@ -21,6 +21,10 @@ namespace LearningManagementSystem.Core.Helpers
         {
             string folderName = _confguration["FileStorage"];
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+            if (!Directory.Exists(folderPath))
+            {
+                return "";
+            }
             var path = Path.Combine(folderPath, file.FileName);
             await using var fileContentStream = new MemoryStream();
 

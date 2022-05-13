@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using LearningManagementSystem.Domain.Contextes;
+using LearningManagementSystem.Domain.MassTransitModels;
 using LearningManagementSystem.Domain.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -33,12 +34,14 @@ namespace LearningManagementSystem.Core.Jobs
             {
                 foreach (var user in toGreat)
                 {
-                    var msg = new GreetingMessage()
+                    var message = new ApiMessage()
                     {
-                        FIO = user.FirstName + " " + user.LastName,
-                        Message = "Happy Birthday"
+                        DeliveryMethod = DeliveryMethod.Email,
+                        MessageType = MessageType.Information,
+                        To = user.Email,
+                        Text = $"Happy birthday, {user.FirstName} {user.LastName}"
                     };
-                    await _publisher.Publish(msg);
+                    await _publisher.Publish(message);
                     _logger.LogInformation("Message has been successfully sent!");
                 }
             }

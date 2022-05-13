@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper.Configuration.Annotations;
+using Microsoft.AspNetCore.Http;
 
 namespace LearningManagementSystem.Domain.Models
 {
@@ -8,7 +9,9 @@ namespace LearningManagementSystem.Domain.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty; 
         public DateTime StartedAt { get; set; }
-        
-        public IFormFile? Image { get; set; }
+
+   
+        public IFormFile? ImageFile { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

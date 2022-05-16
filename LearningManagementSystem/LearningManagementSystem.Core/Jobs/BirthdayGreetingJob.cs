@@ -37,8 +37,9 @@ namespace LearningManagementSystem.Core.Jobs
                     var message = new ApiMessage()
                     {
                         DeliveryMethod = DeliveryMethod.Email,
-                        MessageType = MessageType.Information,
+                        MessageType = MessageType.Greeting,
                         To = user.Email,
+                        Subject = "Happy Birthday!",
                         Text = $"Happy birthday, {user.FirstName} {user.LastName}"
                     };
                     await _publisher.Publish(message);

@@ -35,5 +35,4 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _studentService.GetByIdAsync(id));
         }
     }
-
 }

@@ -1,5 +1,6 @@
 using MassTransit;
-using Notifications.Services;
+using MassTransit.Configuration;
+using Notifications.Services.Consumers;
 
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -14,7 +15,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<BirthdayConsumer>();
+            x.AddConsumer<ApiConsumer>();
 
             x.SetKebabCaseEndpointNameFormatter();
 
@@ -28,3 +29,4 @@ IHost host = Host.CreateDefaultBuilder(args)
     .Build();
 
 await host.RunAsync();
+

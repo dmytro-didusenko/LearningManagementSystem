@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.AutoMapper;
@@ -32,8 +33,9 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped<IStudentService, StudentService>();
-            services.AddScoped<IGroupService, GroupService>();
-
+            services.AddScoped<IGroupService, GroupService>(); 
+            services.AddScoped<IFileHelper, FileHelper>();
+            services.AddScoped<ICourseService, CourseService>();
             return services;
         }
 

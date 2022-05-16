@@ -13,12 +13,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly FileHelper _fileHelper;
+        private readonly IFileHelper _fileHelper;
         private readonly ILogger<CourseService> _logger;
 
         public CourseService(AppDbContext context,
             IMapper mapper,
-            FileHelper fileHelper,
+            IFileHelper fileHelper,
             ILogger<CourseService> logger)
         {
             _context = context;

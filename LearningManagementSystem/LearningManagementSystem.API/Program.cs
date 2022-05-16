@@ -1,6 +1,5 @@
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
-using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Jobs;
 using MassTransit;
 using Quartz;

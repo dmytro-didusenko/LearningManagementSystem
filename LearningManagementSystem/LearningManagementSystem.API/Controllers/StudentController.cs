@@ -22,7 +22,7 @@ namespace LearningManagementSystem.API.Controllers
             await _studentService.AddAsync(model);
             return Ok();
         }
-        
+
         [HttpGet]
         public IActionResult GetAll()
         {

@@ -1,7 +1,6 @@
 ﻿using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -12,16 +11,14 @@ namespace LearningManagementSystem.API.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
-        private readonly FileHelper _fileHelper;
 
-        public CourseController(ICourseService courseService, FileHelper fileHelper)
+        public CourseController(ICourseService courseService)
         {
             _courseService = courseService;
-            _fileHelper = fileHelper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCourse([FromForm]CourseModel course)
+        public async Task<IActionResult> CreateCourse([FromForm] CourseModel course)
         {
             var res = await _courseService.AddAsync(course);
             if (!res.IsSuccessful)
@@ -38,9 +35,9 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCourse(Guid id, [FromBody]CourseModel model)
+        public async Task<IActionResult> UpdateCourse(Guid id, [FromBody] CourseModel model)
         {
-            await _courseService.UpdateAsync(id,model);
+            await _courseService.UpdateAsync(id, model);
             return NoContent();
         }
 

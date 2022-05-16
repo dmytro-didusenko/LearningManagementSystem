@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace LearningManagementSystem.Core.Helpers
 {
-    public class FileHelper
+    public class FileHelper: IFileHelper
     {
         private readonly IConfiguration _confguration;
 
@@ -33,7 +33,5 @@ namespace LearningManagementSystem.Core.Helpers
 
             return path;
         }
-
-
     }
 }

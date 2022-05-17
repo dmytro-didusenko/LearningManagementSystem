@@ -34,7 +34,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new Exception("Student already has a group");
             }
 
-            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
+            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Equals(groupId));
             if (group is null)
             {
                 throw new Exception("Group does not exist");
@@ -42,6 +42,30 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             student.GroupId = groupId;
             _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddCourseToGroup(Guid courseId, Guid groupId)
+        {
+            var course = await _context.Courses.SingleOrDefaultAsync(f => f.Id.Equals(courseId));
+            if (course is null)
+            {
+                throw new Exception("Course does not exist");
+            }
+
+            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
+            if (course is null)
+            {
+                throw new Exception("Group does not exist");
+            }
+
+            if (group.CourseId is not null)
+            {
+                throw new Exception("Group already has a course!");
+            }
+
+            group.CourseId = courseId;
+            _context.Groups.Update(group);
             await _context.SaveChangesAsync();
         }
     }

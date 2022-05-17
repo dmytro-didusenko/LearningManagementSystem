@@ -1,13 +1,14 @@
 ﻿using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.MassTransitModels;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace LearningManagementSystem.Core.Jobs
 {
-    public class CourseStartingJob: IJob
+    public class CourseStartingJob : IJob
     {
         private readonly ILogger<CourseStartingJob> _logger;
         private readonly IPublishEndpoint _publisher;
@@ -27,7 +28,11 @@ namespace LearningManagementSystem.Core.Jobs
             var actual = _context.Courses.Where(i =>
                 i.StartedAt.Day.Equals(today.Day) &&
                 (i.StartedAt.Month - 1).Equals(today.Month)).AsEnumerable();
-         
+
+            var usersToSend = await _context.Students.Include(i => i.User)
+                .Select(s => s.User.FirstName + " " + s.User.LastName)
+                .ToListAsync();
+
             if (actual is not null && actual.Any())
             {
                 foreach (var course in actual)
@@ -37,7 +42,7 @@ namespace LearningManagementSystem.Core.Jobs
                         DeliveryMethod = DeliveryMethod.Email,
                         MessageType = MessageType.Information,
                         Text = $"New course {course.Name} starts next month",
-                        To = "All" //TODO: Concrete user
+                        Receivers = usersToSend //TODO: Concrete user
                     });
                     _logger.LogInformation("Message has been successfully sent!");
                 }

@@ -1,5 +1,4 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -20,6 +19,13 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> AddStudentToGroup(Guid studentId, Guid groupId)
         {
             await _managementService.AddStudentToGroupAsync(studentId, groupId);
+            return Ok();
+        }
+
+        [HttpPost("AddCourse/{courseId}/ToGroup/{groupId}")]
+        public async Task<IActionResult> AddCourseToGoup(Guid courseId, Guid groupId)
+        {
+            await _managementService.AddCourseToGroup(courseId, groupId);
             return Ok();
         }
     }

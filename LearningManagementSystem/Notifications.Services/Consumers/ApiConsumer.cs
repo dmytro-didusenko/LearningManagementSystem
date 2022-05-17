@@ -1,5 +1,4 @@
 ﻿using LearningManagementSystem.Domain.MassTransitModels;
-using LearningManagementSystem.Domain.Models;
 using MassTransit;
 
 namespace Notifications.Services.Consumers
@@ -24,7 +23,11 @@ namespace Notifications.Services.Consumers
 
         private void PrintMessageInConsole(ApiMessage message)
         {
-            Console.WriteLine(message.To);
+            Console.WriteLine(message.Subject);
+            foreach (var receiver in message.Receivers)
+            {
+                Console.WriteLine($"To: {receiver}");
+            }
             Console.WriteLine(message.Text);
         }
     }

@@ -9,6 +9,7 @@ namespace LearningManagementSystem.Domain.Contextes
         public DbSet<Student> Students { get; set; } = null!;
         public DbSet<Group> Groups { get; set; } = null!;
         public DbSet<Course> Courses { get; set; } = null!;
+        public DbSet<Subject> Subjects { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

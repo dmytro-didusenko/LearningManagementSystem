@@ -1,5 +1,4 @@
-﻿using AutoMapper.Configuration.Annotations;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace LearningManagementSystem.Domain.Models
 {
@@ -7,9 +6,10 @@ namespace LearningManagementSystem.Domain.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty; 
+        public string Description { get; set; } = string.Empty;
         public DateTime StartedAt { get; set; }
         public IFormFile? ImageFile { get; set; }
         public string? ImagePath { get; set; }
+        public IEnumerable<SubjectModel>? Subjects { get; set; }
     }
 }

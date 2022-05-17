@@ -68,5 +68,30 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _context.Groups.Update(group);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AddSubjectToCourse(Guid subjectId, Guid courseId)
+        {
+            var subject = await _context.Subjects.Include(i=>i.Courses)
+                .SingleOrDefaultAsync(s => s.Id.Equals(subjectId));
+
+            if (subject is null)
+            {
+                throw new Exception("Subject does not exist");
+            }
+
+            var course = await _context.Courses.SingleOrDefaultAsync(s => s.Id.Equals(courseId));
+            if (course is null)
+            {
+                throw new Exception("Course does not exist");
+            }
+
+            if (subject.Courses.Contains(course))
+            {
+                throw new Exception("Course already has a subject");
+            }
+            subject.Courses.Add(course);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

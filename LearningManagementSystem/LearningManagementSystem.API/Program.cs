@@ -1,7 +1,10 @@
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +18,6 @@ builder.Services.ConfigAutoMapper();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 //configuring MassTransit
 builder.Services.AddMassTransit(cfg =>

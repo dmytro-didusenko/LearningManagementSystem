@@ -1,13 +1,10 @@
-﻿using System.Text;
-using LearningManagementSystem.Domain.Contextes;
+﻿using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.MassTransitModels;
-using LearningManagementSystem.Domain.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using RabbitMQ.Client;
 
 namespace LearningManagementSystem.Core.Jobs
 {
@@ -28,26 +25,26 @@ namespace LearningManagementSystem.Core.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var today = DateTime.Today;
-            var toGreat = _context.Users.AsNoTracking().Where(i => i.Birthday.Day.Equals(today.Day)
-                                                                   && i.Birthday.Month.Equals(today.Month)).AsEnumerable();
-            if (toGreat is not null && toGreat.Any())
+            var usersToGreat = _context.Users.AsNoTracking().Where(i => i.Birthday.Day.Equals(today.Day)
+                                                                   && i.Birthday.Month.Equals(today.Month))
+                                                                    .Select(s => s.FirstName + " " + s.LastName).AsEnumerable();
+
+            if (usersToGreat is not null && usersToGreat.Any())
             {
-                foreach (var user in toGreat)
+                var message = new ApiMessage()
                 {
-                    var message = new ApiMessage()
-                    {
-                        DeliveryMethod = DeliveryMethod.Email,
-                        MessageType = MessageType.Greeting,
-                        To = user.Email,
-                        Subject = "Happy Birthday!",
-                        Text = $"Happy birthday, {user.FirstName} {user.LastName}"
-                    };
-                    await _publisher.Publish(message);
-                    _logger.LogInformation("Message has been successfully sent!");
-                }
+                    DeliveryMethod = DeliveryMethod.Email,
+                    MessageType = MessageType.Greeting,
+                    Receivers = usersToGreat,
+                    Subject = "Happy Birthday!",
+                    Text = $"Happy birthday"
+                };
+                await _publisher.Publish(message);
+                _logger.LogInformation("Message has been successfully sent!");
             }
         }
     }
+}
 
 
 }

@@ -8,7 +8,7 @@ using Quartz;
 
 namespace LearningManagementSystem.Core.Jobs
 {
-    public class CourseStartingJob: IJob
+    public class CourseStartingJob : IJob
     {
         private readonly ILogger<CourseStartingJob> _logger;
         private readonly IPublishEndpoint _publisher;
@@ -29,8 +29,8 @@ namespace LearningManagementSystem.Core.Jobs
                 i.StartedAt.Day.Equals(today.Day) &&
                 (i.StartedAt.Month - 1).Equals(today.Month)).AsEnumerable();
 
-            var userToSend = await _context.Students.Include(i=>i.User)
-                .Select(s => s.User.FirstName+" " + s.User.LastName)
+            var usersToSend = await _context.Students.Include(i => i.User)
+                .Select(s => s.User.FirstName + " " + s.User.LastName)
                 .ToListAsync();
 
             if (actual is not null && actual.Any())
@@ -42,7 +42,7 @@ namespace LearningManagementSystem.Core.Jobs
                         DeliveryMethod = DeliveryMethod.Email,
                         MessageType = MessageType.Information,
                         Text = $"New course {course.Name} starts next month",
-                        To = "All" //TODO: Concrete user
+                        Receivers = usersToSend //TODO: Concrete user
                     });
                     _logger.LogInformation("Message has been successfully sent!");
                 }

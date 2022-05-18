@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220517093601_Added-Subject")]
+    partial class AddedSubject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,25 +124,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.ToTable("Subjects");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Teacher", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("Teachers");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -219,31 +202,9 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Teacher", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
-                        .WithMany("Teachers")
-                        .HasForeignKey("SubjectId");
-
-                    b.Navigation("Subject");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>
                 {
                     b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
-                {
-                    b.Navigation("Teachers");
                 });
 #pragma warning restore 612, 618
         }

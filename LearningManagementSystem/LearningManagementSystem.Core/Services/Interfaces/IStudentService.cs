@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.Domain.Models;
 
 namespace LearningManagementSystem.Core.Services.Interfaces
 {

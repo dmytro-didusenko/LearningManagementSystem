@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LearningManagementSystem.Core.Services.Implementation
 {
-    public class TeacherService:ITeacherService
+    public class TeacherService : ITeacherService
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
@@ -23,11 +23,32 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<Response<TeacherCreationModel>> AddAsync(TeacherCreationModel model)
         {
+
             ArgumentNullException.ThrowIfNull(model);
+
+            var userExist = await _context.Users.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(model.UserId));
+            if (userExist is null)
+            {
+                throw new Exception($"User with id:{model.UserId} does not exist!");
+            }
+
+            var teacher = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(model.UserId));
+            var student = await _context.Teachers.FirstOrDefaultAsync(f => f.Id.Equals(model.UserId));
+
+            if (teacher is not null || student is not null)
+            {
+                return new Response<TeacherCreationModel>()
+                {
+                    Error = "User already has a role",
+                    IsSuccessful = false
+                };
+            }
+
             var entity = _mapper.Map<Teacher>(model);
 
             await _context.Teachers.AddAsync(entity);
             await _context.SaveChangesAsync();
+
             _logger.LogInformation("New teacher has been successfully added");
             return new Response<TeacherCreationModel>()
             {
@@ -38,7 +59,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<TeacherModel> GetByIdAsync(Guid id)
         {
-            var teacher = await _context.Teachers.Include(i=>i.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
+            var teacher = await _context.Teachers.Include(i => i.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (teacher is null)
             {
                 throw new Exception("Teacher does not exist");
@@ -49,7 +70,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<TeacherModel> GetAll()
         {
-            return _mapper.Map<IEnumerable<TeacherModel>>(_context.Teachers.Include(i=>i.User).AsEnumerable());
+            return _mapper.Map<IEnumerable<TeacherModel>>(_context.Teachers.Include(i => i.User).AsEnumerable());
         }
     }
 }

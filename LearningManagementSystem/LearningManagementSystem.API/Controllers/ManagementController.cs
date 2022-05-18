@@ -23,7 +23,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost("AddCourse/{courseId}/ToGroup/{groupId}")]
-        public async Task<IActionResult> AddCourseToGoup(Guid courseId, Guid groupId)
+        public async Task<IActionResult> AddCourseToGroup(Guid courseId, Guid groupId)
         {
             await _managementService.AddCourseToGroup(courseId, groupId);
             return Ok();
@@ -35,5 +35,13 @@ namespace LearningManagementSystem.API.Controllers
             await _managementService.AddSubjectToCourse(subjectId, courseId);
             return Ok();
         }
+
+        [HttpPost("AddTeacher/{teacherId}/ToSubject/{subjectId}")]
+        public async Task<IActionResult> AddTeacherToSubject(Guid teacherId, Guid subjectId)
+        {
+            await _managementService.AddTeacherToSubject(teacherId, subjectId);
+            return Ok();
+        }
+
     }
 }

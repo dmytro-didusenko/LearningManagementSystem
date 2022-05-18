@@ -71,7 +71,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task AddSubjectToCourse(Guid subjectId, Guid courseId)
         {
-            var subject = await _context.Subjects.Include(i=>i.Courses)
+            var subject = await _context.Subjects.Include(i => i.Courses)
                 .SingleOrDefaultAsync(s => s.Id.Equals(subjectId));
 
             if (subject is null)
@@ -93,5 +93,30 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddTeacherToSubject(Guid teacherId, Guid subjectId)
+        {
+            var teacher = await _context.Teachers
+                .Include(i => i.Subject)
+                .SingleOrDefaultAsync(s => s.Id.Equals(teacherId));
+
+            if (teacher is null)
+            {
+                throw new Exception("Teacher does not exist");
+            }
+            if (teacher.SubjectId is not null)
+            {
+                throw new Exception("Teacher already has a subject");
+            }
+
+            var subject = await _context.Subjects.SingleOrDefaultAsync(s => s.Id.Equals(subjectId));
+            if (subject is null)
+            {
+                throw new Exception("Subject does not exist");
+            }
+
+            teacher.SubjectId = subjectId;
+            _context.Update(teacher);
+            await _context.SaveChangesAsync();
+        }
     }
 }

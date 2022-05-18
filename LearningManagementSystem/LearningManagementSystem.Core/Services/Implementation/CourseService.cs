@@ -87,7 +87,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<CourseModel> GetByIdAsync(Guid id)
         {
-            var course = await _context.Courses.Include(i=>i.Subjects).FirstOrDefaultAsync(f => f.Id.Equals(id));
+            var course = await _context.Courses.Include(i => i.Subjects).FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (course is null)
             {
                 throw new Exception($"Course with id:{id} does not exist");
@@ -97,7 +97,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<CourseModel> GetAll()
         {
-            return _mapper.Map<IEnumerable<CourseModel>>(_context.Courses.Include(i=>i.Subjects).AsEnumerable());
+            return _mapper.Map<IEnumerable<CourseModel>>(_context.Courses
+                .Include(i => i.Subjects)
+                .ThenInclude(t => t.Teachers).ToList());
         }
     }
 }

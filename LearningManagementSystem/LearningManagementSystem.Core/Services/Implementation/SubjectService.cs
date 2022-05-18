@@ -50,7 +50,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task UpdateAsync(Guid id, SubjectModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
-            var entity = await _context.Subjects.SingleOrDefaultAsync(s => s.Id.Equals(id));
+            var entity = await _context.Subjects.AsNoTracking().SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (entity is null)
             {
                 throw new Exception($"Subject with id:{id} does not exist");
@@ -70,7 +70,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<SubjectModel> GetByIdAsync(Guid id)
         {
-            var subject = await _context.Subjects.SingleOrDefaultAsync(s => s.Id.Equals(id));
+            var subject = await _context.Subjects
+                .Include(i=>i.Courses)
+                .Include(i=>i.Teachers).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (subject is null)
             {
                 throw new Exception("Subject does not exist");
@@ -81,7 +83,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<SubjectModel> GetAll()
         {
-            var subjects = _context.Subjects.Include(i => i.Courses).AsEnumerable();
+            var subjects = _context.Subjects.Include(i => i.Courses)
+                .Include(i=>i.Teachers).AsEnumerable();
             return _mapper.Map<IEnumerable<SubjectModel>>(subjects);
         }
     }

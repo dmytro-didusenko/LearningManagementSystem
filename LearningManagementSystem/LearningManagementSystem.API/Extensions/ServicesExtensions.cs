@@ -37,6 +37,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IFileHelper, FileHelper>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<ITeacherService, TeacherService>();
 
             return services;
         }

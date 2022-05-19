@@ -29,6 +29,14 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(_studentService.GetAll());
         }
 
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveTeacher(Guid id)
+        {
+            await _studentService.RemoveStudentAsync(id);
+            return NoContent();
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

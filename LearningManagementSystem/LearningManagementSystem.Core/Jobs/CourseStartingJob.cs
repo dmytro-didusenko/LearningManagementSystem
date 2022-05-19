@@ -42,7 +42,7 @@ namespace LearningManagementSystem.Core.Jobs
                         DeliveryMethod = DeliveryMethod.Email,
                         MessageType = MessageType.Information,
                         Text = $"New course {course.Name} starts next month",
-                        Receivers = usersToSend //TODO: Concrete user
+                        Receivers = usersToSend
                     });
                     _logger.LogInformation("Message has been successfully sent!");
                 }

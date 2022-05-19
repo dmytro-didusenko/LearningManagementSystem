@@ -53,7 +53,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             ArgumentNullException.ThrowIfNull(model);
 
             var userExist = await _context.Users.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id));
-            
+
             if (userExist is null)
             {
                 throw new Exception($"User id:{id} does not exist!");
@@ -73,7 +73,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (user is null)
             {
-                //TODO: change this
                 _logger.LogInformation("User with id:{0} does not exist", model.Id);
                 throw new Exception("User is not exist");
             }
@@ -98,9 +97,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return model;
         }
 
-        public async Task<List<UserModel>> GetByFilterAsync(UserQueryModel? query = null)
+        public async Task<IEnumerable<UserModel>> GetByFilterAsync(UserQueryModel? query = null)
         {
-
             var queryable = _context.Users.AsQueryable();
 
             if (query is null)
@@ -122,18 +120,18 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 queryable = queryable.Where(i => i.LastName.Contains(query.LastName));
             }
-            
+
             if (query.BirthdayLessThan is not null)
             {
-                queryable = queryable.Where(i => i.Birthday<query.BirthdayLessThan);
-            } 
-            
+                queryable = queryable.Where(i => i.Birthday < query.BirthdayLessThan);
+            }
+
             if (query.BirthdayGreaterThan is not null)
             {
                 queryable = queryable.Where(i => i.Birthday > query.BirthdayGreaterThan);
             }
 
-            var res =  await queryable.ToListAsync();
+            var res = await queryable.ToListAsync();
 
             return _mapper.Map<List<UserModel>>(res);
         }

@@ -72,5 +72,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             return _mapper.Map<IEnumerable<TeacherModel>>(_context.Teachers.Include(i => i.User).AsEnumerable());
         }
+
+        public async Task RemoveTeacherAsync(Guid id)
+        {
+            var teacher = await _context.Teachers.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            if (teacher is null)
+            {
+                throw new Exception("Teacher does not exist");
+            }
+
+            _context.Teachers.Remove(teacher);
+            await _context.SaveChangesAsync();
+        }
     }
 }

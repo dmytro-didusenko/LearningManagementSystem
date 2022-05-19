@@ -1,7 +1,5 @@
 using MassTransit;
-using MassTransit.Configuration;
 using Notifications.Services.Consumers;
-
 
 IConfiguration configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

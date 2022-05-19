@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LearningManagementSystem.Domain.Entities
+﻿namespace LearningManagementSystem.Domain.Entities
 {
     public class User : BaseEntity
     {
@@ -16,5 +9,14 @@ namespace LearningManagementSystem.Domain.Entities
         public DateTime Birthday { get; set; }
         public string? About { get; set; }
         public bool IsActive { get; set; } = true;
+        public Gender Gender { get; set; }
+        public ICollection<Document>? Document { get; set; }
+    }
+
+    public enum Gender
+    {
+        Male,
+        Female,
+        Other
     }
 }

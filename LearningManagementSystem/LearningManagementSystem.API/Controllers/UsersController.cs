@@ -10,10 +10,12 @@ namespace LearningManagementSystem.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IDocumentService _documentService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IDocumentService documentService)
         {
             _userService = userService;
+            _documentService = documentService;
         }
 
         [HttpPost]
@@ -45,13 +47,36 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
+        [HttpPost("AddDocument")]
+        public async Task<IActionResult> AddDocument([FromBody] DocumentModel model)
+        {
+            var res = await _documentService.AddDocumentAsync(model);
+            if (!res.IsSuccessful)
+            {
+                return BadRequest(res);
+            }
+
+            return Ok(res);
+        }
+
+        [HttpGet("GetDocuments")]
+        public async Task<IActionResult> GetDocumentByFilter([FromQuery] DocumentQueryModel? query = null)
+        {
+            var res = await _documentService.GetDocumentsByFilterAsync(query);
+            return Ok(res);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {
-            ArgumentNullException.ThrowIfNull(query);
-
             return Ok(await _userService.GetByFilterAsync(query));
+        }
+
+        [HttpDelete("RemoveDocument/{id}")]
+        public async Task<IActionResult> RemoveDocument(Guid id)
+        {
+            await _documentService.RemoveDocumentByIdAsync(id);
+            return NoContent();
         }
 
     }

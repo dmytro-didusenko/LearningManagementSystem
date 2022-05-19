@@ -68,5 +68,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var res = _context.Students.Include(i => i.User).AsEnumerable();
             return _mapper.Map<IEnumerable<StudentModel>>(res);
         }
+
+        public async Task RemoveStudentAsync(Guid id)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            if (student is null)
+            {
+                throw new Exception("Student does not exist");
+            }
+
+            _context.Students.Remove(student);
+            await _context.SaveChangesAsync();
+        }
     }
 }

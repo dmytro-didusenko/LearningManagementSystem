@@ -11,6 +11,8 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<UserModel, User>().ReverseMap();
             CreateMap<Group, GroupCreationModel>().ReverseMap();
             CreateMap<Group, GroupModel>().ReverseMap();
+            CreateMap<Document, DocumentModel>().ReverseMap();
+
             CreateMap<Course, CourseModel>()
                .ReverseMap();
 

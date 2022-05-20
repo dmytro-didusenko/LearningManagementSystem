@@ -1,5 +1,4 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,19 +45,5 @@ namespace LearningManagementSystem.API.Controllers
             await _subjectService.UpdateAsync(id, model);
             return NoContent();
         }
-
-        //[HttpGet("drop-db")]
-        //public async Task<IActionResult> DropDb([FromServices] AppDbContext db)
-        //{
-        //    db.Students.RemoveRange(db.Students);
-        //    db.Users.RemoveRange(db.Users);
-        //    db.Courses.RemoveRange(db.Courses);
-        //    db.Documents.RemoveRange(db.Documents);
-        //    db.Groups.RemoveRange(db.Groups);
-        //    db.Subjects.RemoveRange(db.Subjects);
-        //    db.Teachers.RemoveRange(db.Teachers);
-        //    await db.SaveChangesAsync();
-        //    return Ok();
-        //}
     }
 }

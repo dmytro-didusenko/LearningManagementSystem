@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
@@ -8,7 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.WriteIndented = true;
+});
 
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();

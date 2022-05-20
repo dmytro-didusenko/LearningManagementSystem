@@ -12,6 +12,13 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<Group, GroupCreationModel>().ReverseMap();
             CreateMap<Group, GroupModel>().ReverseMap();
             CreateMap<Document, DocumentModel>().ReverseMap();
+            CreateMap<TaskAnswer, TaskAnswerModel>().ReverseMap();
+
+            CreateMap<HomeTask, HomeTaskModel>()
+                .ForMember(m => m.TaskAnswersIds, opt =>
+                    opt.MapFrom(f => f.TaskAnswers.Select(s => s.Id))).ReverseMap();
+
+            CreateMap<HomeTask, HomeTaskDto>().ReverseMap();
 
             CreateMap<Course, CourseModel>()
                .ReverseMap();
@@ -38,7 +45,9 @@ namespace LearningManagementSystem.Domain.AutoMapper
                 .ForMember(m => m.CoursesIds, opt =>
                     opt.MapFrom(f => f.Courses.Select(s => s.Id)))
                 .ForMember(m => m.TeachersIds, opt =>
-                      opt.MapFrom(f => f.Teachers.Select(s => s.Id)))
+                    opt.MapFrom(f => f.Teachers.Select(s => s.Id)))
+                .ForMember(m=>m.HomeTasksIds, opt=>
+                    opt.MapFrom(f=>f.HomeTasks.Select(s=>s.Id)))
                 .ReverseMap();
 
             CreateMap<Student, StudentModel>()

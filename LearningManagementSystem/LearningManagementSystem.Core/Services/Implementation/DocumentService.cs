@@ -43,6 +43,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var entity = _mapper.Map<Document>(document);
             await _context.Documents.AddAsync(entity);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("New document has been successfully added");
             return new Response<DocumentModel>()
             {
                 IsSuccessful = true,
@@ -89,7 +90,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 queryable = queryable.Where(i => i.DocumentType.Equals(query.DocumentType));
             }
-
+            _logger.LogInformation("Getting documents from filter");
             var res = await queryable.ToListAsync();
             return _mapper.Map<IEnumerable<DocumentModel>>(res);
         }
@@ -104,6 +105,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             _context.Documents.Remove(document);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("New document has been successfully removed");
+        }
+
+        public async Task<DocumentModel> GetDocumentByIdAsync(Guid id)
+        {
+            var entity = await _context.Documents.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            _logger.LogInformation("Getting document by id");
+            return _mapper.Map<DocumentModel>(entity);
         }
     }
 }

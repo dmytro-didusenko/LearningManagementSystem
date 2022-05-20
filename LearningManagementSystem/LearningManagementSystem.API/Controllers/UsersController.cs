@@ -79,5 +79,10 @@ namespace LearningManagementSystem.API.Controllers
             return NoContent();
         }
 
+        [HttpGet("GetDocumentById/{id}")]
+        public async Task<IActionResult> GetDocumentById(Guid id)
+        {
+            return Ok(await _documentService.GetDocumentByIdAsync(id));
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace LearningManagementSystem.Core.Services.Interfaces
         public Task AddAsync(StudentCreationModel model);
         public Task<StudentModel> GetByIdAsync(Guid id);
         public IEnumerable<StudentModel> GetAll();
+        public Task RemoveStudentAsync(Guid id);
     }
 }

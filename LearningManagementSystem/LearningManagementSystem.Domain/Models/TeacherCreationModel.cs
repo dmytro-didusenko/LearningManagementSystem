@@ -2,7 +2,7 @@
 {
     public class TeacherCreationModel
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public Guid? SubjectId { get; set; }
         public string Position { get; set; } = string.Empty;
     }

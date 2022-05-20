@@ -11,6 +11,9 @@ namespace LearningManagementSystem.Domain.Contextes
         public DbSet<Course> Courses { get; set; } = null!;
         public DbSet<Subject> Subjects { get; set; } = null!;
         public DbSet<Teacher> Teachers { get; set; } = null!;
+        public DbSet<Document> Documents { get; set; } = null!;
+        public DbSet<HomeTask> HomeTasks { get; set; } = null!;
+        public DbSet<TaskAnswer> TaskAnswers { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,6 +33,11 @@ namespace LearningManagementSystem.Domain.Contextes
                 .HasOne(o => o.Group)
                 .WithMany(m => m.Students)
                 .HasForeignKey(f => f.GroupId);
+
+            modelBuilder.Entity<HomeTask>()
+                .HasOne(o => o.Subject)
+                .WithMany(m => m.HomeTasks)
+                .HasForeignKey(fk => fk.SubjectId);
         }
     }
 }

@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220519081639_Added-Document")]
+    partial class AddedDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,36 +126,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("DateOfExpiration")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DatePlannedStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("HomeTasks");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
                 {
                     b.Property<Guid>("Id")
@@ -186,35 +158,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Subjects");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateOfAnswer")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("HomeTaskId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HomeTaskId");
-
-                    b.ToTable("TaskAnswers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Teacher", b =>
@@ -311,17 +254,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
-                        .WithMany("HomeTasks")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subject");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Group", "Group")
@@ -337,15 +269,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.HomeTask", null)
-                        .WithMany("TaskAnswers")
-                        .HasForeignKey("HomeTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Teacher", b =>
@@ -370,15 +293,8 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
-                {
-                    b.Navigation("TaskAnswers");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
                 {
-                    b.Navigation("HomeTasks");
-
                     b.Navigation("Teachers");
                 });
 

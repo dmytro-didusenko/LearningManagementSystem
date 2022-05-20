@@ -31,12 +31,20 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new Exception($"User with id:{model.UserId} does not exist!");
             }
 
-            var student = new Student()
+            var teacher = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(model.UserId));
+            var student = await _context.Teachers.FirstOrDefaultAsync(f => f.Id.Equals(model.UserId));
+
+            if (teacher is not null || student is not null)
+            {
+                throw new Exception($"User with id:{model.UserId} does not exist!");
+            }
+
+            var studentEntity = new Student()
             {
                 Id = model.UserId,
                 ContractNumber = model.ContractNumber,
             };
-            await _context.AddAsync(student);
+            await _context.Students.AddAsync(studentEntity);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Adding new student");
         }
@@ -59,6 +67,18 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger.LogInformation("Getting all students");
             var res = _context.Students.Include(i => i.User).AsEnumerable();
             return _mapper.Map<IEnumerable<StudentModel>>(res);
+        }
+
+        public async Task RemoveStudentAsync(Guid id)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            if (student is null)
+            {
+                throw new Exception("Student does not exist");
+            }
+
+            _context.Students.Remove(student);
+            await _context.SaveChangesAsync();
         }
     }
 }

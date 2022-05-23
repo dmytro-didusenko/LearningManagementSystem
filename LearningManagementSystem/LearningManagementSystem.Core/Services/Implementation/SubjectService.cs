@@ -72,7 +72,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             var subject = await _context.Subjects
                 .Include(i=>i.Courses)
-                .Include(i=>i.Teachers).SingleOrDefaultAsync(s => s.Id.Equals(id));
+                .Include(i=>i.Teachers)
+                .Include(i=>i.Topics).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (subject is null)
             {
                 throw new Exception("Subject does not exist");
@@ -84,7 +85,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public IEnumerable<SubjectModel> GetAll()
         {
             var subjects = _context.Subjects.Include(i => i.Courses)
-                .Include(i=>i.Teachers).AsEnumerable();
+                .Include(i=>i.Teachers)
+                .Include(i=>i.Topics).AsEnumerable();
             return _mapper.Map<IEnumerable<SubjectModel>>(subjects);
         }
     }

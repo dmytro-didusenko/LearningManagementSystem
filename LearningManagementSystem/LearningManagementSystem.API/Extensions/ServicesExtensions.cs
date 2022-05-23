@@ -39,8 +39,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IDocumentService, DocumentService>();
-            services.AddScoped<IHomeTaskService, HomeTaskService>();
-
+            services.AddScoped<ITopicService, TopicService>();
             return services;
         }
 

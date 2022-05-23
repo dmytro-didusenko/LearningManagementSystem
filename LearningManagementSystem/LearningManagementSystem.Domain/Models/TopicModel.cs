@@ -8,6 +8,5 @@ namespace LearningManagementSystem.Domain.Models
         public string Name { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public DateTime DateOfCreation { get; set; }
-        public HomeTaskModel? HomeTaskModel { get; set; }
     }
 }

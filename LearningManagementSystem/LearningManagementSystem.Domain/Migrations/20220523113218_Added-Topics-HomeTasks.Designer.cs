@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220520122641_Added-Topics")]
-    partial class AddedTopics
+    [Migration("20220523113218_Added-Topics-HomeTasks")]
+    partial class AddedTopicsHomeTasks
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -129,7 +129,6 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateOfExpiration")
@@ -145,9 +144,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TopicId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -251,9 +247,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Property<DateTime>("DateOfCreation")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("HomeTaskId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -262,10 +255,6 @@ namespace LearningManagementSystem.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HomeTaskId")
-                        .IsUnique()
-                        .HasFilter("[HomeTaskId] IS NOT NULL");
 
                     b.HasIndex("SubjectId");
 
@@ -347,6 +336,17 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
+                {
+                    b.HasOne("LearningManagementSystem.Domain.Entities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+                });
+
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Group", "Group")
@@ -402,17 +402,11 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
                 {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.HomeTask", "HomeTask")
-                        .WithOne("Topic")
-                        .HasForeignKey("LearningManagementSystem.Domain.Entities.Topic", "HomeTaskId");
-
                     b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
                         .WithMany("Topics")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("HomeTask");
 
                     b.Navigation("Subject");
                 });
@@ -425,9 +419,6 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
                 {
                     b.Navigation("TaskAnswers");
-
-                    b.Navigation("Topic")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>

@@ -9,6 +9,7 @@ namespace LearningManagementSystem.Domain.Entities
         [ForeignKey("Topic")]
         public Guid Id { get; set; }
         public Topic Topic { get; set; } = null!;
+
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime DatePlannedStart { get; set; }

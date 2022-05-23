@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LearningManagementSystem.Domain.Migrations
 {
-    public partial class AddedTopics : Migration
+    public partial class AddedTopicsHomeTasks : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,10 +17,9 @@ namespace LearningManagementSystem.Domain.Migrations
                 name: "IX_HomeTasks_SubjectId",
                 table: "HomeTasks");
 
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
                 name: "SubjectId",
-                table: "HomeTasks",
-                newName: "TopicId");
+                table: "HomeTasks");
 
             migrationBuilder.CreateTable(
                 name: "Topics",
@@ -30,17 +29,11 @@ namespace LearningManagementSystem.Domain.Migrations
                     SubjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HomeTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Topics", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Topics_HomeTasks_HomeTaskId",
-                        column: x => x.HomeTaskId,
-                        principalTable: "HomeTasks",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Topics_Subjects_SubjectId",
                         column: x => x.SubjectId,
@@ -55,16 +48,17 @@ namespace LearningManagementSystem.Domain.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Topics_HomeTaskId",
-                table: "Topics",
-                column: "HomeTaskId",
-                unique: true,
-                filter: "[HomeTaskId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Topics_SubjectId",
                 table: "Topics",
                 column: "SubjectId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_HomeTasks_Topics_Id",
+                table: "HomeTasks",
+                column: "Id",
+                principalTable: "Topics",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_TaskAnswers_Students_StudentId",
@@ -78,6 +72,10 @@ namespace LearningManagementSystem.Domain.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_HomeTasks_Topics_Id",
+                table: "HomeTasks");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_TaskAnswers_Students_StudentId",
                 table: "TaskAnswers");
 
@@ -88,10 +86,12 @@ namespace LearningManagementSystem.Domain.Migrations
                 name: "IX_TaskAnswers_StudentId",
                 table: "TaskAnswers");
 
-            migrationBuilder.RenameColumn(
-                name: "TopicId",
+            migrationBuilder.AddColumn<Guid>(
+                name: "SubjectId",
                 table: "HomeTasks",
-                newName: "SubjectId");
+                type: "uniqueidentifier",
+                nullable: false,
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_HomeTasks_SubjectId",

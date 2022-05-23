@@ -69,7 +69,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<TopicModel> GetAllTopics()
         {
-            var topics = _context.Topics.Include(i=>i.HomeTask).AsEnumerable();
+            var topics = _context.Topics.AsEnumerable();
             return _mapper.Map<IEnumerable<TopicModel>>(topics);
         }
     }

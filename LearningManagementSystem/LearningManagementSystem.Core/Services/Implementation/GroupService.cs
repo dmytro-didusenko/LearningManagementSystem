@@ -34,7 +34,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return new Response<GroupCreationModel>()
                 {
                     IsSuccessful = false,
-                    Error = "Group is already exist!"
+                    ErrorMessage = "Group is already exist!"
                 };
             }
             await _context.Groups.AddAsync(_mapper.Map<Group>(model));

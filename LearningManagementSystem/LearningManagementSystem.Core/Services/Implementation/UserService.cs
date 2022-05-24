@@ -33,7 +33,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return new Response<UserModel>()
                 {
                     IsSuccessful = false,
-                    Error = "User with such credentials is already exist!"
+                    ErrorMessage = "User with such credentials is already exist!"
                 };
             }
 

@@ -30,7 +30,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return new Response<DocumentModel>()
                 {
                     IsSuccessful = false,
-                    Error = "User not found"
+                    ErrorMessage = "User not found"
                 };
             }
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220524105950_Added-Grade")]
+    [Migration("20220524134612_Added-Grade")]
     partial class AddedGrade
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,7 +114,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Grade");
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>

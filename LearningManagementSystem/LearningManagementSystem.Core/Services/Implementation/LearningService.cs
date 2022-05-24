@@ -125,6 +125,23 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         }
 
+        public async Task<IEnumerable<GradeModel>> GetStudentGrades(Guid studentId)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(studentId));
+            if (student is null)
+            {
+                throw new Exception("Student does not exist");
+            }
+
+            var grades = _context.TaskAnswers
+                .Include(i=>i.Grade)
+                .Where(i => i.StudentId.Equals(studentId))
+                .Select(s=>s.Grade)
+                .AsEnumerable();
+
+            return _mapper.Map<IEnumerable<GradeModel>>(grades);
+        }
+
         public IEnumerable<TaskAnswerModel>? GetTaskAnswersByHomeTaskId(Guid homeTaskId)
         {
             var answers = _context.TaskAnswers.Where(i => i.HomeTaskId.Equals(homeTaskId)).AsEnumerable();
@@ -165,7 +182,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return Response<GradeModel>.Error("Task answer does not exist");
             }
 
-            return Response<GradeModel>.Success(null!);
+            var entity = _mapper.Map<Grade>(model);
+            entity.Id = taskAnswerId;
+            await _context.Grades.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return Response<GradeModel>.Success(model);
         }
 
         public IEnumerable<TopicModel> GetTopicsBySubjectId(Guid subjectId)

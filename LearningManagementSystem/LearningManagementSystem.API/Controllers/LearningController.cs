@@ -113,5 +113,24 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
+        [HttpPost("Add/Grade/{taskAnswerId}")]
+        public async Task<IActionResult> AddGrade(Guid taskAnswerId, [FromBody] GradeModel model)
+        {
+            var res = await _learningService.AddGradeAsync(taskAnswerId, model);
+            if (!res.IsSuccessful)
+            {
+                return BadRequest(res);
+            }
+
+            return Ok(res);
+        }
+
+        [HttpGet("Get/Grades/{studentId}")]
+        public async Task<IActionResult> GetStudentGrades(Guid studentId)
+        {
+            var res = await _learningService.GetStudentGrades(studentId);
+            return Ok(res);
+        }
+
     }
 }

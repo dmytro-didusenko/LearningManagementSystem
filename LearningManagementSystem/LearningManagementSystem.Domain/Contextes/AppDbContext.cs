@@ -42,10 +42,11 @@ namespace LearningManagementSystem.Domain.Contextes
                 .HasOne(o => o.HomeTask)
                 .WithOne();
 
-            modelBuilder.Entity<Grade>().HasKey(pk => pk.Id);
+            modelBuilder.Entity<Grade>().HasKey(k => k.Id);
+
             modelBuilder.Entity<TaskAnswer>()
                 .HasOne(o => o.Grade)
-                .WithOne(o => o.TaskAnswer)
+                .WithOne(o=>o.TaskAnswer)
                 .HasForeignKey<Grade>(fk => fk.Id);
         }
     }

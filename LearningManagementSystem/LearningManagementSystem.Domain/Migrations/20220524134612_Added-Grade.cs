@@ -10,7 +10,7 @@ namespace LearningManagementSystem.Domain.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Grade",
+                name: "Grades",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -19,9 +19,9 @@ namespace LearningManagementSystem.Domain.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Grade", x => x.Id);
+                    table.PrimaryKey("PK_Grades", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Grade_TaskAnswers_Id",
+                        name: "FK_Grades_TaskAnswers_Id",
                         column: x => x.Id,
                         principalTable: "TaskAnswers",
                         principalColumn: "Id",
@@ -32,7 +32,7 @@ namespace LearningManagementSystem.Domain.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Grade");
+                name: "Grades");
         }
     }
 }

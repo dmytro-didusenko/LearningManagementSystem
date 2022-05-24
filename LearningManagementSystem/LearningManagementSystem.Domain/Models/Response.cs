@@ -5,6 +5,7 @@
         public bool IsSuccessful { get; set; }
         public T? Data { get; set; } = default!;
         public string? ErrorMessage { get; set; }
+
         public static Response<T> Success(T data)
         {
             return new Response<T>()

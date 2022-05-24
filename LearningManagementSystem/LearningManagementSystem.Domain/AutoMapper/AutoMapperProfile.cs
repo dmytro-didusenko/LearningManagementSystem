@@ -16,6 +16,8 @@ namespace LearningManagementSystem.Domain.AutoMapper
 
             CreateMap<Topic, TopicCreateModel>().ReverseMap();
 
+            CreateMap<Grade, GradeModel>().ReverseMap();
+
             CreateMap<Topic, TopicModel>()
                 .ForMember(m=>m.HomeTaskModel, opt=>
                     opt.MapFrom(f=>f.HomeTask)).ReverseMap();

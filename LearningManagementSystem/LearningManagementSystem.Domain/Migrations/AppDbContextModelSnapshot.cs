@@ -112,7 +112,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Grade");
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>

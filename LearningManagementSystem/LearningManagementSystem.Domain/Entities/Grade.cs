@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace LearningManagementSystem.Domain.Entities
+﻿namespace LearningManagementSystem.Domain.Entities
 {
     public class Grade
     {

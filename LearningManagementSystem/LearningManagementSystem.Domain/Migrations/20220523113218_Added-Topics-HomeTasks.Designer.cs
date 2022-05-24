@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220523113218_Added-Topics-HomeTasks")]
+    partial class AddedTopicsHomeTasks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +128,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
                 {
-                    b.Property<Guid>("TopicId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateOfExpiration")
@@ -143,7 +145,7 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TopicId");
+                    b.HasKey("Id");
 
                     b.ToTable("HomeTasks");
                 });
@@ -336,11 +338,13 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.HomeTask", b =>
                 {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Topic", null)
-                        .WithOne("HomeTask")
-                        .HasForeignKey("LearningManagementSystem.Domain.Entities.HomeTask", "TopicId")
+                    b.HasOne("LearningManagementSystem.Domain.Entities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Topic");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
@@ -422,11 +426,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Teachers");
 
                     b.Navigation("Topics");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
-                {
-                    b.Navigation("HomeTask");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>

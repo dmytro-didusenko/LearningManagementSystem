@@ -1,10 +1,8 @@
-﻿
-namespace LearningManagementSystem.Domain.Entities
+﻿namespace LearningManagementSystem.Domain.Entities
 {
-    public class HomeTask : BaseEntity
+    public class HomeTask
     {
-        public Guid SubjectId { get; set; }
-        public Subject Subject { get; set; } = null!;
+        public Guid TopicId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime DatePlannedStart { get; set; }

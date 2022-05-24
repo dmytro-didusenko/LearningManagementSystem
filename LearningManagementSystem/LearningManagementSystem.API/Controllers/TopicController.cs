@@ -1,6 +1,5 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -45,5 +44,10 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(_topicService.GetAllTopics());
         }
 
+        [HttpGet("GetTopicsBySubjectId/{subjectId}")]
+        public IActionResult GetTopicsBySubjectId(Guid subjectId)
+        {
+            return Ok(_topicService.GetTopicsBySubjectId(subjectId));
+        }
     }
 }

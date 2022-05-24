@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using System.Text.Json;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +25,8 @@ namespace LearningManagementSystem.API.Controllers
             {
                 return BadRequest(res);
             }
-            return Ok(res); 
+            return Ok(res);
+
         }
 
         [HttpGet]

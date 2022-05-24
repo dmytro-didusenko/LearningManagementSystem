@@ -34,6 +34,9 @@ namespace LearningManagementSystem.Domain.Contextes
                 .HasOne(o => o.Group)
                 .WithMany(m => m.Students)
                 .HasForeignKey(f => f.GroupId);
+
+            modelBuilder.Entity<HomeTask>().HasKey(k => k.TopicId);
+            modelBuilder.Entity<Topic>().HasOne(o => o.HomeTask).WithOne();
         }
     }
 }

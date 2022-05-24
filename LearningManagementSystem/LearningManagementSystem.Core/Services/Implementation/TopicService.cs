@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace LearningManagementSystem.Core.Services.Implementation
@@ -57,7 +58,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             }
 
             var entity = _mapper.Map<HomeTask>(model);
-            entity.Id = model.TopicId;
+            entity.TopicId = model.TopicId;
             await _context.HomeTasks.AddAsync(entity);
             await _context.SaveChangesAsync();
             return new Response<HomeTaskCreateModel>()
@@ -67,10 +68,19 @@ namespace LearningManagementSystem.Core.Services.Implementation
             };
         }
 
+        //TODO: Remove this
         public IEnumerable<TopicModel> GetAllTopics()
         {
-            var topics = _context.Topics.AsEnumerable();
+            var topic = _context.Topics.Include(i => i.HomeTask).AsEnumerable();
+            return _mapper.Map<IEnumerable<TopicModel>>(topic);
+        }
+
+        public IEnumerable<TopicModel> GetTopicsBySubjectId(Guid subjectId)
+        {
+            var topics = _context.Topics.Include(i=>i.HomeTask)
+                .Where(i => i.SubjectId.Equals(subjectId)).AsEnumerable();
             return _mapper.Map<IEnumerable<TopicModel>>(topics);
         }
+
     }
 }

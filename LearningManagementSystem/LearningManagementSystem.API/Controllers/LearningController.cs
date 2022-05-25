@@ -89,7 +89,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPut("Update/TaskAnswer/{id}")]
+        [HttpPut("TaskAnswer/{id}")]
         public async Task<IActionResult> UpdateTaskAnswer(Guid id, [FromBody] TaskAnswerUpdateModel model)
         {
             var res = await _learningService.UpdateTaskAnswerAsync(id, model);
@@ -130,6 +130,12 @@ namespace LearningManagementSystem.API.Controllers
         {
             var res = await _learningService.GetStudentGrades(studentId);
             return Ok(res);
+        }
+
+        [HttpGet("Get/Grades/Subject/{subjectId}/Student/{studentId}")]
+        public IActionResult GetStudentGradesBySubject(Guid subjectId, Guid studentId)
+        {
+            return Ok(_learningService.GetStudentGradesBySubjectId(studentId, subjectId));
         }
 
     }

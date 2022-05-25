@@ -16,6 +16,10 @@ namespace LearningManagementSystem.Domain.Contextes
         public DbSet<TaskAnswer> TaskAnswers { get; set; } = null!;
         public DbSet<Topic> Topics { get; set; } = null!;
         public DbSet<Grade> Grades { get; set; } = null!;
+        public DbSet<Test> Tests { get; set; } = null!;
+        public DbSet<Question> Questions { get; set; } = null!;
+        public DbSet<Answer> Answers { get; set; } = null!;
+        public DbSet<StudentAnswer> StudentAnswers { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

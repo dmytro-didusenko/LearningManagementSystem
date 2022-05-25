@@ -40,7 +40,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
 
-            var topicExist = await _context.Topics.Include(i => i.HomeTask).AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(model.TopicId));
+            var topicExist = await _context.Topics.Include(i => i.HomeTask)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id.Equals(model.TopicId));
             if (topicExist is null)
             {
                 return Response<HomeTaskCreateModel>.Error("Topic does not exist");
@@ -134,12 +136,30 @@ namespace LearningManagementSystem.Core.Services.Implementation
             }
 
             var grades = _context.TaskAnswers
-                .Include(i=>i.Grade)
+                .Include(i => i.Grade)
                 .Where(i => i.StudentId.Equals(studentId))
-                .Select(s=>s.Grade)
+                .Select(s => s.Grade)
                 .AsEnumerable();
 
             return _mapper.Map<IEnumerable<GradeModel>>(grades);
+        }
+
+        //TODO: Rewrite logic
+        public IEnumerable<GradeModel>? GetStudentGradesBySubjectId(Guid studentId, Guid subjectId)
+        {
+            var grades = _context.Topics
+                .Include(i => i.HomeTask)
+                .ThenInclude(t=>t.TaskAnswers)
+                .ThenInclude(t=>t.Grade)
+                .Where(i => i.SubjectId.Equals(subjectId))
+                .Select(s => s.HomeTask)
+                .SelectMany(s => s.TaskAnswers)
+                .Where(i => i.StudentId.Equals(studentId))
+                .Select(s => s.Grade)
+                .ToListAsync().Result;
+
+            var mapped = _mapper.Map<IEnumerable<GradeModel>>(grades);
+            return mapped;
         }
 
         public IEnumerable<TaskAnswerModel>? GetTaskAnswersByHomeTaskId(Guid homeTaskId)
@@ -186,6 +206,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             entity.Id = taskAnswerId;
             await _context.Grades.AddAsync(entity);
             await _context.SaveChangesAsync();
+
             return Response<GradeModel>.Success(model);
         }
 

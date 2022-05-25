@@ -1,5 +1,4 @@
-﻿using LearningManagementSystem.Core.Helpers;
-using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Testing;
 
 namespace LearningManagementSystem.Domain.AutoMapper
 {
@@ -13,6 +14,12 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<Group, GroupModel>().ReverseMap();
             CreateMap<Document, DocumentModel>().ReverseMap();
             CreateMap<TaskAnswer, TaskAnswerModel>().ReverseMap();
+
+            CreateMap<Test, TestModel>().ReverseMap();
+            CreateMap<Question, QuestionModel>()
+                .ForMember(m=>m.Answers, opt=>
+                    opt.MapFrom(f=>f.Answers)).ReverseMap();
+            CreateMap<Answer, AnswerCreateModel>().ReverseMap();
 
             CreateMap<Topic, TopicCreateModel>().ReverseMap();
 

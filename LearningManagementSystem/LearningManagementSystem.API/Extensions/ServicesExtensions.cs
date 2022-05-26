@@ -40,6 +40,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<ILearningService, LearningService>();
+            services.AddScoped<ITestingService, TestingService>();
             return services;
         }
 

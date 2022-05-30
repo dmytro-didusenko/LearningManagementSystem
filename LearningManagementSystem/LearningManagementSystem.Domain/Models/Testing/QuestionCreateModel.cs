@@ -1,6 +1,6 @@
 ﻿namespace LearningManagementSystem.Domain.Models.Testing
 {
-    public class QuestionModel
+    public class QuestionCreateModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

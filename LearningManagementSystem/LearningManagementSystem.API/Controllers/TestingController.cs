@@ -29,7 +29,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost("Questions/{testId}")]
-        public async Task<IActionResult> AddQuestion(Guid testId, [FromBody] QuestionModel questionModel)
+        public async Task<IActionResult> AddQuestion(Guid testId, [FromBody] QuestionCreateModel questionModel)
         {
             var res = await _testingService.AddQuestionAsync(testId, questionModel);
             if (!res.IsSuccessful)
@@ -42,7 +42,7 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPost("Answers/{questionId}")]
         public async Task<IActionResult> AddAnswersToQuestion(Guid questionId, [FromBody] IEnumerable<AnswerCreateModel> answers)
         {
-            var res = await _testingService.AddAnswersToQuestion(questionId, answers);
+            var res = await _testingService.AddAnswersToQuestionAsync(questionId, answers);
             if (!res.IsSuccessful)
             {
                 return BadRequest(res);
@@ -50,5 +50,46 @@ namespace LearningManagementSystem.API.Controllers
 
             return Ok(res);
         }
+
+        [HttpGet("Tests/{testId}")]
+        public async Task<IActionResult> GetTestById(Guid testId)
+        {
+            var res = await _testingService.GetTestByIdAsync(testId);
+            return Ok(res);
+        }
+
+        [HttpGet("Questions/{testId}")]
+        public IActionResult GetQuestionsByTestId(Guid testId)
+        {
+            return Ok(_testingService.GetQuestionsByTestId(testId));
+        }
+
+
+        [HttpGet("Questions/Passing/{testId}")]
+        public IActionResult GetQuestionsForPassing(Guid testId)
+        {
+            return Ok(_testingService.GetQuestionsForPassing(testId));
+        }
+
+        [HttpPost("Tests/Passing")]
+        public async Task<IActionResult> PassTest([FromBody] IEnumerable<StudentAnswerModel> model)
+        {
+            var res =  await _testingService.AddStudentAnswersAsync(model);
+            if (!res.IsSuccessful)
+            {
+                return BadRequest(res);
+            }
+
+            return Ok(res);
+        }
+
+        [HttpGet("Results/{testId}/{studentId}")]
+        public async Task<IActionResult> GetStudentResults(Guid testId, Guid studentId)
+        {
+            var res = await _testingService.GetTestingResultAsync(testId, studentId);
+            return Ok(res);
+        }
+
     }
+    
 }

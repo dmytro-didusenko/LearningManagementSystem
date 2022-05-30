@@ -1,11 +1,11 @@
-﻿namespace LearningManagementSystem.Domain.Entities
+﻿namespace LearningManagementSystem.Domain.Models.Testing
 {
-    public class StudentAnswer : BaseEntity
+    public class StudentAnswerModel
     {
+        public Guid Id { get; set; }
         public Guid TestId { get; set; }
         public Guid StudentId { get; set; }
         public Guid QuestionId { get; set; }
         public Guid AnswerId { get; set; }
-        public Answer Answer { get; set; } = null!;
     }
 }

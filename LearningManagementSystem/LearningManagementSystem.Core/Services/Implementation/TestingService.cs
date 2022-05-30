@@ -45,15 +45,15 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<TestModel>.Success(model);
         }
 
-        public async Task<Response<QuestionModel>> AddQuestionAsync(Guid testId, QuestionModel questionModel)
+        public async Task<Response<QuestionCreateModel>> AddQuestionAsync(Guid testId, QuestionCreateModel questionModel)
         {
             var test = await _context.Tests.FirstOrDefaultAsync(f => f.Id.Equals(testId));
             if (test is null)
             {
-                return Response<QuestionModel>.Error("Test does not exist");
+                return Response<QuestionCreateModel>.Error("Test does not exist");
             }
 
-            var question= _mapper.Map<Question>(questionModel);
+            var question = _mapper.Map<Question>(questionModel);
             question.TestId = testId;
             question.Id = Guid.NewGuid();
             if (question.Answers is not null)
@@ -67,10 +67,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Questions.AddAsync(question);
             await _context.SaveChangesAsync();
 
-            return Response<QuestionModel>.Success(questionModel);
+            return Response<QuestionCreateModel>.Success(questionModel);
         }
 
-        public async Task<Response<IEnumerable<AnswerCreateModel>>> AddAnswersToQuestion(Guid questionId,
+        public async Task<Response<IEnumerable<AnswerCreateModel>>> AddAnswersToQuestionAsync(Guid questionId,
             IEnumerable<AnswerCreateModel> answers)
         {
             ArgumentNullException.ThrowIfNull(answers);
@@ -91,5 +91,55 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
             return Response<IEnumerable<AnswerCreateModel>>.Success(answers);
         }
+
+        public async Task<TestModel?> GetTestByIdAsync(Guid testId)
+        {
+            var test = await _context.Tests.FirstOrDefaultAsync(f => f.Id.Equals(testId));
+            return _mapper.Map<TestModel>(test);
+        }
+
+        public IEnumerable<QuestionCreateModel>? GetQuestionsByTestId(Guid testId)
+        {
+            var questions = _context.Questions
+                .Include(i => i.Answers)
+                .Where(i => i.TestId.Equals(testId)).AsEnumerable();
+            return _mapper.Map<IEnumerable<QuestionCreateModel>>(questions);
+        }
+
+        public IEnumerable<QuestionPassingModel> GetQuestionsForPassing(Guid testId)
+        {
+            var questions = _context.Questions
+                .Include(i => i.Answers)
+                .Where(i => i.TestId.Equals(testId)).AsEnumerable();
+            return _mapper.Map<IEnumerable<QuestionPassingModel>>(questions);
+        }
+
+        public async Task<Response<IEnumerable<StudentAnswerModel>>> AddStudentAnswersAsync(IEnumerable<StudentAnswerModel> models)
+        {
+            ArgumentNullException.ThrowIfNull(models);
+            var answers = _mapper.Map<IEnumerable<StudentAnswer>>(models);
+            await _context.StudentAnswers.AddRangeAsync(answers);
+            await _context.SaveChangesAsync();
+
+            return Response<IEnumerable<StudentAnswerModel>>.Success(models);
+        }
+
+        public async Task<TestResultModel> GetTestingResultAsync(Guid testId, Guid studentId)
+        {
+            var test = await _context.Tests.FirstOrDefaultAsync(f => f.Id.Equals(testId));
+            var result = new TestResultModel()
+            {
+                TestId = testId,
+                Name = test.Name,
+            };
+            var answers = _context.StudentAnswers
+                .Include(i=>i.Answer)
+                .Where(i => i.StudentId.Equals(studentId) && i.TestId.Equals(testId));
+            result.TotalAnswers = answers.Count();
+            result.CorrectAnswers = answers.Count(w => w.Answer.IsCorrect);
+
+            return result;
+        }
+
     }
 }

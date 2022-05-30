@@ -16,7 +16,7 @@ namespace LearningManagementSystem.API.Controllers
             _learningService = learningService;
         }
 
-        [HttpPost("Create/HomeTask")]
+        [HttpPost("HomeTasks")]
         public async Task<IActionResult> AddHomeTask([FromBody] HomeTaskCreateModel model)
         {
             var res = await _learningService.CreateHomeTaskAsync(model);
@@ -27,7 +27,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPost("Create/Topic")]
+        [HttpPost("Topics")]
         public async Task<IActionResult> CreateTopic([FromBody] TopicCreateModel model)
         {
             var res = await _learningService.CreateTopicAsync(model);
@@ -38,7 +38,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPost("Add/TaskAnswer")]
+        [HttpPost("TaskAnswers")]
         public async Task<IActionResult> AddTaskAnswer([FromBody] TaskAnswerModel model)
         {
             var res = await _learningService.AddTaskAnswerAsync(model);
@@ -49,25 +49,25 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpGet("Get/TaskAnswers/{homeTaskId}")]
+        [HttpGet("TaskAnswers/{homeTaskId}")]
         public IActionResult GetTaskAnswersByHomeTaskId(Guid homeTaskId)
         {
             return Ok(_learningService.GetTaskAnswersByHomeTaskId(homeTaskId));
         }
 
-        [HttpGet("Get/HomeTask/{topicId}")]
+        [HttpGet("HomeTasks/{topicId}")]
         public async Task<IActionResult> GetHomeTaskByTopicId(Guid topicId)
         {
             return Ok(await _learningService.GetHomeTaskByIdAsync(topicId));
         }
 
-        [HttpGet("Get/Topics/{subjectId}")]
+        [HttpGet("Topics/{subjectId}")]
         public IActionResult GetTopicsBySubjectId(Guid subjectId)
         {
             return Ok(_learningService.GetTopicsBySubjectId(subjectId));
         }
 
-        [HttpPut("Update/Topic/{id}")]
+        [HttpPut("Topics/{id}")]
         public async Task<IActionResult> UpdateTopic(Guid id, [FromBody] TopicModel model)
         {
             var res = await _learningService.UpdateTopicAsync(id, model);
@@ -78,7 +78,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPut("Update/HomeTask/{id}")]
+        [HttpPut("HomeTasks/{id}")]
         public async Task<IActionResult> UpdateHomeTask(Guid id, [FromBody] HomeTaskModel model)
         {
             var res = await _learningService.UpdateHomeTaskAsync(id, model);
@@ -89,7 +89,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPut("TaskAnswer/{id}")]
+        [HttpPut("TaskAnswers/{id}")]
         public async Task<IActionResult> UpdateTaskAnswer(Guid id, [FromBody] TaskAnswerUpdateModel model)
         {
             var res = await _learningService.UpdateTaskAnswerAsync(id, model);
@@ -101,7 +101,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpDelete("Remove/HomeTask/{topicId}")]
+        [HttpDelete("HomeTasks/{topicId}")]
         public async Task<IActionResult> RemoveHomeTask(Guid topicId)
         {
             var res = await _learningService.RemoveHomeTaskAsync(topicId);
@@ -113,7 +113,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpPost("Add/Grade/{taskAnswerId}")]
+        [HttpPost("Grades/{taskAnswerId}")]
         public async Task<IActionResult> AddGrade(Guid taskAnswerId, [FromBody] GradeModel model)
         {
             var res = await _learningService.AddGradeAsync(taskAnswerId, model);
@@ -125,14 +125,14 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [HttpGet("Get/Grades/{studentId}")]
+        [HttpGet("Grades/{studentId}")]
         public async Task<IActionResult> GetStudentGrades(Guid studentId)
         {
             var res = await _learningService.GetStudentGrades(studentId);
             return Ok(res);
         }
 
-        [HttpGet("Get/Grades/Subject/{subjectId}/Student/{studentId}")]
+        [HttpGet("Grades/Subject/{subjectId}/Student/{studentId}")]
         public IActionResult GetStudentGradesBySubject(Guid subjectId, Guid studentId)
         {
             return Ok(_learningService.GetStudentGradesBySubjectId(studentId, subjectId));

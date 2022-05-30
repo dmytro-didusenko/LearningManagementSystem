@@ -1,7 +1,4 @@
-﻿
-using LearningManagementSystem.Domain.Models.Testing;
-
-namespace LearningManagementSystem.Domain.Entities
+﻿namespace LearningManagementSystem.Domain.Entities
 {
     public class Question : BaseEntity
     {

@@ -42,16 +42,33 @@ namespace LearningManagementSystem.Domain.Contextes
 
             modelBuilder.Entity<HomeTask>()
                 .HasKey(k => k.TopicId);
+
             modelBuilder.Entity<Topic>()
                 .HasOne(o => o.HomeTask)
                 .WithOne();
 
             modelBuilder.Entity<Grade>().HasKey(k => k.Id);
+                
+            modelBuilder.Entity<Student>()
+                .HasOne(o => o.User)
+                .WithOne()
+                .HasForeignKey<Student>(fk=>fk.Id);
+
+            modelBuilder.Entity<Teacher>()
+                .HasOne(o => o.User)
+                .WithOne()
+                .HasForeignKey<Teacher>(fk => fk.Id);
 
             modelBuilder.Entity<TaskAnswer>()
                 .HasOne(o => o.Grade)
-                .WithOne(o=>o.TaskAnswer)
+                .WithOne(o => o.TaskAnswer)
                 .HasForeignKey<Grade>(fk => fk.Id);
+
+            modelBuilder.Entity<StudentAnswer>()
+                .HasOne(o => o.Answer)
+                .WithOne()
+                .HasForeignKey<StudentAnswer>(fk => fk.AnswerId)
+                .OnDelete(DeleteBehavior.ClientNoAction);
         }
     }
 }

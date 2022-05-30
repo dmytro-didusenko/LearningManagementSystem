@@ -2,7 +2,7 @@
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +22,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task AddAsync(StudentCreationModel model)
+        public async Task AddAsync(StudentCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
             var userExist = await _userService.GetByIdAsync(model.UserId);

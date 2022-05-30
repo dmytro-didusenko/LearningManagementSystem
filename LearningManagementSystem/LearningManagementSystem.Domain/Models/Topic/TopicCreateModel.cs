@@ -1,6 +1,4 @@
-﻿using LearningManagementSystem.Domain.Entities;
-
-namespace LearningManagementSystem.Domain.Models
+﻿namespace LearningManagementSystem.Domain.Models.Topic
 {
     public class TopicCreateModel
     {

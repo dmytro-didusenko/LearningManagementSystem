@@ -1,4 +1,6 @@
-﻿using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.Domain.Models.HomeTask;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.Topic;
 
 namespace LearningManagementSystem.Core.Services.Interfaces
 {

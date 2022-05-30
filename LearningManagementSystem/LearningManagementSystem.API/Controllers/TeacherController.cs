@@ -1,5 +1,5 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -17,7 +17,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTeacher([FromBody] TeacherCreationModel teacher)
+        public async Task<IActionResult> AddTeacher([FromBody] TeacherCreateModel teacher)
         {
             var res = await _teacherService.AddAsync(teacher);
             if (!res.IsSuccessful)

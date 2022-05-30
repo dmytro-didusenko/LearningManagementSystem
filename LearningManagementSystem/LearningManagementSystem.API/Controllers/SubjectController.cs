@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Subject;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers

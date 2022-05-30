@@ -1,5 +1,5 @@
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers

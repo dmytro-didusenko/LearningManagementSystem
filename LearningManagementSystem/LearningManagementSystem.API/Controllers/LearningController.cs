@@ -1,5 +1,6 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.HomeTask;
+using LearningManagementSystem.Domain.Models.Topic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers

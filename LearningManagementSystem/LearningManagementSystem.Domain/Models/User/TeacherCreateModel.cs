@@ -1,6 +1,6 @@
-﻿namespace LearningManagementSystem.Domain.Models
+﻿namespace LearningManagementSystem.Domain.Models.User
 {
-    public class TeacherCreationModel
+    public class TeacherCreateModel
     {
         public Guid UserId { get; set; }
         public Guid? SubjectId { get; set; }

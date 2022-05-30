@@ -1,4 +1,6 @@
-﻿namespace LearningManagementSystem.Domain.Models
+﻿using LearningManagementSystem.Domain.Models.User;
+
+namespace LearningManagementSystem.Domain.Models.Group
 {
     public class GroupModel
     {

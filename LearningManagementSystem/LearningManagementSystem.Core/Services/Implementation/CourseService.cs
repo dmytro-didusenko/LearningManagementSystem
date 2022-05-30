@@ -3,7 +3,8 @@ using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Course;
+using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

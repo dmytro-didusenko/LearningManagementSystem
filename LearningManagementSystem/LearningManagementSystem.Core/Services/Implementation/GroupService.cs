@@ -2,7 +2,8 @@
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Group;
+using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +22,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<Response<GroupCreationModel>> AddAsync(GroupCreationModel model)
+        public async Task<Response<GroupCreateModel>> AddAsync(GroupCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -31,7 +32,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (groupExist is not null)
             {
                 _logger.LogInformation("Trying to add group that already exist!");
-                return new Response<GroupCreationModel>()
+                return new Response<GroupCreateModel>()
                 {
                     IsSuccessful = false,
                     ErrorMessage = "Group is already exist!"
@@ -41,14 +42,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("New group has been created successfully");
-            return new Response<GroupCreationModel>()
+            return new Response<GroupCreateModel>()
             {
                 IsSuccessful = true,
                 Data = model
             };
         }
 
-        public async Task UpdateAsync(Guid id, GroupCreationModel model)
+        public async Task UpdateAsync(Guid id, GroupCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 

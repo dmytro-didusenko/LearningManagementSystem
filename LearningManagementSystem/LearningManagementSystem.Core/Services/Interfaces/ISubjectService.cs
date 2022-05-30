@@ -1,4 +1,4 @@
-﻿using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.Domain.Models.Subject;
 
 namespace LearningManagementSystem.Core.Services.Interfaces
 {

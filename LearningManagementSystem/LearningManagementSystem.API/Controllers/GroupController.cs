@@ -1,5 +1,6 @@
 ﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Group;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -16,7 +17,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateGroup([FromBody] GroupCreationModel group)
+        public async Task<IActionResult> CreateGroup([FromBody] GroupCreateModel group)
         {
             var res = await _groupService.AddAsync(group);
             if (!res.IsSuccessful)
@@ -39,7 +40,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] GroupCreationModel model)
+        public async Task<IActionResult> Update(Guid id, [FromBody] GroupCreateModel model)
         {
             await _groupService.UpdateAsync(id, model);
             return NoContent();

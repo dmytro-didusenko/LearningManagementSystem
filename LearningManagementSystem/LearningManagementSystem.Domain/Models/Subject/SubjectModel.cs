@@ -1,4 +1,4 @@
-﻿namespace LearningManagementSystem.Domain.Models
+﻿namespace LearningManagementSystem.Domain.Models.Subject
 {
     public class SubjectModel
     {

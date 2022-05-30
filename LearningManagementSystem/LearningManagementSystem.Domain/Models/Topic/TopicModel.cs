@@ -1,5 +1,6 @@
-﻿
-namespace LearningManagementSystem.Domain.Models
+﻿using LearningManagementSystem.Domain.Models.HomeTask;
+
+namespace LearningManagementSystem.Domain.Models.Topic
 {
     public class TopicModel
     {

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Data.Common;
+using System.Net;
 using System.Text.Json;
 
 namespace LearningManagementSystem.API.Middlewares

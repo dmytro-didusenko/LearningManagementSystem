@@ -39,7 +39,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 return new Response<TeacherCreationModel>()
                 {
-                    Error = "User already has a role",
+                    ErrorMessage = "User already has a role",
                     IsSuccessful = false
                 };
             }

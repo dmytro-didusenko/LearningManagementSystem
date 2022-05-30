@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220524134612_Added-Grade")]
+    partial class AddedGrade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,29 +37,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasIndex("SubjectsId");
 
                     b.ToTable("CourseSubject");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Answer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Course", b =>
@@ -188,30 +167,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.ToTable("HomeTasks");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Question", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TestId");
-
-                    b.ToTable("Questions");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
                 {
                     b.Property<Guid>("Id")
@@ -229,31 +184,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.StudentAnswer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AnswerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TestId");
-
-                    b.ToTable("StudentAnswers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
@@ -319,39 +249,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasIndex("SubjectId");
 
                     b.ToTable("Teachers");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Test", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("DateOfExpiration")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateOfStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<TimeSpan?>("Duration")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("Tests");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
@@ -436,17 +333,6 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Answer", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Question", "Question")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Document", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.User", "User")
@@ -487,17 +373,6 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Question", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Test", "Test")
-                        .WithMany("Questions")
-                        .HasForeignKey("TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Test");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Group", "Group")
@@ -513,15 +388,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.StudentAnswer", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Test", null)
-                        .WithMany("StudentAnswers")
-                        .HasForeignKey("TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
@@ -560,17 +426,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Test", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
-                        .WithMany("Tests")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subject");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
@@ -592,16 +447,9 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("TaskAnswers");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Question", b =>
-                {
-                    b.Navigation("Answers");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
                 {
                     b.Navigation("Teachers");
-
-                    b.Navigation("Tests");
 
                     b.Navigation("Topics");
                 });
@@ -609,13 +457,6 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
                 {
                     b.Navigation("Grade");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Test", b =>
-                {
-                    b.Navigation("Questions");
-
-                    b.Navigation("StudentAnswers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>

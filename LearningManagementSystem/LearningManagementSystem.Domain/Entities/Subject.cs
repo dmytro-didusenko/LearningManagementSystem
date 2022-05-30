@@ -6,5 +6,6 @@
         public ICollection<Teacher>? Teachers { get; set; }
         public ICollection<Course>? Courses { get; set; }
         public ICollection<Topic>? Topics { get; set; }
+        public ICollection<Test>? Tests { get; set; }
     }
 }

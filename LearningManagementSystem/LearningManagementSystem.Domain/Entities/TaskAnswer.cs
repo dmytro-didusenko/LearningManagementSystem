@@ -9,5 +9,6 @@
         public string Answer { get; set; } = null!;
         public DateTime DateOfAnswer { get; set; }
         public DateTime? LastUpdated { get; set; }
+        public Grade? Grade{ get; set; }
     }
 }

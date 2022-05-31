@@ -2,24 +2,26 @@
 {
     public class Response<T>
     {
-        public bool IsSuccessful { get; set; }
-        public T? Data { get; set; } = default!;
-        public string? ErrorMessage { get; set; }
+        public T? Data { get; set; }
+        public Error? Error { get; set; }
 
-        public static Response<T> Success(T data)
+        public static Response<T> GetSuccess(T data)
         {
+            ArgumentNullException.ThrowIfNull(data);
             return new Response<T>()
             {
-                IsSuccessful = true,
                 Data = data
             };
         }
-        public static Response<T> Error(string error)
+        public static Response<T> GetError(ErrorCode errorCode, string errorMessage)
         {
             return new Response<T>()
             {
-                IsSuccessful = false,
-                ErrorMessage = error
+                Error = new Error()
+                {
+                    ErrorCode = errorCode,
+                    ErrorMessage = errorMessage
+                }
             };
         }
     }

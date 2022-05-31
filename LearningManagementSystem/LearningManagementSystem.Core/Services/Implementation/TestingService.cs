@@ -29,7 +29,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 .FirstOrDefaultAsync(f => f.Id.Equals(model.SubjectId));
             if (subject is null)
             {
-                return Response<TestModel>.Error("Subject does not exist");
+                return Response<TestModel>.GetError(ErrorCode.NotFound, "Subject does not exist");
             }
 
             var entity = _mapper.Map<Test>(model);
@@ -42,7 +42,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
             _logger.LogInformation("New test has been successfully added!");
             model.Id = entity.Id;
-            return Response<TestModel>.Success(model);
+            return Response<TestModel>.GetSuccess(model);
         }
 
         public async Task<Response<QuestionCreateModel>> AddQuestionAsync(Guid testId, QuestionCreateModel questionModel)
@@ -50,7 +50,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var test = await _context.Tests.FirstOrDefaultAsync(f => f.Id.Equals(testId));
             if (test is null)
             {
-                return Response<QuestionCreateModel>.Error("Test does not exist");
+                return Response<QuestionCreateModel>.GetError(ErrorCode.NotFound,"Test does not exist");
             }
 
             var question = _mapper.Map<Question>(questionModel);
@@ -67,7 +67,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Questions.AddAsync(question);
             await _context.SaveChangesAsync();
 
-            return Response<QuestionCreateModel>.Success(questionModel);
+            return Response<QuestionCreateModel>.GetSuccess(questionModel);
         }
 
         public async Task<Response<IEnumerable<AnswerCreateModel>>> AddAnswersToQuestionAsync(Guid questionId,
@@ -77,7 +77,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var question = await _context.Questions.FirstOrDefaultAsync(f => f.Id.Equals(questionId));
             if (question is null)
             {
-                return Response<IEnumerable<AnswerCreateModel>>.Error("Question does not exist");
+                return Response<IEnumerable<AnswerCreateModel>>.GetError(ErrorCode.NotFound,"Question does not exist");
             }
 
             var answerEntities = _mapper.Map<IEnumerable<Answer>>(answers);
@@ -89,7 +89,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             await _context.AddRangeAsync(answerEntities);
             await _context.SaveChangesAsync();
-            return Response<IEnumerable<AnswerCreateModel>>.Success(answers);
+            return Response<IEnumerable<AnswerCreateModel>>.GetSuccess(answers);
         }
 
         public async Task<TestModel?> GetTestByIdAsync(Guid testId)
@@ -121,7 +121,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.StudentAnswers.AddRangeAsync(answers);
             await _context.SaveChangesAsync();
 
-            return Response<IEnumerable<StudentAnswerModel>>.Success(models);
+            return Response<IEnumerable<StudentAnswerModel>>.GetSuccess(models);
         }
 
         public async Task<TestResultModel> GetTestingResultAsync(Guid testId, Guid studentId)

@@ -15,6 +15,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
+
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
 builder.Services.AddServices();

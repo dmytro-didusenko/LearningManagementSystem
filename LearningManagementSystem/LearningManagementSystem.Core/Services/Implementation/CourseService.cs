@@ -39,11 +39,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             }
             await _context.Courses.AddAsync(entity);
             await _context.SaveChangesAsync();
-            return new Response<CourseModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<CourseModel>.GetSuccess(model);
         }
 
         public async Task UpdateAsync(Guid id, CourseModel model)

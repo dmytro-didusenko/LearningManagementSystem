@@ -42,11 +42,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Subjects.AddAsync(entity);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New subject has been successfully added");
-            return new Response<SubjectModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<SubjectModel>.GetSuccess(model);
         }
 
         public async Task UpdateAsync(Guid id, SubjectModel model)

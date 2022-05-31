@@ -38,11 +38,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (teacher is not null || student is not null)
             {
-                return new Response<TeacherCreateModel>()
-                {
-                    ErrorMessage = "User already has a role",
-                    IsSuccessful = false
-                };
+                return Response<TeacherCreateModel>.GetError(ErrorCode.Conflict, "User already has a role");
             }
 
             var entity = _mapper.Map<Teacher>(model);
@@ -51,11 +47,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("New teacher has been successfully added");
-            return new Response<TeacherCreateModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<TeacherCreateModel>.GetSuccess(model);
         }
 
         public async Task<TeacherModel> GetByIdAsync(Guid id)

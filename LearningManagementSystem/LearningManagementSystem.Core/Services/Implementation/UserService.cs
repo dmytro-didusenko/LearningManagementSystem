@@ -31,22 +31,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (userExist is not null)
             {
-                return new Response<UserModel>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = "User with such credentials is already exist!"
-                };
+                return Response<UserModel>.GetError(ErrorCode.Conflict, "User with such credentials is already exist!");
             }
 
             await _context.AddAsync(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
             _logger.LogInformation("New user has been added");
 
-            return new Response<UserModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<UserModel>.GetSuccess(model);
         }
 
         public async Task UpdateAsync(Guid id, UserModel model)

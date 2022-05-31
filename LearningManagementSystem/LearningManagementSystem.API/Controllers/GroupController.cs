@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Group;
 using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> CreateGroup([FromBody] GroupCreateModel group)
         {
             var res = await _groupService.AddAsync(group);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return CreatedAtRoute("GetById", new { Id = res.Data.Id }, res.Data);
+            return res.ToActionResult();
         }
 
         [HttpGet]

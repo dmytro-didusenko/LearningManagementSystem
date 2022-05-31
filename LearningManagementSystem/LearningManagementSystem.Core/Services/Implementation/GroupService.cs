@@ -32,21 +32,13 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (groupExist is not null)
             {
                 _logger.LogInformation("Trying to add group that already exist!");
-                return new Response<GroupCreateModel>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = "Group is already exist!"
-                };
+                return Response<GroupCreateModel>.GetError(ErrorCode.Conflict, "Group is already exist!");
             }
             await _context.Groups.AddAsync(_mapper.Map<Group>(model));
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("New group has been created successfully");
-            return new Response<GroupCreateModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<GroupCreateModel>.GetSuccess(model);
         }
 
         public async Task UpdateAsync(Guid id, GroupCreateModel model)
@@ -86,7 +78,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public IEnumerable<GroupModel> GetAll()
         {
             return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups
-                .Include(i=>i.Students).ThenInclude(t=>t.User).AsEnumerable());
+                .Include(i=>i.Students).ThenInclude(t=>t.User)
+                .AsEnumerable());
         }
     }
 }

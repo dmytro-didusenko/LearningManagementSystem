@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Subject;
 using LearningManagementSystem.Domain.Models.User;
@@ -22,12 +23,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> CreateSubject([FromBody] SubjectModel subject)
         {
             var res = await _subjectService.AddAsync(subject);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
-
+            return res.ToActionResult();
         }
 
         [HttpGet]

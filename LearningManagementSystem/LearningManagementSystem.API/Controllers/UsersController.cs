@@ -1,3 +1,4 @@
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +25,7 @@ namespace LearningManagementSystem.API.Controllers
             ArgumentNullException.ThrowIfNull(user);
 
             var res= await _userService.AddAsync(user);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return CreatedAtRoute("GetUserById", new {Id = res.Data.Id}, res.Data);
+            return res.ToActionResult();
         }
 
         [HttpPut("{id}")]
@@ -51,12 +48,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> AddDocument([FromBody] DocumentModel model)
         {
             var res = await _documentService.AddDocumentAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpGet("GetDocuments")]

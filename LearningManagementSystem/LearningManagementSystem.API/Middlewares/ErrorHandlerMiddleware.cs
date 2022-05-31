@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
 
 namespace LearningManagementSystem.API.Middlewares
@@ -12,7 +11,7 @@ namespace LearningManagementSystem.API.Middlewares
         {
             _next = next;
         }
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {

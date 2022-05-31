@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.HomeTask;
 using LearningManagementSystem.Domain.Models.Topic;
 using Microsoft.AspNetCore.Mvc;
@@ -21,33 +22,21 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> AddHomeTask([FromBody] HomeTaskCreateModel model)
         {
             var res = await _learningService.CreateHomeTaskAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpPost("Topics")]
         public async Task<IActionResult> CreateTopic([FromBody] TopicCreateModel model)
         {
             var res = await _learningService.CreateTopicAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpPost("TaskAnswers")]
         public async Task<IActionResult> AddTaskAnswer([FromBody] TaskAnswerModel model)
         {
             var res = await _learningService.AddTaskAnswerAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpGet("TaskAnswers/{homeTaskId}")]
@@ -72,34 +61,21 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> UpdateTopic(Guid id, [FromBody] TopicModel model)
         {
             var res = await _learningService.UpdateTopicAsync(id, model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpPut("HomeTasks/{id}")]
         public async Task<IActionResult> UpdateHomeTask(Guid id, [FromBody] HomeTaskModel model)
         {
             var res = await _learningService.UpdateHomeTaskAsync(id, model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpPut("TaskAnswers/{id}")]
         public async Task<IActionResult> UpdateTaskAnswer(Guid id, [FromBody] TaskAnswerUpdateModel model)
         {
             var res = await _learningService.UpdateTaskAnswerAsync(id, model);
-            if(!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpDelete("HomeTasks/{topicId}")]
@@ -108,7 +84,7 @@ namespace LearningManagementSystem.API.Controllers
             var res = await _learningService.RemoveHomeTaskAsync(topicId);
             if (!res.IsSuccessful)
             {
-                return BadRequest(res);
+                return BadRequest();
             }
 
             return Ok(res);
@@ -118,12 +94,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> AddGrade(Guid taskAnswerId, [FromBody] GradeModel model)
         {
             var res = await _learningService.AddGradeAsync(taskAnswerId, model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpGet("Grades/{studentId}")]
@@ -138,6 +109,5 @@ namespace LearningManagementSystem.API.Controllers
         {
             return Ok(_learningService.GetStudentGradesBySubjectId(studentId, subjectId));
         }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Course;
 using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> CreateCourse([FromForm] CourseModel course)
         {
             var res = await _courseService.AddAsync(course);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return CreatedAtRoute("GetCourseById", new { Id = res.Data.Id }, res.Data);
+            return res.ToActionResult();
         }
 
         [HttpGet("{id}", Name = "GetCourseById")]

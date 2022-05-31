@@ -10,11 +10,11 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class SubjectController : ControllerBase
+    public class SubjectsController : ControllerBase
     {
         private readonly ISubjectService _subjectService;
 
-        public SubjectController(ISubjectService subjectService)
+        public SubjectsController(ISubjectService subjectService)
         {
             _subjectService = subjectService;
         }

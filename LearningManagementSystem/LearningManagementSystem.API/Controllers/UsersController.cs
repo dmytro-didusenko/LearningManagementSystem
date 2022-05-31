@@ -36,22 +36,21 @@ namespace LearningManagementSystem.API.Controllers
         }
 
 
-        [HttpGet("{id}", Name = "GetUserById")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(Guid id)
         {
             var res = await _userService.GetByIdAsync(id);
-            
             return Ok(res);
         }
 
-        [HttpPost("AddDocument")]
+        [HttpPost("Documents")]
         public async Task<IActionResult> AddDocument([FromBody] DocumentModel model)
         {
             var res = await _documentService.AddDocumentAsync(model);
             return res.ToActionResult();
         }
 
-        [HttpGet("GetDocuments")]
+        [HttpGet("Documents")]
         public async Task<IActionResult> GetDocumentByFilter([FromQuery] DocumentQueryModel? query = null)
         {
             var res = await _documentService.GetDocumentsByFilterAsync(query);
@@ -64,14 +63,14 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _userService.GetByFilterAsync(query));
         }
 
-        [HttpDelete("RemoveDocument/{id}")]
+        [HttpDelete("Documents/{id}")]
         public async Task<IActionResult> RemoveDocument(Guid id)
         {
             await _documentService.RemoveDocumentByIdAsync(id);
             return NoContent();
         }
 
-        [HttpGet("GetDocumentById/{id}")]
+        [HttpGet("Documents/{id}")]
         public async Task<IActionResult> GetDocumentById(Guid id)
         {
             return Ok(await _documentService.GetDocumentByIdAsync(id));

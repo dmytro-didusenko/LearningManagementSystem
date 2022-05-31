@@ -9,11 +9,11 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class CourseController : ControllerBase
+    public class CoursesController : ControllerBase
     {
         private readonly ICourseService _courseService;
 
-        public CourseController(ICourseService courseService)
+        public CoursesController(ICourseService courseService)
         {
             _courseService = courseService;
         }

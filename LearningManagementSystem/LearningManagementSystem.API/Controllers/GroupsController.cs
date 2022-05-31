@@ -9,10 +9,10 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class GroupController : ControllerBase
+    public class GroupsController : ControllerBase
     {
         private readonly IGroupService _groupService;
-        public GroupController(IGroupService groupService)
+        public GroupsController(IGroupService groupService)
         {
             _groupService = groupService;
         }
@@ -30,7 +30,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(_groupService.GetAll());
         }
 
-        [HttpGet("{id}", Name = "GetById")]
+        [HttpGet("{id}"]
         public async Task<IActionResult> GetById(Guid id)
         {
             return Ok(await _groupService.GetByIdAsync(id));

@@ -8,11 +8,11 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class TeacherController : ControllerBase
+    public class TeachersController : ControllerBase
     {
         private readonly ITeacherService _teacherService;
 
-        public TeacherController(ITeacherService teacherService)
+        public TeachersController(ITeacherService teacherService)
         {
             _teacherService = teacherService;
         }

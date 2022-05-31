@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -70,7 +71,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var group = await _context.Groups.Include(i=>i.Students).ThenInclude(t=>t.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (group is null)
             {
-                throw new Exception($"Group with id: {id} does not exist");
+                throw new NotFoundException(id);
             }
             return _mapper.Map<GroupModel>(group);
         }

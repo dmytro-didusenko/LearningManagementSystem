@@ -30,7 +30,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(_groupService.GetAll());
         }
 
-        [HttpGet("{id}"]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             return Ok(await _groupService.GetByIdAsync(id));

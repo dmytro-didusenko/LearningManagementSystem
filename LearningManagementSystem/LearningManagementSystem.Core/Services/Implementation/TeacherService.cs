@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -55,7 +56,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var teacher = await _context.Teachers.Include(i => i.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (teacher is null)
             {
-                throw new Exception("Teacher does not exist");
+                throw new NotFoundException(id);
             }
 
             return _mapper.Map<TeacherModel>(teacher);
@@ -71,7 +72,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var teacher = await _context.Teachers.FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (teacher is null)
             {
-                throw new Exception("Teacher does not exist");
+                throw new NotFoundException(id);
             }
 
             _context.Teachers.Remove(teacher);

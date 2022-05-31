@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -41,7 +42,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<UserModel>.GetSuccess(model);
         }
 
-        public async Task UpdateAsync(Guid id, UserModel model)
+        public async Task<Response<UserModel>> UpdateAsync(Guid id, UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -49,13 +50,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (userExist is null)
             {
-                throw new Exception($"User id:{id} does not exist!");
+                return Response<UserModel>.GetError(ErrorCode.BadRequest, "User id:{id} does not exist!");
             }
 
             model.Id = id;
             _context.Users.Update(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
             _logger.LogInformation("User[id]:{0} has been updated", model.Id);
+            return Response<UserModel>.GetSuccess(model);
         }
 
         public async Task RemoveAsync(UserModel model)

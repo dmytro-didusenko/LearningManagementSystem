@@ -41,8 +41,8 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] SubjectModel model)
         {
-            await _subjectService.UpdateAsync(id, model);
-            return NoContent();
+            var res = await _subjectService.UpdateAsync(id, model);
+            return res.ToActionResult();
         }
     }
 }

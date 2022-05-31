@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -104,6 +105,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task<DocumentModel> GetDocumentByIdAsync(Guid id)
         {
             var entity = await _context.Documents.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            if (entity is null)
+            {
+                throw new NotFoundException(id);
+            }
             _logger.LogInformation("Getting document by id");
             return _mapper.Map<DocumentModel>(entity);
         }

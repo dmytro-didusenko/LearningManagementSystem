@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
@@ -26,18 +27,18 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var student = await _context.Students.SingleOrDefaultAsync(f => f.Id.Equals(studentId));
             if (student is null)
             {
-                throw new Exception("Student does not exist");
+                throw new NotFoundException(studentId);
             }
 
             if (student.GroupId is not null)
             {
-                throw new Exception("Student already has a group");
+                throw new BadRequestException("Student already has a group");
             }
 
             var group = await _context.Groups.SingleOrDefaultAsync(f => f.Equals(groupId));
             if (group is null)
             {
-                throw new Exception("Group does not exist");
+                throw new NotFoundException(groupId);
             }
 
             student.GroupId = groupId;
@@ -50,18 +51,18 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var course = await _context.Courses.SingleOrDefaultAsync(f => f.Id.Equals(courseId));
             if (course is null)
             {
-                throw new Exception("Course does not exist");
+                throw new NotFoundException(courseId);
             }
 
             var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
             if (course is null)
             {
-                throw new Exception("Group does not exist");
+                throw new NotFoundException(groupId);
             }
 
             if (group.CourseId is not null)
             {
-                throw new Exception("Group already has a course!");
+                throw new BadRequestException("Group already has a course!");
             }
 
             group.CourseId = courseId;
@@ -76,18 +77,18 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (subject is null)
             {
-                throw new Exception("Subject does not exist");
+                throw new NotFoundException(subjectId);
             }
 
             var course = await _context.Courses.SingleOrDefaultAsync(s => s.Id.Equals(courseId));
             if (course is null)
             {
-                throw new Exception("Course does not exist");
+                throw new NotFoundException(courseId);
             }
 
             if (subject.Courses.Contains(course))
             {
-                throw new Exception("Course already has a subject");
+                throw new BadRequestException("Course already has a subject");
             }
             subject.Courses.Add(course);
             await _context.SaveChangesAsync();
@@ -101,24 +102,22 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (teacher is null)
             {
-                throw new Exception("Teacher does not exist");
+                throw new NotFoundException(teacherId);
             }
             if (teacher.SubjectId is not null)
             {
-                throw new Exception("Teacher already has a subject");
+                throw new BadRequestException("Teacher already has a subject");
             }
 
             var subject = await _context.Subjects.SingleOrDefaultAsync(s => s.Id.Equals(subjectId));
             if (subject is null)
             {
-                throw new Exception("Subject does not exist");
+                throw new NotFoundException(subjectId);
             }
 
             teacher.SubjectId = subjectId;
             _context.Update(teacher);
             await _context.SaveChangesAsync();
         }
-
-
     }
 }

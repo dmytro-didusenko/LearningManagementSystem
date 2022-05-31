@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,8 +20,8 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateStudent(StudentCreateModel model)
         {
-            await _studentService.AddAsync(model);
-            return Ok();
+            var res = await _studentService.AddAsync(model);
+            return res.ToActionResult();
         }
 
         [HttpGet]

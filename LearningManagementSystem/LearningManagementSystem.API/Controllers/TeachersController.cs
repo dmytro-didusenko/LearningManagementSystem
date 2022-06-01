@@ -1,5 +1,6 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -7,25 +8,20 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class TeacherController : ControllerBase
+    public class TeachersController : ControllerBase
     {
         private readonly ITeacherService _teacherService;
 
-        public TeacherController(ITeacherService teacherService)
+        public TeachersController(ITeacherService teacherService)
         {
             _teacherService = teacherService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTeacher([FromBody] TeacherCreationModel teacher)
+        public async Task<IActionResult> AddTeacher([FromBody] TeacherCreateModel teacher)
         {
             var res = await _teacherService.AddAsync(teacher);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpGet]

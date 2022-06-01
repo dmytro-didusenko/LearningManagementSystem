@@ -1,5 +1,6 @@
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -23,43 +24,33 @@ namespace LearningManagementSystem.API.Controllers
         {
             ArgumentNullException.ThrowIfNull(user);
 
-            var res= await _userService.AddAsync(user);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return CreatedAtRoute("GetUserById", new {Id = res.Data.Id}, res.Data);
+            var res = await _userService.AddAsync(user);
+            return res.ToActionResult();
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserModel model)
         {
-            await _userService.UpdateAsync(id, model);
-            return NoContent();
+            var res = await _userService.UpdateAsync(id, model);
+            return res.ToActionResult();
         }
 
 
-        [HttpGet("{id}", Name = "GetUserById")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(Guid id)
         {
             var res = await _userService.GetByIdAsync(id);
-            
             return Ok(res);
         }
 
-        [HttpPost("AddDocument")]
+        [HttpPost("Documents")]
         public async Task<IActionResult> AddDocument([FromBody] DocumentModel model)
         {
             var res = await _documentService.AddDocumentAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
-        [HttpGet("GetDocuments")]
+        [HttpGet("Documents")]
         public async Task<IActionResult> GetDocumentByFilter([FromQuery] DocumentQueryModel? query = null)
         {
             var res = await _documentService.GetDocumentsByFilterAsync(query);
@@ -72,14 +63,14 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _userService.GetByFilterAsync(query));
         }
 
-        [HttpDelete("RemoveDocument/{id}")]
+        [HttpDelete("Documents/{id}")]
         public async Task<IActionResult> RemoveDocument(Guid id)
         {
             await _documentService.RemoveDocumentByIdAsync(id);
             return NoContent();
         }
 
-        [HttpGet("GetDocumentById/{id}")]
+        [HttpGet("Documents/{id}")]
         public async Task<IActionResult> GetDocumentById(Guid id)
         {
             return Ok(await _documentService.GetDocumentByIdAsync(id));

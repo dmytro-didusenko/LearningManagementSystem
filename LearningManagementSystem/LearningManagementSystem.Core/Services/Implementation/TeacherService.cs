@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +23,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<Response<TeacherCreationModel>> AddAsync(TeacherCreationModel model)
+        public async Task<Response<TeacherCreateModel>> AddAsync(TeacherCreateModel model)
         {
 
             ArgumentNullException.ThrowIfNull(model);
@@ -37,11 +39,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (teacher is not null || student is not null)
             {
-                return new Response<TeacherCreationModel>()
-                {
-                    ErrorMessage = "User already has a role",
-                    IsSuccessful = false
-                };
+                return Response<TeacherCreateModel>.GetError(ErrorCode.Conflict, "User already has a role");
             }
 
             var entity = _mapper.Map<Teacher>(model);
@@ -50,11 +48,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("New teacher has been successfully added");
-            return new Response<TeacherCreationModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<TeacherCreateModel>.GetSuccess(model);
         }
 
         public async Task<TeacherModel> GetByIdAsync(Guid id)
@@ -62,7 +56,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var teacher = await _context.Teachers.Include(i => i.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (teacher is null)
             {
-                throw new Exception("Teacher does not exist");
+                throw new NotFoundException(id);
             }
 
             return _mapper.Map<TeacherModel>(teacher);
@@ -78,7 +72,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var teacher = await _context.Teachers.FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (teacher is null)
             {
-                throw new Exception("Teacher does not exist");
+                throw new NotFoundException(id);
             }
 
             _context.Teachers.Remove(teacher);

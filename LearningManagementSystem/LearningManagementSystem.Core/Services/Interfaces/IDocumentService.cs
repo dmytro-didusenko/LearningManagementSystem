@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.User;
 
 namespace LearningManagementSystem.Core.Services.Interfaces
 {

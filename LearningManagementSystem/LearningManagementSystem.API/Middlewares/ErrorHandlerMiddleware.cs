@@ -1,6 +1,6 @@
-﻿using System.Data.Common;
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
+using LearningManagementSystem.Core.Exceptions;
 
 namespace LearningManagementSystem.API.Middlewares
 {
@@ -12,7 +12,7 @@ namespace LearningManagementSystem.API.Middlewares
         {
             _next = next;
         }
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
@@ -25,7 +25,10 @@ namespace LearningManagementSystem.API.Middlewares
 
                 switch (error)
                 {
-                    case Exception e:
+                    case NotFoundException ex:
+                        response.StatusCode = (int) HttpStatusCode.NotFound;
+                        break;
+                    case BadRequestException ex:
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         break;
                     default:

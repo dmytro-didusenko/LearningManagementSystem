@@ -2,7 +2,9 @@
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.Subject;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -40,26 +42,24 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Subjects.AddAsync(entity);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New subject has been successfully added");
-            return new Response<SubjectModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<SubjectModel>.GetSuccess(model);
         }
 
-        public async Task UpdateAsync(Guid id, SubjectModel model)
+        public async Task<Response<SubjectModel>> UpdateAsync(Guid id, SubjectModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
             var entity = await _context.Subjects.AsNoTracking().SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (entity is null)
             {
-                throw new Exception($"Subject with id:{id} does not exist");
+                return Response<SubjectModel>.GetError(ErrorCode.BadRequest, "Subject with id:{id} does not exist");
             }
 
             model.Id = id;
             var toUpdate = _mapper.Map<Subject>(model);
             _context.Subjects.Update(toUpdate);
             await _context.SaveChangesAsync();
+
+            return Response<SubjectModel>.GetSuccess(model);
         }
 
         //TODO: Implement this
@@ -71,9 +71,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task<SubjectModel> GetByIdAsync(Guid id)
         {
             var subject = await _context.Subjects
-                .Include(i=>i.Courses)
-                .Include(i=>i.Teachers)
-                .Include(i=>i.Topics).SingleOrDefaultAsync(s => s.Id.Equals(id));
+                .Include(i => i.Courses)
+                .Include(i => i.Teachers)
+                .Include(i => i.Topics).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (subject is null)
             {
                 throw new Exception("Subject does not exist");
@@ -85,8 +85,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public IEnumerable<SubjectModel> GetAll()
         {
             var subjects = _context.Subjects.Include(i => i.Courses)
-                .Include(i=>i.Teachers)
-                .Include(i=>i.Topics).AsEnumerable();
+                .Include(i => i.Teachers)
+                .Include(i => i.Topics).AsEnumerable();
             return _mapper.Map<IEnumerable<SubjectModel>>(subjects);
         }
     }

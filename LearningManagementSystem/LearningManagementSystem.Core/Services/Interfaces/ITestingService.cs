@@ -1,4 +1,4 @@
-﻿using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.Domain.Models.Responses;
 using LearningManagementSystem.Domain.Models.Testing;
 
 namespace LearningManagementSystem.Core.Services.Interfaces

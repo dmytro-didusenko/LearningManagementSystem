@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Subject;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -8,11 +10,11 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class SubjectController : ControllerBase
+    public class SubjectsController : ControllerBase
     {
         private readonly ISubjectService _subjectService;
 
-        public SubjectController(ISubjectService subjectService)
+        public SubjectsController(ISubjectService subjectService)
         {
             _subjectService = subjectService;
         }
@@ -21,12 +23,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> CreateSubject([FromBody] SubjectModel subject)
         {
             var res = await _subjectService.AddAsync(subject);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return Ok(res);
-
+            return res.ToActionResult();
         }
 
         [HttpGet]
@@ -44,8 +41,8 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] SubjectModel model)
         {
-            await _subjectService.UpdateAsync(id, model);
-            return NoContent();
+            var res = await _subjectService.UpdateAsync(id, model);
+            return res.ToActionResult();
         }
     }
 }

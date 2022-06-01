@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Course;
+using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -38,14 +40,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
             }
             await _context.Courses.AddAsync(entity);
             await _context.SaveChangesAsync();
-            return new Response<CourseModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<CourseModel>.GetSuccess(model);
         }
 
-        public async Task UpdateAsync(Guid id, CourseModel model)
+        public async Task<Response<CourseModel>> UpdateAsync(Guid id, CourseModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -53,7 +51,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (courseEntity is null)
             {
-                throw new Exception($"Course id:{id} does not exist!");
+                return Response<CourseModel>.GetError(ErrorCode.BadRequest, "Course id:{id} does not exist!");
             }
             if (model.ImageFile is not null)
             {
@@ -66,6 +64,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _context.Courses.Update(entityToUpdate);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Course[id]:{0} has been updated", model.Id);
+            return Response<CourseModel>.GetSuccess(model);
         }
 
         public async Task RemoveAsync(CourseModel model)
@@ -90,7 +89,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var course = await _context.Courses.Include(i => i.Subjects).FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (course is null)
             {
-                throw new Exception($"Course with id:{id} does not exist");
+                throw new NotFoundException(id);
             }
             return _mapper.Map<CourseModel>(course);
         }

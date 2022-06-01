@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -22,13 +24,13 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task AddAsync(StudentCreationModel model)
+        public async Task<Response<StudentCreateModel>> AddAsync(StudentCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
-            var userExist = await _userService.GetByIdAsync(model.UserId);
-            if (userExist is null)
+            var user = await _userService.GetByIdAsync(model.UserId);
+            if (user is null)
             {
-                throw new Exception($"User with id:{model.UserId} does not exist!");
+                return Response<StudentCreateModel>.GetError(ErrorCode.BadRequest, "User with id:{model.UserId} does not exist!");
             }
 
             var teacher = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(model.UserId));
@@ -36,7 +38,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (teacher is not null || student is not null)
             {
-                throw new Exception($"User with id:{model.UserId} does not exist!");
+                return Response<StudentCreateModel>.GetError(ErrorCode.BadRequest, "User already has a role");
             }
 
             var studentEntity = new Student()
@@ -47,6 +49,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Students.AddAsync(studentEntity);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Adding new student");
+            return Response<StudentCreateModel>.GetSuccess(model);
         }
 
         public async Task<StudentModel> GetByIdAsync(Guid id)
@@ -54,7 +57,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var entity = await _context.Students.Include(i => i.User).SingleOrDefaultAsync(u => u.Id.Equals(id));
             if (entity is null)
             {
-                throw new Exception("Student does not exist!");
+                throw new NotFoundException(id);
             }
 
             var model = _mapper.Map<StudentModel>(entity);
@@ -74,7 +77,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var student = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (student is null)
             {
-                throw new Exception("Student does not exist");
+                throw new NotFoundException(id);
             }
 
             _context.Students.Remove(student);

@@ -1,7 +1,12 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Course;
+using LearningManagementSystem.Domain.Models.Group;
+using LearningManagementSystem.Domain.Models.HomeTask;
+using LearningManagementSystem.Domain.Models.Subject;
 using LearningManagementSystem.Domain.Models.Testing;
+using LearningManagementSystem.Domain.Models.Topic;
+using LearningManagementSystem.Domain.Models.User;
 using StudentAnswer = LearningManagementSystem.Domain.Entities.StudentAnswer;
 
 namespace LearningManagementSystem.Domain.AutoMapper
@@ -11,7 +16,7 @@ namespace LearningManagementSystem.Domain.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<UserModel, User>().ReverseMap();
-            CreateMap<Group, GroupCreationModel>().ReverseMap();
+            CreateMap<Group, GroupCreateModel>().ReverseMap();
             CreateMap<Group, GroupModel>().ReverseMap();
             CreateMap<Document, DocumentModel>().ReverseMap();
             CreateMap<TaskAnswer, TaskAnswerModel>().ReverseMap();
@@ -46,7 +51,7 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<Course, CourseModel>()
                .ReverseMap();
 
-            CreateMap<TeacherCreationModel, Teacher>()
+            CreateMap<TeacherCreateModel, Teacher>()
                 .ForMember(m=>m.Id, opt=>
                     opt.MapFrom(f=>f.UserId)).ReverseMap();
 

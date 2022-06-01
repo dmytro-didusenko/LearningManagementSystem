@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Hangfire;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
@@ -14,6 +15,14 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.WriteIndented = true;
 });
+
+builder.Services.AddHangfire((provider, cfg) =>
+{
+    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
+    cfg.UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings();
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
@@ -35,9 +44,9 @@ builder.Services.AddQuartz(cfg =>
     cfg.UseMicrosoftDependencyInjectionJobFactory();
     cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
     cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
+
 });
 builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
-
 
 var app = builder.Build();
 
@@ -53,6 +62,8 @@ app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseHangfireDashboard();
 
 app.MapControllers();
 

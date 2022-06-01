@@ -1,5 +1,7 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Models;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Domain.Models.Course;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -7,11 +9,11 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class CourseController : ControllerBase
+    public class CoursesController : ControllerBase
     {
         private readonly ICourseService _courseService;
 
-        public CourseController(ICourseService courseService)
+        public CoursesController(ICourseService courseService)
         {
             _courseService = courseService;
         }
@@ -20,11 +22,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> CreateCourse([FromForm] CourseModel course)
         {
             var res = await _courseService.AddAsync(course);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-            return CreatedAtRoute("GetCourseById", new { Id = res.Data.Id }, res.Data);
+            return res.ToActionResult();
         }
 
         [HttpGet("{id}", Name = "GetCourseById")]
@@ -36,8 +34,8 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourse(Guid id, [FromBody] CourseModel model)
         {
-            await _courseService.UpdateAsync(id, model);
-            return NoContent();
+            var res = await _courseService.UpdateAsync(id, model);
+            return res.ToActionResult();
         }
 
         [HttpGet]

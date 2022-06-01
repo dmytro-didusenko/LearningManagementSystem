@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -30,25 +32,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (userExist is not null)
             {
-                return new Response<UserModel>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = "User with such credentials is already exist!"
-                };
+                return Response<UserModel>.GetError(ErrorCode.Conflict, "User with such credentials is already exist!");
             }
 
             await _context.AddAsync(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
             _logger.LogInformation("New user has been added");
 
-            return new Response<UserModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<UserModel>.GetSuccess(model);
         }
 
-        public async Task UpdateAsync(Guid id, UserModel model)
+        public async Task<Response<UserModel>> UpdateAsync(Guid id, UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -56,13 +50,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (userExist is null)
             {
-                throw new Exception($"User id:{id} does not exist!");
+                return Response<UserModel>.GetError(ErrorCode.BadRequest, "User id:{id} does not exist!");
             }
 
             model.Id = id;
             _context.Users.Update(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
             _logger.LogInformation("User[id]:{0} has been updated", model.Id);
+            return Response<UserModel>.GetSuccess(model);
         }
 
         public async Task RemoveAsync(UserModel model)

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -27,11 +29,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var userExist = await _context.Users.FirstOrDefaultAsync(f => f.Id.Equals(document.UserId));
             if (userExist is null)
             {
-                return new Response<DocumentModel>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = "User not found"
-                };
+                return Response<DocumentModel>.GetError(ErrorCode.NotFound, "User not found");
             }
 
             document.DateAdded = DateTime.Parse(DateTime.Today.ToShortDateString());
@@ -44,11 +42,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Documents.AddAsync(entity);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New document has been successfully added");
-            return new Response<DocumentModel>()
-            {
-                IsSuccessful = true,
-                Data = document
-            };
+            return Response<DocumentModel>.GetSuccess(document);
         }
 
         public async Task<IEnumerable<DocumentModel>> GetDocumentsByFilterAsync(DocumentQueryModel? query = null)
@@ -82,8 +76,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
             }
             if (query.DateOfExpiration.HasValue)
             {
-                queryable = queryable.Where(i=>i.DateOfExpiration != null).Where(i =>
-                    i.DateOfExpiration.Value.Equals(query.DateOfExpiration!.Value));
+                queryable = queryable.Where(i => i.DateOfExpiration != null).Where(i =>
+                      i.DateOfExpiration.Value.Equals(query.DateOfExpiration!.Value));
             }
 
             if (query.DocumentType.HasValue)
@@ -111,6 +105,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task<DocumentModel> GetDocumentByIdAsync(Guid id)
         {
             var entity = await _context.Documents.FirstOrDefaultAsync(f => f.Id.Equals(id));
+            if (entity is null)
+            {
+                throw new NotFoundException(id);
+            }
             _logger.LogInformation("Getting document by id");
             return _mapper.Map<DocumentModel>(entity);
         }

@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Testing;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,41 +21,29 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> CreateTest([FromBody] TestModel model)
         {
             var res = await _testingService.CreateTestAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
 
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpPost("Questions/{testId}")]
         public async Task<IActionResult> AddQuestion(Guid testId, [FromBody] QuestionCreateModel questionModel)
         {
             var res = await _testingService.AddQuestionAsync(testId, questionModel);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
 
-            return Ok(res);
+            return res.ToActionResult();
         }
         [HttpPost("Answers/{questionId}")]
         public async Task<IActionResult> AddAnswersToQuestion(Guid questionId, [FromBody] IEnumerable<AnswerCreateModel> answers)
         {
             var res = await _testingService.AddAnswersToQuestionAsync(questionId, answers);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpGet("Tests/{testId}")]
         public async Task<IActionResult> GetTestById(Guid testId)
         {
             var res = await _testingService.GetTestByIdAsync(testId);
+            
             return Ok(res);
         }
 
@@ -75,12 +64,7 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> PassTest([FromBody] IEnumerable<StudentAnswerModel> model)
         {
             var res =  await _testingService.AddStudentAnswersAsync(model);
-            if (!res.IsSuccessful)
-            {
-                return BadRequest(res);
-            }
-
-            return Ok(res);
+            return res.ToActionResult();
         }
 
         [HttpGet("Results/{testId}/{studentId}")]
@@ -89,7 +73,6 @@ namespace LearningManagementSystem.API.Controllers
             var res = await _testingService.GetTestingResultAsync(testId, studentId);
             return Ok(res);
         }
-
     }
     
 }

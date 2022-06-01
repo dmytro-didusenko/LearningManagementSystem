@@ -5,15 +5,15 @@ namespace LearningManagementSystem.Core.Helpers
 {
     public class FileHelper: IFileHelper
     {
-        private readonly IConfiguration _confguration;
+        private readonly IConfiguration _configuration;
 
-        public FileHelper(IConfiguration confguration)
+        public FileHelper(IConfiguration configuration)
         {
-            _confguration = confguration;
+            _configuration = configuration;
         }
         public async Task<string> UploadFileAsync(IFormFile file)
         {
-            string folderName = _confguration["FileStorage"];
+            string folderName = _configuration["FileStorage"];
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
             if (!Directory.Exists(folderPath))
             {

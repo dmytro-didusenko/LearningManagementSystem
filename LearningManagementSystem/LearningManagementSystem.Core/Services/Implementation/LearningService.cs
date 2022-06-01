@@ -1,8 +1,13 @@
 ﻿using AutoMapper;
+using Hangfire;
+using LearningManagementSystem.Core.Exceptions;
+using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.HomeTask;
+using LearningManagementSystem.Domain.Models.Responses;
+using LearningManagementSystem.Domain.Models.Topic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -13,12 +18,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<LearningService> _logger;
+        private readonly IBackgroundJobClient _jobClient;
 
-        public LearningService(AppDbContext context, IMapper mapper, ILogger<LearningService> logger)
+        public LearningService(AppDbContext context, 
+            IMapper mapper, 
+            ILogger<LearningService> logger,
+            IBackgroundJobClient jobClient)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _jobClient = jobClient;
         }
 
         public async Task<Response<TopicCreateModel>> CreateTopicAsync(TopicCreateModel model)
@@ -27,13 +37,13 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var subjectExist = await _context.Subjects.FirstOrDefaultAsync(f => f.Id.Equals(model.SubjectId));
             if (subjectExist == null)
             {
-                return Response<TopicCreateModel>.Error("Subject does not exist");
+                return Response<TopicCreateModel>.GetError(ErrorCode.NotFound, "Subject does not exist");
             }
             var topic = _mapper.Map<Topic>(model);
             await _context.Topics.AddAsync(topic);
             await _context.SaveChangesAsync();
 
-            return Response<TopicCreateModel>.Success(model);
+            return Response<TopicCreateModel>.GetSuccess(model);
         }
 
         public async Task<Response<HomeTaskCreateModel>> CreateHomeTaskAsync(HomeTaskCreateModel model)
@@ -45,12 +55,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 .FirstOrDefaultAsync(f => f.Id.Equals(model.TopicId));
             if (topicExist is null)
             {
-                return Response<HomeTaskCreateModel>.Error("Topic does not exist");
+                return Response<HomeTaskCreateModel>.GetError(ErrorCode.NotFound, "Topic does not exist");
             }
 
             if (topicExist.HomeTask is not null)
             {
-                return Response<HomeTaskCreateModel>.Error("Topic already has a Home task");
+                return Response<HomeTaskCreateModel>.GetError(ErrorCode.Conflict, "Topic already has a Home task");
             }
 
             var entity = _mapper.Map<HomeTask>(model);
@@ -58,7 +68,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.HomeTasks.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            return Response<HomeTaskCreateModel>.Success(model);
+            return Response<HomeTaskCreateModel>.GetSuccess(model);
         }
 
         public async Task<Response<HomeTaskModel>> UpdateHomeTaskAsync(Guid id, HomeTaskModel model)
@@ -67,14 +77,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var topic = await _context.HomeTasks.FirstOrDefaultAsync(f => f.TopicId.Equals(id));
             if (topic is null)
             {
-                return Response<HomeTaskModel>.Error($"Home task with id:{id} does not exist");
+                return Response<HomeTaskModel>.GetError(ErrorCode.NotFound, $"Home task with id:{id} does not exist");
             }
             model.TopicId = id;
             _context.HomeTasks.Update(_mapper.Map<HomeTask>(model));
             await _context.SaveChangesAsync();
             _logger.LogInformation("Home task[id]:{0} has been updated", model.TopicId);
 
-            return Response<HomeTaskModel>.Success(model);
+            return Response<HomeTaskModel>.GetSuccess(model);
         }
 
         public async Task<Response> RemoveHomeTaskAsync(Guid topicId)
@@ -100,6 +110,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task<HomeTaskModel?> GetHomeTaskByIdAsync(Guid topicId)
         {
             var homeTask = await _context.HomeTasks.FirstOrDefaultAsync(f => f.TopicId.Equals(topicId));
+            if (homeTask is null)
+            {
+                throw new NotFoundException(topicId);
+            }
             return _mapper.Map<HomeTaskModel>(homeTask);
         }
 
@@ -110,20 +124,20 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var student = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(model.StudentId));
             if (student is null)
             {
-                return Response<TaskAnswerModel>.Error("Student does not exist");
+                return Response<TaskAnswerModel>.GetError(ErrorCode.NotFound, "Student does not exist");
             }
 
             var homeTask = await _context.HomeTasks.FirstOrDefaultAsync(f => f.TopicId.Equals(model.HomeTaskId));
             if (homeTask is null)
             {
-                return Response<TaskAnswerModel>.Error("Home task does not exist");
+                return Response<TaskAnswerModel>.GetError(ErrorCode.Conflict, "Home task does not exist");
             }
 
             var entity = _mapper.Map<TaskAnswer>(model);
             await _context.TaskAnswers.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            return Response<TaskAnswerModel>.Success(model);
+            return Response<TaskAnswerModel>.GetSuccess(model);
 
         }
 
@@ -132,9 +146,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var student = await _context.Students.FirstOrDefaultAsync(f => f.Id.Equals(studentId));
             if (student is null)
             {
-                throw new Exception("Student does not exist");
+                throw new NotFoundException("Student does not exist");
             }
-
             var grades = _context.TaskAnswers
                 .Include(i => i.Grade)
                 .Where(i => i.StudentId.Equals(studentId))
@@ -149,8 +162,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             var grades = _context.Topics
                 .Include(i => i.HomeTask)
-                .ThenInclude(t=>t.TaskAnswers)
-                .ThenInclude(t=>t.Grade)
+                .ThenInclude(t => t.TaskAnswers)
+                .ThenInclude(t => t.Grade)
                 .Where(i => i.SubjectId.Equals(subjectId))
                 .Select(s => s.HomeTask)
                 .SelectMany(s => s.TaskAnswers)
@@ -164,7 +177,13 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<TaskAnswerModel>? GetTaskAnswersByHomeTaskId(Guid homeTaskId)
         {
-            var answers = _context.TaskAnswers.Where(i => i.HomeTaskId.Equals(homeTaskId)).AsEnumerable();
+            var homeTask = _context.HomeTasks.FirstOrDefaultAsync(f => f.TopicId.Equals(homeTaskId));
+            if (homeTask is null)
+            {
+                throw new NotFoundException(homeTaskId);
+            }
+            var answers = _context.TaskAnswers
+                .Where(i => i.HomeTaskId.Equals(homeTaskId)).AsEnumerable();
             return _mapper.Map<IEnumerable<TaskAnswerModel>>(answers);
         }
 
@@ -177,12 +196,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (taskAnswer is null)
             {
-                return Response<TaskAnswerModel>.Error("Task does not exist");
+                return Response<TaskAnswerModel>.GetError(ErrorCode.NotFound, "Task does not exist");
             }
 
             if (taskAnswer.HomeTask.DateOfExpiration <= DateTime.Now)
             {
-                return Response<TaskAnswerModel>.Error("Time is out!");
+                return Response<TaskAnswerModel>.GetError(ErrorCode.Conflict, "Time is out!");
             }
 
             taskAnswer.Answer = model.Answer;
@@ -190,7 +209,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _context.TaskAnswers.Update(taskAnswer);
             await _context.SaveChangesAsync();
 
-            return Response<TaskAnswerModel>.Success(_mapper.Map<TaskAnswerModel>(taskAnswer));
+            return Response<TaskAnswerModel>.GetSuccess(_mapper.Map<TaskAnswerModel>(taskAnswer));
         }
 
         public async Task<Response<GradeModel>> AddGradeAsync(Guid taskAnswerId, GradeModel model)
@@ -199,19 +218,27 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var taskAnswer = await _context.TaskAnswers.FirstOrDefaultAsync(f => f.Id.Equals(taskAnswerId));
             if (taskAnswer is null)
             {
-                return Response<GradeModel>.Error("Task answer does not exist");
+                return Response<GradeModel>.GetError(ErrorCode.NotFound, "Task answer does not exist");
             }
+
+            //Running background task
+            _jobClient.Enqueue<IGradeNotifyJob>(gradeJob => gradeJob.SendNotification(taskAnswer.StudentId));
 
             var entity = _mapper.Map<Grade>(model);
             entity.Id = taskAnswerId;
             await _context.Grades.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            return Response<GradeModel>.Success(model);
+            return Response<GradeModel>.GetSuccess(model);
         }
 
         public IEnumerable<TopicModel> GetTopicsBySubjectId(Guid subjectId)
         {
+            var subject = _context.Subjects.FirstOrDefaultAsync(f => f.Id.Equals(subjectId));
+            if (subject is null)
+            {
+                throw new NotFoundException(subjectId);
+            }
             var topics = _context.Topics.Include(i => i.HomeTask)
                 .Where(i => i.SubjectId.Equals(subjectId)).AsEnumerable();
             return _mapper.Map<IEnumerable<TopicModel>>(topics);
@@ -223,14 +250,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var topic = await _context.Topics.FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (topic is null)
             {
-                return Response<TopicModel>.Error($"Topic with id:{id} does not exist");
+                return Response<TopicModel>.GetError(ErrorCode.NotFound, $"Topic with id:{id} does not exist");
             }
             model.Id = id;
             _context.Topics.Update(_mapper.Map<Topic>(model));
             await _context.SaveChangesAsync();
             _logger.LogInformation("Topic[id]:{0} has been updated", model.Id);
 
-            return Response<TopicModel>.Success(model);
+            return Response<TopicModel>.GetSuccess(model);
         }
     }
 }

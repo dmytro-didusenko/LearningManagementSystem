@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
+using LearningManagementSystem.Domain.Models.Group;
+using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +23,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<Response<GroupCreationModel>> AddAsync(GroupCreationModel model)
+        public async Task<Response<GroupCreateModel>> AddAsync(GroupCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -31,24 +33,16 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (groupExist is not null)
             {
                 _logger.LogInformation("Trying to add group that already exist!");
-                return new Response<GroupCreationModel>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = "Group is already exist!"
-                };
+                return Response<GroupCreateModel>.GetError(ErrorCode.Conflict, "Group is already exist!");
             }
             await _context.Groups.AddAsync(_mapper.Map<Group>(model));
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("New group has been created successfully");
-            return new Response<GroupCreationModel>()
-            {
-                IsSuccessful = true,
-                Data = model
-            };
+            return Response<GroupCreateModel>.GetSuccess(model);
         }
 
-        public async Task UpdateAsync(Guid id, GroupCreationModel model)
+        public async Task UpdateAsync(Guid id, GroupCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -77,7 +71,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var group = await _context.Groups.Include(i=>i.Students).ThenInclude(t=>t.User).SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (group is null)
             {
-                throw new Exception($"Group with id: {id} does not exist");
+                throw new NotFoundException(id);
             }
             return _mapper.Map<GroupModel>(group);
         }
@@ -85,7 +79,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public IEnumerable<GroupModel> GetAll()
         {
             return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups
-                .Include(i=>i.Students).ThenInclude(t=>t.User).AsEnumerable());
+                .Include(i=>i.Students).ThenInclude(t=>t.User)
+                .AsEnumerable());
         }
     }
 }

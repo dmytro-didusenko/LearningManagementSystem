@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
@@ -41,6 +42,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<ILearningService, LearningService>();
             services.AddScoped<ITestingService, TestingService>();
+            services.AddScoped<IGradeNotifyJob, GradeNotifyJob>();
             return services;
         }
 

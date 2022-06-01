@@ -19,6 +19,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddHangfire((provider, cfg) =>
 {
     cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
+    cfg.UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings();
 });
 builder.Services.AddHangfireServer();
 
@@ -42,7 +44,7 @@ builder.Services.AddQuartz(cfg =>
     cfg.UseMicrosoftDependencyInjectionJobFactory();
     cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
     cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
-    
+
 });
 builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Hangfire;
 using LearningManagementSystem.Core.Exceptions;
+using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -16,12 +18,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<LearningService> _logger;
+        private readonly IBackgroundJobClient _jobClient;
 
-        public LearningService(AppDbContext context, IMapper mapper, ILogger<LearningService> logger)
+        public LearningService(AppDbContext context, 
+            IMapper mapper, 
+            ILogger<LearningService> logger,
+            IBackgroundJobClient jobClient)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _jobClient = jobClient;
         }
 
         public async Task<Response<TopicCreateModel>> CreateTopicAsync(TopicCreateModel model)
@@ -213,6 +220,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 return Response<GradeModel>.GetError(ErrorCode.NotFound, "Task answer does not exist");
             }
+
+            //Running background task
+            _jobClient.Enqueue<IGradeNotifyJob>(gradeJob => gradeJob.SendNotification(taskAnswer.StudentId));
 
             var entity = _mapper.Map<Grade>(model);
             entity.Id = taskAnswerId;

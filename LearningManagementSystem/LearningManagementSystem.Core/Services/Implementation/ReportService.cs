@@ -61,7 +61,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                         .FirstOrDefault(w => w.StudentId.Equals(studentId)).Grade
                 })
                 .ToList()
-                .GroupBy(g => g.subject)
+                .GroupBy(g => g.subject);
                 
             //foreach (var q in results)
             //{

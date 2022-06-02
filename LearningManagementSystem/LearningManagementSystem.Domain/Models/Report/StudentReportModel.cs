@@ -13,6 +13,6 @@
     public class TopicInfoModel
     {
         public string TopicName { get; set; } = string.Empty;
-        public int Grade { get; set; }
+        public int? Grade { get; set; }
     }
 }

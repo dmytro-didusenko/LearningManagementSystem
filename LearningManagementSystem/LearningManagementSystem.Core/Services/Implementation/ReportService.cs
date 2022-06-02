@@ -48,20 +48,25 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             report.Subjects = new Dictionary<string, IEnumerable<TopicInfoModel>>();
 
-            var results = _context.Topics
-                .Include(i => i.Subject)
-                .Include(i => i.HomeTask)
-                .ThenInclude(t => t.TaskAnswers)
+            var results = _context.Topics?
+                .Include(i => i.Subject)?
+                .Include(i => i.HomeTask)?
+                .ThenInclude(t => t.TaskAnswers)?
                 .ThenInclude(t => t.Grade)
                 .Select(s => new
                 {
                     subject = s.Subject.Name,
                     topicName = s.Name,
                     grade = s.HomeTask.TaskAnswers
-                        .FirstOrDefault(w => w.StudentId.Equals(studentId)).Grade.Value
+                        .FirstOrDefault(w => w.StudentId.Equals(studentId)).Grade
                 })
                 .ToList()
-                .GroupBy(g => g.subject);
+                .GroupBy(g => g.subject)
+                
+            //foreach (var q in results)
+            //{
+            //    _logger.LogCritical("Subject: {0}, topic: {1}, grade: {2}", q.subject, q.topicName, q.grade?.Value);
+            //}
 
 
             foreach (var res in results)
@@ -69,7 +74,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 report.Subjects.Add(res.Key, res.Select(s => new TopicInfoModel()
                 {
                     TopicName = s.topicName,
-                    Grade = s.grade
+                    Grade = s.grade?.Value
                 }));
             }
 

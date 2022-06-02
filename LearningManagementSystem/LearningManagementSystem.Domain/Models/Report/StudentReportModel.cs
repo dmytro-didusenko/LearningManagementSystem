@@ -6,7 +6,7 @@
         public string UserName { get; set; } = string.Empty;
         public string GroupName { get; set; } = string.Empty;
         public string CourseName { get; set; } = string.Empty;
-        public Dictionary<string, IEnumerable<TopicInfoModel>> Subjects { get; set; } = null!;
+        public Dictionary<string, IEnumerable<TopicInfoModel>>? Subjects { get; set; } = null!;
         public DateTime ReportCreatedTime { get; set; }
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models.Report;
 using LearningManagementSystem.Domain.Models.Responses;
@@ -46,37 +45,20 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 CourseName = student.Group.Course.Name
             };
 
-            report.Subjects = new Dictionary<string, IEnumerable<TopicInfoModel>>();
-
-            var results = _context.Topics?
-                .Include(i => i.Subject)?
-                .Include(i => i.HomeTask)?
-                .ThenInclude(t => t.TaskAnswers)?
-                .ThenInclude(t => t.Grade)
-                .Select(s => new
-                {
-                    subject = s.Subject.Name,
-                    topicName = s.Name,
-                    grade = s.HomeTask.TaskAnswers
-                        .FirstOrDefault(w => w.StudentId.Equals(studentId)).Grade
-                })
+            report.Subjects = _context.TaskAnswers
+                .Include(i => i.Grade)
+                .Include(i => i.HomeTask)
+                .Where(w => w.StudentId.Equals(studentId))
+                .Join(_context.Topics.Include(i => i.Subject),
+                    f => f.HomeTask.TopicId, s => s.Id,
+                    (f, s) => new { taskAnsw = f, topic = s })
                 .ToList()
-                .GroupBy(g => g.subject);
-                
-            //foreach (var q in results)
-            //{
-            //    _logger.LogCritical("Subject: {0}, topic: {1}, grade: {2}", q.subject, q.topicName, q.grade?.Value);
-            //}
-
-
-            foreach (var res in results)
-            {
-                report.Subjects.Add(res.Key, res.Select(s => new TopicInfoModel()
+                .GroupBy(g => g.topic.Subject.Name)
+                .ToDictionary(k => k.Key, v => v.Select(s => new TopicInfoModel()
                 {
-                    TopicName = s.topicName,
-                    Grade = s.grade?.Value
-                }));
-            }
+                    TopicName = s.topic.Name,
+                    Grade = s.taskAnsw.Grade?.Value
+                }).AsEnumerable());
 
             report.ReportCreatedTime = DateTime.Now;
 

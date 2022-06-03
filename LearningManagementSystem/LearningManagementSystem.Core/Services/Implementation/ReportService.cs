@@ -1,9 +1,12 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using System.Drawing;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models.Report;
 using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace LearningManagementSystem.Core.Services.Implementation
 {
@@ -18,7 +21,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<Response<StudentReportModel>> GetReportForStudent(Guid studentId)
+        public async Task<Response<StudentReportModel>> GetReportForStudentAsync(Guid studentId)
         {
             var student = await _context.Students
                 .Include(i => i.User)
@@ -64,5 +67,67 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             return Response<StudentReportModel>.GetSuccess(report);
         }
+
+        public async Task GetReportForStudentInExcel(Guid studentId)
+        {
+            var response = await GetReportForStudentAsync(studentId);
+            if (response.Error is not null)
+            {
+                //TODO: Return error
+            }
+
+            //TODO: Check if file is opened
+
+            var report = response.Data!;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var fileName = $"{report.FullName}_{report.ReportCreatedTime.ToShortDateString()}.xlsx";
+            var fileInfo = new FileInfo($@"C:\Users\Maxim\Desktop\Excels\{fileName}");
+
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+
+            }
+            using var package = new ExcelPackage(fileInfo);
+
+            var ws = package.Workbook.Worksheets.Add($"{report.FullName}_SuccessReport");
+            ws.DefaultColWidth = 25;
+
+            //Header
+            var headerCells = ws.Cells[1, 1, 1, 6];
+            ws.Cells[1, 1].Value = $"Success report for {report.FullName}, Group: {report.GroupName}, Course: {report.CourseName}";
+            headerCells.Merge = true;
+            headerCells.AutoFitColumns();
+            ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+            ws.Row(1).Height = 50;
+            ws.Row(1).Style.Font.Bold = true;
+            ws.Row(1).Style.Font.Size = 18;
+            ws.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            headerCells.Style.Fill.SetBackground(Color.Wheat);
+
+
+            var currCol = 1;
+            var currRow = 2;
+            foreach (var subject in report.Subjects)
+            {
+                ws.Cells[currRow, currCol].Value = subject.Key;
+                ws.Cells[currRow, currCol, currRow, ++currCol].Merge = true;
+                currRow++;
+                currCol = 1;
+                foreach (var topic in subject.Value)
+                {
+                    ws.Cells[currRow, currCol].Value = topic.TopicName;
+                    ws.Cells[currRow++, currCol + 1].Value = topic.Grade is null ? "Not marked": topic.Grade.Value;
+                }
+
+                currRow = 2;
+                currCol += 2;
+            }
+
+
+            await package.SaveAsync();
+        }
+
+
     }
 }

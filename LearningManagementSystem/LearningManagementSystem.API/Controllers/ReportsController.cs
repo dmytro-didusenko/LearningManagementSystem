@@ -19,8 +19,15 @@ namespace LearningManagementSystem.API.Controllers
         [HttpGet("Progress/{studentId}")]
         public async Task<IActionResult> GetReportForStudent(Guid studentId)
         {
-            var res = await _reportService.GetReportForStudent(studentId);
+            var res = await _reportService.GetReportForStudentAsync(studentId);
             return res.ToActionResult();
+        }
+
+        [HttpGet("Progress/{studentId}.xlsx")]
+        public async Task<IActionResult> GetReportForStudentExcel(Guid studentId)
+        {
+            await _reportService.GetReportForStudentInExcel(studentId);
+            return Ok();
         }
     }
 }

@@ -5,6 +5,8 @@ namespace LearningManagementSystem.Core.Services.Interfaces
 {
     public interface IReportService
     {
-        public Task<Response<StudentReportModel>> GetReportForStudent(Guid studentId);
+        public Task<Response<StudentReportModel>> GetReportForStudentAsync(Guid studentId);
+        public Task GetReportForStudentInExcel(Guid studentId);
+
     }
 }

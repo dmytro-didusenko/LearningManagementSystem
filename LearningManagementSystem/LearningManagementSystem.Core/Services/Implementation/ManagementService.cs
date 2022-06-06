@@ -35,7 +35,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new BadRequestException("Student already has a group");
             }
 
-            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Equals(groupId));
+            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
             if (group is null)
             {
                 throw new NotFoundException(groupId);

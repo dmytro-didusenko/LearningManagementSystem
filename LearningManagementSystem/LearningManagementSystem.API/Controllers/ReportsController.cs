@@ -1,7 +1,9 @@
 ﻿using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Domain.Contextes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -23,11 +25,14 @@ namespace LearningManagementSystem.API.Controllers
             return res.ToActionResult();
         }
 
-        [HttpGet("Progress/{studentId}.xlsx")]
+        [HttpGet("Progress/{studentId}/Excel")]
         public async Task<IActionResult> GetReportForStudentExcel(Guid studentId)
         {
+            
             await _reportService.GetReportForStudentInExcel(studentId);
             return Ok();
+            
         }
+
     }
 }

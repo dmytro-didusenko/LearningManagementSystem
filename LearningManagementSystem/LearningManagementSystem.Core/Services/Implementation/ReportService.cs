@@ -67,75 +67,63 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<StudentReportModel>.GetSuccess(report);
         }
 
-        public async Task GetReportForStudentInExcel(Guid studentId)
+        public async Task<Response<(string fileName, byte[] data)>> GetReportForStudentInExcel(Guid studentId)
         {
             var response = await GetReportForStudentAsync(studentId);
             if (response.Error is not null)
             {
-                //TODO: Return error
+                return Response<(string fileName, byte[] data)>.GetError(response.Error.ErrorCode, response.Error.ErrorMessage);
             }
 
             var report = response.Data!;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            var fileName = $"{report.FullName}_{report.ReportCreatedTime.ToShortDateString()}.xlsx";
-            var fileInfo = new FileInfo($@"C:\Users\Maxim\Desktop\Excels\{fileName}");
+            var reportName = $"{report.FullName}_{report.ReportCreatedTime.ToShortDateString()}.xlsx";
 
-            if (fileInfo.Exists)
-            {
-                fileInfo.Delete();
-            }
-
-            using var package = new ExcelPackage(fileInfo);
+            using var package = new ExcelPackage();
             var ws = package.Workbook.Worksheets.Add($"{report.FullName}_SuccessReport");
             ws.DefaultColWidth = 25;
 
-            //Header
+            ////Header
+            var headerText = ws.Cells[1, 1];
+            headerText.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+
+            headerText.Value = "Success reports" + "\r\n" +
+                               $"Student: {report.FullName}\r\n" +
+                               $"Group: {report.GroupName}\r\n" +
+                               $"Course: {report.CourseName}\r\n";
+            headerText.Style.WrapText = true;
+            headerText.Style.Font.Size = 16;
+            headerText.Style.Font.Bold = true;
+
             var minHeaderWidth = report.Subjects.Count * 2 >= 6 ? report.Subjects.Count * 2 : 6;
             var headerCells = ws.Cells[1, 1, 1, minHeaderWidth];
-            ws.Cells[1, 1].Value = $"Success report for {report.FullName}, Group: {report.GroupName}, Course: {report.CourseName}";
             headerCells.Merge = true;
-            headerCells.AutoFitColumns();
-            ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-            ws.Row(1).Height = 50;
-            ws.Row(1).Style.Font.Bold = true;
-            ws.Row(1).Style.Font.Size = 18;
-            ws.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             headerCells.Style.Fill.SetBackground(Color.Wheat);
+            ws.Row(1).Height = 82;
 
             var subjectRow = 2;
             var subjectCol = 1;
+
+            for (int j=0, i = 2; j <= report.Subjects.Values.Count; j++)
+            {
+                ws.Cells[subjectRow, i++].Value = $"Topic {j + 1}";
+            }
+
+            var subjRow = subjectRow+1;
+        
             foreach (var subject in report.Subjects)
             {
-                ws.Cells[subjectRow, subjectCol].Value = subject.Key;
-                var subjectNameCells = ws.Cells[subjectRow, subjectCol, subjectRow, ++subjectCol];
-
-                subjectNameCells.Merge = true;
-                subjectNameCells.Style.Font.Bold = true;
-                subjectNameCells.Style.Font.Size = 15;
-                subjectNameCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                subjectNameCells.Style.Fill.SetBackground(Color.Green);
-                subjectNameCells.Style.Border.BorderAround(ExcelBorderStyle.Hair);
-
-                var topicRow = subjectRow + 1;
+                var subjCol = 1;
+                ws.Cells[subjRow, subjCol].Value = subject.Key;
+                subjCol++;
                 foreach (var topic in subject.Value)
                 {
-                    var topicCol = subjectCol - 1;
-                    var topicCells = ws.Cells[topicRow, topicCol];
-                    topicCells.Value = topic.TopicName;
-                    topicCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                    topicCells.Style.Fill.SetBackground(Color.Yellow);
-                    topicCells.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                    var gradeCells = ws.Cells[topicRow, ++topicCol];
-                    gradeCells.Value = topic.Grade is null ? "Not marked" : topic.Grade.Value;
-                    gradeCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                    topicRow++;
+                    ws.Cells[subjRow, subjCol++].Value = topic.Grade.Value;
                 }
-                subjectCol++;
+                subjRow++;
             }
-            
-            await package.SaveAsync();
+            return Response<(string fileName, byte[] data)>.GetSuccess((reportName, await package.GetAsByteArrayAsync()));
         }
     }
 }

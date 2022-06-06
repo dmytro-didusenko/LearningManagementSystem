@@ -28,10 +28,8 @@ namespace LearningManagementSystem.API.Controllers
         [HttpGet("Progress/{studentId}/Excel")]
         public async Task<IActionResult> GetReportForStudentExcel(Guid studentId)
         {
-            
-            await _reportService.GetReportForStudentInExcel(studentId);
-            return Ok();
-            
+            var res = await _reportService.GetReportForStudentInExcel(studentId);
+            return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
         }
 
     }

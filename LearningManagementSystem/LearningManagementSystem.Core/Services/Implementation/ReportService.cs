@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Drawing;
+﻿using System.Drawing;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models.Report;
@@ -106,7 +105,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             var subjectRow = 2;
             var subjectCol = 1;
-
             foreach (var subject in report.Subjects)
             {
                 ws.Cells[subjectRow, subjectCol].Value = subject.Key;
@@ -127,6 +125,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     topicCells.Value = topic.TopicName;
                     topicCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
                     topicCells.Style.Fill.SetBackground(Color.Yellow);
+                    topicCells.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
                     var gradeCells = ws.Cells[topicRow, ++topicCol];
                     gradeCells.Value = topic.Grade is null ? "Not marked" : topic.Grade.Value;
@@ -135,6 +134,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 }
                 subjectCol++;
             }
+            
             await package.SaveAsync();
         }
     }

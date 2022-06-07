@@ -82,44 +82,60 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             using var package = new ExcelPackage();
             var ws = package.Workbook.Worksheets.Add($"{report.FullName}_SuccessReport");
-            ws.DefaultColWidth = 25;
+            ws.Cells.AutoFitColumns();
 
             ////Header
-            var headerText = ws.Cells[1, 1];
-            headerText.Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+            var headerRow = 1;
+            ws.Cells[headerRow++, 1].Value = "Success report";
+            ws.Cells[headerRow, 1].Value = "Student:";
+            ws.Cells[headerRow++, 2].Value = report.FullName;
+            ws.Cells[headerRow, 1].Value = "Group:";
+            ws.Cells[headerRow++, 2].Value = report.GroupName;
+            ws.Cells[headerRow, 1].Value = "Course:";
+            ws.Cells[headerRow, 2].Value = report.CourseName;
 
-            headerText.Value = "Success reports" + "\r\n" +
-                               $"Student: {report.FullName}\r\n" +
-                               $"Group: {report.GroupName}\r\n" +
-                               $"Course: {report.CourseName}\r\n";
-            headerText.Style.WrapText = true;
-            headerText.Style.Font.Size = 16;
-            headerText.Style.Font.Bold = true;
+            var topicsCount = report.Subjects.Values.Max(s => s.Count());
 
-            var minHeaderWidth = report.Subjects.Count * 2 >= 6 ? report.Subjects.Count * 2 : 6;
-            var headerCells = ws.Cells[1, 1, 1, minHeaderWidth];
-            headerCells.Merge = true;
-            headerCells.Style.Fill.SetBackground(Color.Wheat);
-            ws.Row(1).Height = 82;
+            var headerCells = ws.Cells[1, 1, headerRow, topicsCount+1];
+            headerCells.Style.Font.Size = 15;
+            headerCells.Style.Font.Bold = true;
+            headerCells.AutoFitColumns();
+            headerCells.Style.Fill.SetBackground(Color.DodgerBlue);
 
-            var subjectRow = 2;
-            var subjectCol = 1;
+            var successRange = ws.Cells[1, 1, 1, topicsCount + 1];
+            successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 
-            for (int j=0, i = 2; j <= report.Subjects.Values.Count; j++)
+            var topicRow = headerRow+1;
+            var topicCol = 1;
+
+            for (int j = 0, i = 2; j < topicsCount; j++)
             {
-                ws.Cells[subjectRow, i++].Value = $"Topic {j + 1}";
+                var topicCells = ws.Cells[topicRow, i];
+                topicCells.Value = $"Topic {j + 1}";
+                topicCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                topicCells.Style.Fill.SetBackground(Color.Yellow);
+                topicCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                i++;
             }
 
-            var subjRow = subjectRow+1;
-        
+            var subjRow = topicRow + 1;
+            var table = ws.Cells[topicRow, 1, report.Subjects.Count + topicRow, topicsCount + 1];
+            table.Style.Border.BorderAround(ExcelBorderStyle.Thin);
             foreach (var subject in report.Subjects)
             {
                 var subjCol = 1;
-                ws.Cells[subjRow, subjCol].Value = subject.Key;
+                var subjectCell = ws.Cells[subjRow, subjCol];
+                subjectCell.Value = subject.Key;
+                subjectCell.AutoFitColumns();
+                subjectCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 subjCol++;
                 foreach (var topic in subject.Value)
                 {
-                    ws.Cells[subjRow, subjCol++].Value = topic.Grade.Value;
+                    var gradeCell = ws.Cells[subjRow, subjCol];
+                    gradeCell.Value = topic.Grade.Value;
+                    gradeCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
+                    gradeCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    subjCol++;
                 }
                 subjRow++;
             }

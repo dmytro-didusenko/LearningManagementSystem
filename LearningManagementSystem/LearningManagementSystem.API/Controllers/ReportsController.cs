@@ -29,6 +29,10 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> GetReportForStudentExcel(Guid studentId)
         {
             var res = await _reportService.GetReportForStudentInExcel(studentId);
+            if (res.Error is not null)
+            {
+                return BadRequest(res.Error.ErrorMessage);
+            }
             return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
         }
 

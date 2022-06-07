@@ -84,7 +84,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var ws = package.Workbook.Worksheets.Add($"{report.FullName}_SuccessReport");
             ws.Cells.AutoFitColumns();
 
-            ////Header
             var headerRow = 1;
             ws.Cells[headerRow++, 1].Value = "Success report";
             ws.Cells[headerRow, 1].Value = "Student:";
@@ -96,7 +95,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             var topicsCount = report.Subjects.Values.Max(s => s.Count());
 
-            var headerCells = ws.Cells[1, 1, headerRow, topicsCount+1];
+            var headerCells = ws.Cells[1, 1, headerRow, topicsCount + 1];
             headerCells.Style.Font.Size = 15;
             headerCells.Style.Font.Bold = true;
             headerCells.AutoFitColumns();
@@ -105,7 +104,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var successRange = ws.Cells[1, 1, 1, topicsCount + 1];
             successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 
-            var topicRow = headerRow+1;
+            var topicRow = headerRow + 1;
             var topicCol = 1;
 
             for (int j = 0, i = 2; j < topicsCount; j++)

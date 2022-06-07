@@ -45,15 +45,15 @@ namespace LearningManagementSystem.Domain.Contextes
 
             modelBuilder.Entity<Topic>()
                 .HasOne(o => o.HomeTask)
-                .WithOne(o=>o.Topic)
-                .HasForeignKey<HomeTask>(fk=>fk.TopicId);
+                .WithOne(o => o.Topic)
+                .HasForeignKey<HomeTask>(fk => fk.TopicId);
 
             modelBuilder.Entity<Grade>().HasKey(k => k.Id);
-                
+
             modelBuilder.Entity<Student>()
                 .HasOne(o => o.User)
                 .WithOne()
-                .HasForeignKey<Student>(fk=>fk.Id);
+                .HasForeignKey<Student>(fk => fk.Id);
 
             modelBuilder.Entity<Teacher>()
                 .HasOne(o => o.User)
@@ -70,8 +70,6 @@ namespace LearningManagementSystem.Domain.Contextes
                 .WithOne()
                 .HasForeignKey<StudentAnswer>(fk => fk.AnswerId)
                 .OnDelete(DeleteBehavior.ClientNoAction);
-
-            //modelBuilder.Seed();
         }
     }
 }

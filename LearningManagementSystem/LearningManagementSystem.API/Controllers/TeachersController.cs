@@ -37,12 +37,10 @@ namespace LearningManagementSystem.API.Controllers
             return NoContent();
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTeacherById(Guid id)
         {
             return Ok(await _teacherService.GetByIdAsync(id));
         }
     }
-
 }

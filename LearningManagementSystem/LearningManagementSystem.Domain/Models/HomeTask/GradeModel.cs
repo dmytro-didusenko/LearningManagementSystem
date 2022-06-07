@@ -1,6 +1,4 @@
-﻿using LearningManagementSystem.Domain.Entities;
-
-namespace LearningManagementSystem.Domain.Models.HomeTask
+﻿namespace LearningManagementSystem.Domain.Models.HomeTask
 {
     public class GradeModel
     {

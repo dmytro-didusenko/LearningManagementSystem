@@ -1,9 +1,6 @@
 ﻿using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Contextes;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Controllers
 {

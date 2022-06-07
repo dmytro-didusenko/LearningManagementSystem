@@ -1,10 +1,8 @@
-﻿
-namespace LearningManagementSystem.Core.Exceptions
+﻿namespace LearningManagementSystem.Core.Exceptions
 {
     public class BadRequestException : Exception
     {
         public BadRequestException() { }
-
-        public BadRequestException(string message): base(message) { }
+        public BadRequestException(string message) : base(message) { }
     }
 }

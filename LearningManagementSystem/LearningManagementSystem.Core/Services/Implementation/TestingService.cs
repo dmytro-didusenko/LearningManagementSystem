@@ -140,6 +140,5 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             return result;
         }
-
     }
 }

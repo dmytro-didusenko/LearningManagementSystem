@@ -1,7 +1,6 @@
 ﻿using LearningManagementSystem.Domain.Models.Subject;
 using Microsoft.AspNetCore.Http;
 
-
 namespace LearningManagementSystem.Domain.Models.Course
 {
     public class CourseModel

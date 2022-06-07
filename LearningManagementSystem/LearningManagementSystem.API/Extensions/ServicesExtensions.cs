@@ -18,6 +18,7 @@ namespace LearningManagementSystem.API.Extensions
 
             return services;
         }
+
         public static IServiceCollection ConfigAutoMapper(this IServiceCollection services)
         {
             var mappperCfg = new MapperConfiguration(c =>
@@ -34,7 +35,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped<IStudentService, StudentService>();
-            services.AddScoped<IGroupService, GroupService>(); 
+            services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IFileHelper, FileHelper>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ISubjectService, SubjectService>();

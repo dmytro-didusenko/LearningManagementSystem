@@ -1,7 +1,6 @@
 ﻿using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Group;
-using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -42,6 +41,5 @@ namespace LearningManagementSystem.API.Controllers
             await _groupService.UpdateAsync(id, model);
             return NoContent();
         }
-
     }
 }

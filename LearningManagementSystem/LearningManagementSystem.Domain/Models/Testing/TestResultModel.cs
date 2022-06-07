@@ -1,5 +1,4 @@
-﻿
-namespace LearningManagementSystem.Domain.Models.Testing
+﻿namespace LearningManagementSystem.Domain.Models.Testing
 {
     public class TestResultModel
     {

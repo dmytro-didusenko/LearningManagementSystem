@@ -42,6 +42,5 @@ namespace LearningManagementSystem.API.Controllers
             await _managementService.AddTeacherToSubject(teacherId, subjectId);
             return Ok();
         }
-
     }
 }

@@ -9,7 +9,6 @@
         public Dictionary<string, IEnumerable<TopicInfoModel>>? Subjects { get; set; } = null!;
         public DateTime ReportCreatedTime { get; set; }
     }
-
     public class TopicInfoModel
     {
         public string TopicName { get; set; } = string.Empty;

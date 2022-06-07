@@ -8,5 +8,4 @@
         public string Content { get; set; } = string.Empty;
         public DateTime DateOfCreation { get; set; }
     }
-    
 }

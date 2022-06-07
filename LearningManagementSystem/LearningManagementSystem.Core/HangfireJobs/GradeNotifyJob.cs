@@ -17,7 +17,6 @@ namespace LearningManagementSystem.Core.HangfireJobs
 
         public async Task SendNotification(Guid studentId)
         {
-            await Task.Delay(3000);
             var student = _context.Users.FirstOrDefault(f => f.Id.Equals(studentId));
             if (student == null)
                 await _publisher.Publish(new ApiMessage()

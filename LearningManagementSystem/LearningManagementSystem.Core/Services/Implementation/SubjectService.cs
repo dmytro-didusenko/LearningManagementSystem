@@ -4,7 +4,6 @@ using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models.Responses;
 using LearningManagementSystem.Domain.Models.Subject;
-using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

@@ -7,6 +7,5 @@
         public string? LastName { get; set; }
         public DateTime? BirthdayGreaterThan { get; set; }
         public DateTime? BirthdayLessThan { get; set; }
-
     }
 }

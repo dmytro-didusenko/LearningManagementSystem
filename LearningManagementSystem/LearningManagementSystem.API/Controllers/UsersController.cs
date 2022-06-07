@@ -35,7 +35,6 @@ namespace LearningManagementSystem.API.Controllers
             return res.ToActionResult();
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(Guid id)
         {

@@ -7,5 +7,6 @@ namespace LearningManagementSystem.Core.Services.Interfaces
     {
         public Task<Response<StudentReportModel>> GetReportForStudentAsync(Guid studentId);
         public Task<Response<(string fileName, byte[] data)>> GetReportForStudentInExcel(Guid studentId);
+        public GroupReportModel GetReportForGroup(Guid groupId);
     }
 }

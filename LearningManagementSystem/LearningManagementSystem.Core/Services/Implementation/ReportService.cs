@@ -49,9 +49,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             report.Subjects = _context.TaskAnswers
                 .Include(i => i.Grade)?
-                .Include(i => i.HomeTask)?
-                .ThenInclude(t => t.Topic)?
-                .ThenInclude(t => t.Subject)
+                .Include(i => i.HomeTask)
+                .ThenInclude(t => t.Topic)
+                .ThenInclude(t => t.Subject)?
                 .Where(w => w.StudentId.Equals(studentId))
                 .ToList()
                 .GroupBy(g => g.HomeTask.Topic.Subject.Name)
@@ -139,6 +139,37 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 subjRow++;
             }
             return Response<(string fileName, byte[] data)>.GetSuccess((reportName, await package.GetAsByteArrayAsync()));
+        }
+
+        public GroupReportModel GetReportForGroup(Guid groupId)
+        {
+            var groupInfo = _context.Groups
+                .Include(i => i.Course)
+                .FirstOrDefault(f => f.Id.Equals(groupId));
+
+            var report = new GroupReportModel()
+            {
+                GroupName = groupInfo.Name,
+                CourseName = groupInfo.Course.Name
+            };
+
+            report.Subjects = _context.TaskAnswers
+                .Include(i => i.Grade)
+                .Include(i => i.Student)
+                .ThenInclude(t => t.User)
+                .Include(i => i.HomeTask)
+                .ThenInclude(th => th.Topic)
+                .ThenInclude(th => th.Subject)
+                .Where(w => w.Student.GroupId.Equals(groupId))
+                .ToList()
+                .GroupBy(g => g.HomeTask.Topic.Subject.Name)
+                .ToDictionary(k => k.Key, v =>
+                    v.GroupBy(g => g.HomeTask.Topic.Name)
+                        .ToDictionary(k => k.Key, v =>
+                              v.ToDictionary(k => k.Student.User.UserName, v => v.Grade?.Value)));
+
+
+            return report;
         }
     }
 }

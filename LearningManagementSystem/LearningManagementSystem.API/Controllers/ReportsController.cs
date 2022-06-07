@@ -33,5 +33,10 @@ namespace LearningManagementSystem.API.Controllers
             return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
         }
 
+        [HttpGet("Group/{groupId}")]
+        public IActionResult GetGroupReport(Guid groupId)
+        {
+            return Ok(_reportService.GetReportForGroup(groupId));
+        }
     }
 }

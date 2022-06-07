@@ -37,14 +37,14 @@ builder.Services.AddMassTransit(cfg =>
     });
 });
 //Adding Quartz
-builder.Services.AddQuartz(cfg =>
-{
-    cfg.UseMicrosoftDependencyInjectionJobFactory();
-    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
-    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
+//builder.Services.AddQuartz(cfg =>
+//{
+//    cfg.UseMicrosoftDependencyInjectionJobFactory();
+//    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
+//    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
 
-});
-builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
+//});
+//builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
@@ -55,7 +55,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ErrorHandlerMiddleware>();
+//app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

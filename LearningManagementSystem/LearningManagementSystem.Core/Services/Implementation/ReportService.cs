@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.Data;
+using System.Drawing;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models.Report;
 using LearningManagementSystem.Domain.Models.Responses;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
@@ -31,12 +33,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (student is null)
             {
-                return Response<StudentReportModel>.GetError(ErrorCode.NotFound, $"Student with id: {studentId} not found");
+                return Response<StudentReportModel>.GetError(ErrorCode.NotFound,
+                    $"Student with id: {studentId} not found");
             }
 
             if (student.Group is null || student.Group.Course is null)
             {
-                return Response<StudentReportModel>.GetError(ErrorCode.BadRequest, "Student is not yet assigned to any group/course");
+                return Response<StudentReportModel>.GetError(ErrorCode.BadRequest,
+                    "Student is not yet assigned to any group/course");
             }
 
             var report = new StudentReportModel
@@ -72,7 +76,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var response = await GetReportForStudentAsync(studentId);
             if (response.Error is not null)
             {
-                return Response<(string fileName, byte[] data)>.GetError(response.Error.ErrorCode, response.Error.ErrorMessage);
+                return Response<(string fileName, byte[] data)>.GetError(response.Error.ErrorCode,
+                    response.Error.ErrorMessage);
             }
 
             var report = response.Data!;
@@ -136,38 +141,61 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     gradeCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                     subjCol++;
                 }
+
                 subjRow++;
             }
-            return Response<(string fileName, byte[] data)>.GetSuccess((reportName, await package.GetAsByteArrayAsync()));
+
+            return Response<(string fileName, byte[] data)>.GetSuccess(
+                (reportName, await package.GetAsByteArrayAsync()));
         }
+
 
         public GroupReportModel GetReportForGroup(Guid groupId)
         {
-            var groupInfo = _context.Groups
-                .Include(i => i.Course)
-                .FirstOrDefault(f => f.Id.Equals(groupId));
+            using var command = _context.Database.GetDbConnection().CreateCommand();
+            string query = $"SELECT [g].[Name] AS 'Group', [c].[Name] AS 'Course', [sb].[Name] AS 'Subject'," +
+                           $"[t].[Name] AS 'Topic', CONCAT([u].[FirstName], ' ', [u].[LastName]) AS 'Student', [gr].[Value] AS 'Grade'" +
+                           $"FROM [dbo].[Groups] AS [g]" +
+                           $"JOIN [dbo].[Courses] AS [c] ON [c].[Id] = [g].[CourseId]" +
+                           $"JOIN [dbo].[CourseSubject] AS [cs] ON [cs].[CoursesId] = [c].[Id]" +
+                           $"JOIN [dbo].[Subjects] AS [sb] ON [sb].[Id] = [cs].[SubjectsId]" +
+                           $"JOIN [dbo].[Topics] AS [t] ON [t].[SubjectId] = [sb].[Id]" +
+                           $"JOIN [dbo].[Students] AS [s] ON [s].[GroupId] = [g].[Id]" +
+                           $"JOIN [dbo].[Users] AS [u] ON [u].[Id] = [s].[Id]" +
+                           $"JOIN [dbo].[HomeTasks] AS [ht] ON [ht].[TopicId] = [t].[Id]" +
+                           $"LEFT JOIN [dbo].[TaskAnswers] AS [ta] ON [ta].[HomeTaskId] = [ht].[TopicId] AND [ta].[StudentId] = [s].[Id]" +
+                           $"LEFT JOIN [dbo].[Grades] AS [gr] ON [gr].[Id] = [ta].[Id]" +
+                           $"WHERE [g].[Id] = '{groupId}'";
+      
+            command.CommandText = query;
+            command.CommandType = CommandType.Text;
+         
+            _context.Database.OpenConnection();
 
+            using var result = command.ExecuteReader();
+            var queryResult = new List<ReportQueryModel>();
+            while (result.Read())
+            {
+               queryResult.Add(new ReportQueryModel()
+               {
+                   Group = result.GetString("Group"),
+                   Course = result.GetString("Course"),
+                   Subject = result.GetString("Subject"),
+                   Topic = result.GetString("Topic"),
+                   Student = result.GetString("Student"),
+                   Grade =  result.GetValue("Grade").ToString()
+               });
+            }
             var report = new GroupReportModel()
             {
-                GroupName = groupInfo.Name,
-                CourseName = groupInfo.Course.Name
+                GroupName = queryResult.FirstOrDefault().Group,
+                CourseName = queryResult.FirstOrDefault().Course
             };
 
-            report.Subjects = _context.TaskAnswers
-                .Include(i => i.Grade)
-                .Include(i => i.Student)
-                .ThenInclude(t => t.User)
-                .Include(i => i.HomeTask)
-                .ThenInclude(th => th.Topic)
-                .ThenInclude(th => th.Subject)
-                .Where(w => w.Student.GroupId.Equals(groupId))
-                .ToList()
-                .GroupBy(g => g.HomeTask.Topic.Subject.Name)
-                .ToDictionary(k => k.Key, v =>
-                    v.GroupBy(g => g.HomeTask.Topic.Name)
-                        .ToDictionary(k => k.Key, v =>
-                              v.ToDictionary(k => k.Student.User.UserName, v => v.Grade?.Value)));
-
+            report.Subjects = queryResult.GroupBy(g => g.Subject)
+                .ToDictionary(k => k.Key, v => v.GroupBy(g => g.Topic)
+                    .ToDictionary(k => k.Key,
+                        v => v.ToDictionary(k => k.Student, v => v.Grade)));
 
             return report;
         }

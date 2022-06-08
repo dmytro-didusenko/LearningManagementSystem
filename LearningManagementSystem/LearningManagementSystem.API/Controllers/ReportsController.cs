@@ -1,6 +1,10 @@
-﻿using LearningManagementSystem.API.Extensions;
+﻿using System.Linq;
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Domain.Contextes;
+using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -38,5 +42,7 @@ namespace LearningManagementSystem.API.Controllers
         {
             return Ok(_reportService.GetReportForGroup(groupId));
         }
+
+
     }
 }

@@ -38,9 +38,10 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet("Group/{groupId}")]
-        public IActionResult GetGroupReport(Guid groupId)
+        public async Task<IActionResult> GetGroupReport(Guid groupId)
         {
-            return Ok(_reportService.GetReportForGroup(groupId));
+            var res = await _reportService.GetReportForGroup(groupId);
+            return  res.ToActionResult();
         }
 
 

@@ -150,7 +150,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         }
 
 
-        public GroupReportModel GetReportForGroup(Guid groupId)
+        public async Task<Response<GroupReportModel>> GetReportForGroup(Guid groupId)
         {
             using var command = _context.Database.GetDbConnection().CreateCommand();
             string query = $"SELECT [g].[Name] AS 'Group', [c].[Name] AS 'Course', [sb].[Name] AS 'Subject'," +
@@ -170,11 +170,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
             command.CommandText = query;
             command.CommandType = CommandType.Text;
          
-            _context.Database.OpenConnection();
+            await _context.Database.OpenConnectionAsync();
 
-            using var result = command.ExecuteReader();
+            using var result = await command.ExecuteReaderAsync();
             var queryResult = new List<ReportQueryModel>();
-            while (result.Read())
+            while (await result.ReadAsync())
             {
                queryResult.Add(new ReportQueryModel()
                {
@@ -197,7 +197,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     .ToDictionary(k => k.Key,
                         v => v.ToDictionary(k => k.Student, v => v.Grade)));
 
-            return report;
+            return Response<GroupReportModel>.GetSuccess(report);
         }
     }
 }

@@ -1,10 +1,6 @@
-﻿using System.Linq;
-using LearningManagementSystem.API.Extensions;
+﻿using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Contextes;
-using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -44,6 +40,15 @@ namespace LearningManagementSystem.API.Controllers
             return  res.ToActionResult();
         }
 
-
+        [HttpGet("Progress/Group/{groupId}/Excel")]
+        public async Task<IActionResult> GetReportForGroupExcel(Guid groupId)
+        {
+            var res = await _reportService.GetReportForGroupInExcel(groupId);
+            if (res.Error is not null)
+            {
+                return BadRequest(res.Error.ErrorMessage);
+            }
+            return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
+        }
     }
 }

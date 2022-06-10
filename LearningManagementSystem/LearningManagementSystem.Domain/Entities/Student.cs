@@ -7,5 +7,6 @@
         public Guid? GroupId { get; set; }
         public Group? Group { get; set; }
         public string ContractNumber { get; set; } = string.Empty;
+        public ICollection<TaskAnswer> TaskAnswers { get; set; }
     }
 }

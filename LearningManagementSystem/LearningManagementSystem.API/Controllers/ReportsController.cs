@@ -33,5 +33,22 @@ namespace LearningManagementSystem.API.Controllers
             return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
         }
 
+        [HttpGet("Group/{groupId}")]
+        public async Task<IActionResult> GetGroupReport(Guid groupId)
+        {
+            var res = await _reportService.GetReportForGroup(groupId);
+            return  res.ToActionResult();
+        }
+
+        [HttpGet("Progress/Group/{groupId}/Excel")]
+        public async Task<IActionResult> GetReportForGroupExcel(Guid groupId)
+        {
+            var res = await _reportService.GetReportForGroupInExcel(groupId);
+            if (res.Error is not null)
+            {
+                return BadRequest(res.Error.ErrorMessage);
+            }
+            return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
+        }
     }
 }

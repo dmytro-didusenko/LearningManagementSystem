@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.Domain.Entities;
+using LearningManagementSystem.Domain.Extensions;
 using LearningManagementSystem.Domain.Models.Course;
 using LearningManagementSystem.Domain.Models.Group;
 using LearningManagementSystem.Domain.Models.HomeTask;
+using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Models.Subject;
 using LearningManagementSystem.Domain.Models.Testing;
 using LearningManagementSystem.Domain.Models.Topic;
@@ -20,6 +22,22 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<Group, GroupModel>().ReverseMap();
             CreateMap<Document, DocumentModel>().ReverseMap();
             CreateMap<TaskAnswer, TaskAnswerModel>().ReverseMap();
+
+            var splitter = ":";
+            CreateMap<VisitingReportOptions, VisitingReportModel>()
+                .ForMember(m => m.CourseCell, opt =>
+                    opt.MapFrom(f => f.CourseCell.ToTuple(splitter)))
+                .ForMember(m => m.GroupCell, opt =>
+                    opt.MapFrom(f => f.GroupCell.ToTuple(splitter)))
+                .ForMember(m => m.DateCell, opt =>
+                    opt.MapFrom(f => f.DateCell.ToTuple(splitter)))
+                .ForMember(m => m.StudentsStartCell, opt =>
+                    opt.MapFrom(f => f.StudentsStartCell.ToTuple(splitter)))
+                .ForMember(m => m.SubjectCell, opt =>
+                    opt.MapFrom(f => f.SubjectCell.ToTuple(splitter)))
+                .ForMember(m => m.TopicsStartCell, opt =>
+                    opt.MapFrom(f => f.TopicsStartCell.ToTuple(splitter)));
+
 
             CreateMap<StudentAnswer, StudentAnswerModel>().ReverseMap();
 

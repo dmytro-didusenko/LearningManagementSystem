@@ -1,11 +1,15 @@
 ﻿using System.Data;
 using System.Drawing;
+using AutoMapper;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
+using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Models.Report;
 using LearningManagementSystem.Domain.Models.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
@@ -15,11 +19,16 @@ namespace LearningManagementSystem.Core.Services.Implementation
     {
         private readonly AppDbContext _context;
         private readonly ILogger<ReportService> _logger;
+        private readonly IMapper _mapper;
+        private readonly VisitingReportModel visitingReportModel;
 
-        public ReportService(AppDbContext context, ILogger<ReportService> logger)
+        public ReportService(AppDbContext context, ILogger<ReportService> logger,
+            IMapper mapper, IOptions<VisitingReportOptions> visitingReportOptions)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
+            visitingReportModel = _mapper.Map<VisitingReportModel>(visitingReportOptions.Value);
         }
 
         public async Task<Response<StudentReportModel>> GetReportForStudentAsync(Guid studentId)
@@ -63,7 +72,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     TopicName = s.HomeTask.Topic.Name,
                     Grade = s.Grade?.Value
                 }).AsEnumerable());
-
 
             report.ReportCreatedTime = DateTime.Now;
 
@@ -196,6 +204,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     .ToDictionary(k => k.Key,
                         v => v.ToDictionary(k => k.Student, v => v.Grade)));
 
+
             report.ReportCreatedTime = DateTime.Now;
             return Response<GroupReportModel>.GetSuccess(report);
         }
@@ -217,12 +226,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
             using var package = new ExcelPackage();
 
             var subjects = report.Subjects;
-           
+
             foreach (var subject in subjects)
             {
                 var ws = package.Workbook.Worksheets.Add($"{subject.Key.Replace(" ", "_")}");
                 ws.Cells.AutoFitColumns();
-          
+
                 //Header
                 var headerRow = 1;
                 ws.Cells[headerRow++, 1].Value = "Success report";
@@ -312,6 +321,27 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             return Response<(string fileName, byte[] data)>.GetSuccess(
                 (reportName, await package.GetAsByteArrayAsync()));
+        }
+
+        public async Task<Response<VisitingReport>> GetVisitingFromExcel(IFormFile visitingReport)
+        {
+            if (!visitingReport.FileName.EndsWith(".xlsx"))
+            {
+                return Response<VisitingReport>.GetError(ErrorCode.BadRequest, "File should be .xlsx type");
+            }
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using var package = new ExcelPackage();
+            await package.LoadAsync(visitingReport.OpenReadStream());
+
+
+            foreach (var ws in package.Workbook.Worksheets)
+            {
+               
+            }
+
+            return Response<VisitingReport>.GetSuccess(new VisitingReport());
         }
     }
 }

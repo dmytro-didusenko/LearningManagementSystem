@@ -1,6 +1,10 @@
-﻿using LearningManagementSystem.API.Extensions;
+﻿using AutoMapper;
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Domain.Extensions;
+using LearningManagementSystem.Domain.Models.Options;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -50,5 +54,13 @@ namespace LearningManagementSystem.API.Controllers
             }
             return File(res.Data.data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", res.Data.fileName);
         }
+
+        [HttpPost("Visiting")]
+        public async Task<IActionResult> GetVisitingFromExcel(IFormFile visitingReport)
+        {
+            var res = await _reportService.GetVisitingFromExcel(visitingReport);
+            return res.ToActionResult();
+        }
+
     }
 }

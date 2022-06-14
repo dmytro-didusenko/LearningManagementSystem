@@ -173,7 +173,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Database.OpenConnectionAsync();
 
             using var result = await command.ExecuteReaderAsync();
+            if (!result.HasRows)
+            {
+                return Response<GroupReportModel>.GetError(ErrorCode.BadRequest, "There are no data!");
+            }
             var queryResult = new List<ReportQueryModel>();
+            
             while (await result.ReadAsync())
             {
                 queryResult.Add(new ReportQueryModel()

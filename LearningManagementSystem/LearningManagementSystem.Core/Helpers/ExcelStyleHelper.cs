@@ -46,12 +46,6 @@ namespace LearningManagementSystem.Core.Helpers
                 }
             }
         }
-
-        //TODO: implement
-        public static void AddStyles(ExcelPackage cells, SuccessReportStyles style)
-        {
-
-        }
     }
 
     public enum SuccessReportStyles

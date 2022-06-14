@@ -1,6 +1,6 @@
 ﻿using System.Data;
-using System.Drawing;
 using AutoMapper;
+using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Models.Options;
@@ -108,10 +108,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var topicsCount = report.Subjects.Values.Max(s => s.Count());
 
             var headerCells = ws.Cells[1, 1, headerRow, topicsCount + 1];
-            headerCells.Style.Font.Size = 15;
-            headerCells.Style.Font.Bold = true;
-            headerCells.AutoFitColumns();
-            headerCells.Style.Fill.SetBackground(Color.DodgerBlue);
+            ExcelStyleHelper.AddStyles(headerCells, new List<SuccessReportStyles>() { SuccessReportStyles.HeaderStyling });
 
             var successRange = ws.Cells[1, 1, 1, topicsCount + 1];
             successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
@@ -123,9 +120,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 var topicCells = ws.Cells[topicRow, i];
                 topicCells.Value = $"Topic {j + 1}";
-                topicCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                topicCells.Style.Fill.SetBackground(Color.Yellow);
-                topicCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                ExcelStyleHelper.AddStyles(topicCells, new List<SuccessReportStyles>() { SuccessReportStyles.TopicStyling });
                 i++;
             }
 
@@ -144,11 +139,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 {
                     var gradeCell = ws.Cells[subjRow, subjCol];
                     gradeCell.Value = topic.Grade.Value;
-                    gradeCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                    gradeCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    ExcelStyleHelper.AddStyles(gradeCell, new List<SuccessReportStyles>() { SuccessReportStyles.CenteringAndBorderThinStyling });
                     subjCol++;
                 }
-
                 subjRow++;
             }
 
@@ -238,18 +231,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 ws.Cells[headerRow, 1].Value = "Group:";
                 var collToFit = ws.Cells[headerRow++, 2];
                 collToFit.Value = report.GroupName;
-
                 ws.Cells[headerRow, 1].Value = "Course:";
                 ws.Cells[headerRow, 2].Value = report.CourseName;
 
                 var topicsCount = subject.Value.Count;
 
                 var headerCells = ws.Cells[1, 1, headerRow, topicsCount + 1];
-                headerCells.Style.Font.Size = 15;
-                headerCells.Style.Font.Bold = true;
-                headerCells.Style.Font.Color.SetColor(Color.White);
-                headerCells.AutoFitColumns();
-                headerCells.Style.Fill.SetBackground(Color.DodgerBlue);
+                ExcelStyleHelper.AddStyles(headerCells, new List<SuccessReportStyles>() { SuccessReportStyles.HeaderStyling });
+
                 var successRange = ws.Cells[1, 1, 1, topicsCount + 1];
                 successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 
@@ -280,16 +269,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 //Subject
                 var subjectNameCell = ws.Cells[subjectRow, subjectCol];
                 subjectNameCell.Value = subject.Key;
-                subjectNameCell.Style.Font.Bold = true;
-                subjectNameCell.Style.Font.Size = 13;
-
-                subjectNameCell.Style.Fill.SetBackground(Color.MediumSeaGreen);
-                subjectNameCell.AutoFitColumns();
-                subjectNameCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
                 var cellToMerge = subjectCol + subject.Value.Count - 1;
                 var subjectCells = ws.Cells[subjectRow, subjectCol, subjectRow, cellToMerge];
-                subjectCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 subjectCells.Merge = true;
+                ExcelStyleHelper.AddStyles(subjectCells, new List<SuccessReportStyles>() { SuccessReportStyles.SubjectStyling });
+
 
                 //Topics
                 foreach (var topic in subject.Value)
@@ -298,10 +282,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     var topicCol = subjectCol;
                     var topicCells = ws.Cells[topicRow, subjectCol];
                     topicCells.Value = topic.Key;
-                    topicCells.AutoFitColumns();
-                    topicCells.Style.Fill.SetBackground(Color.PaleGreen);
-                    topicCells.Style.Font.Italic = true;
-                    topicCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    ExcelStyleHelper.AddStyles(topicCells, new List<SuccessReportStyles>() { SuccessReportStyles.TopicStyling });
 
                     var gradeRow = topicRow + 1;
                     foreach (var grade in topic.Value)
@@ -309,9 +290,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                         var gradeCol = topicCol;
                         var gradeCell = ws.Cells[gradeRow++, gradeCol++];
                         gradeCell.Value = grade.Value == string.Empty ? "X" : grade.Value;
-                        gradeCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                        gradeCell.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        gradeCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        ExcelStyleHelper.AddStyles(gradeCell, new List<SuccessReportStyles>() { SuccessReportStyles.CenteringAndBorderThinStyling });
                     }
 
                     subjectCol++;

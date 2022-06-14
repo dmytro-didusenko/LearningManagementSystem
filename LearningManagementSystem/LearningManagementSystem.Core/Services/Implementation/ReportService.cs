@@ -20,7 +20,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         private readonly AppDbContext _context;
         private readonly ILogger<ReportService> _logger;
         private readonly IMapper _mapper;
-        private readonly VisitingReportModel visitingReportModel;
+        private readonly VisitingReportModel vrModel;
 
         public ReportService(AppDbContext context, ILogger<ReportService> logger,
             IMapper mapper, IOptions<VisitingReportOptions> visitingReportOptions)
@@ -28,7 +28,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _context = context;
             _logger = logger;
             _mapper = mapper;
-            visitingReportModel = _mapper.Map<VisitingReportModel>(visitingReportOptions.Value);
+            vrModel = _mapper.Map<VisitingReportModel>(visitingReportOptions.Value);
         }
 
         public async Task<Response<StudentReportModel>> GetReportForStudentAsync(Guid studentId)
@@ -335,13 +335,44 @@ namespace LearningManagementSystem.Core.Services.Implementation
             using var package = new ExcelPackage();
             await package.LoadAsync(visitingReport.OpenReadStream());
 
+            var result = new VisitingReport();
+
+            var wsFirst = package.Workbook.Worksheets.FirstOrDefault();
+            if (wsFirst is null)
+            {
+                return Response<VisitingReport>.GetError(ErrorCode.BadRequest, "Report does not contains any WorkSheets");
+            }
+
+            result.GroupName = wsFirst.Cells[vrModel.GroupCell.row, vrModel.GroupCell.col].Value?.ToString();
+            result.CourseName = wsFirst.Cells[vrModel.CourseCell.row, vrModel.CourseCell.col].Value?.ToString();
+            result.ReportCreatedTime = DateTime.Parse(wsFirst.Cells[vrModel.DateCell.row, vrModel.DateCell.col].Value?.ToString());
 
             foreach (var ws in package.Workbook.Worksheets)
             {
-               
+                var subjectName = ws.Cells[vrModel.SubjectCell.row, vrModel.SubjectCell.col].Value?.ToString();
+
+                var endCol = ws.Dimension.Columns;
+                var endRow = ws.Dimension.Rows;
+                var topicsDict = new Dictionary<string, Dictionary<string, string>>();
+                for (int i = vrModel.TopicsStartCell.col; i <= endCol; i++)
+                {
+                    var topic = ws.Cells[vrModel.TopicsStartCell.row, i].Value?.ToString();
+
+                    var gradeCol = i;
+                    var studRow = vrModel.StudentsStartCell.row;
+                    var gradesDict = new Dictionary<string, string>();
+                    for (int j = vrModel.StudentsStartCell.row; j <= endRow; j++)
+                    {
+                        var student = ws.Cells[j, vrModel.StudentsStartCell.col].Value?.ToString();
+                        var grade = ws.Cells[j, gradeCol].Value?.ToString();
+                        gradesDict.Add(student, grade);
+                    }
+                    topicsDict.Add(topic, gradesDict);
+                }
+                result.Subjects.Add(subjectName, topicsDict);
             }
 
-            return Response<VisitingReport>.GetSuccess(new VisitingReport());
+            return Response<VisitingReport>.GetSuccess(result);
         }
     }
 }

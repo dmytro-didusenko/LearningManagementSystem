@@ -1,11 +1,15 @@
 ﻿using System.Data;
-using System.Drawing;
+using AutoMapper;
+using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
+using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Models.Report;
 using LearningManagementSystem.Domain.Models.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
@@ -15,11 +19,16 @@ namespace LearningManagementSystem.Core.Services.Implementation
     {
         private readonly AppDbContext _context;
         private readonly ILogger<ReportService> _logger;
+        private readonly IMapper _mapper;
+        private readonly VisitingReportModel vrModel;
 
-        public ReportService(AppDbContext context, ILogger<ReportService> logger)
+        public ReportService(AppDbContext context, ILogger<ReportService> logger,
+            IMapper mapper, IOptions<VisitingReportOptions> visitingReportOptions)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
+            vrModel = _mapper.Map<VisitingReportModel>(visitingReportOptions.Value);
         }
 
         public async Task<Response<StudentReportModel>> GetReportForStudentAsync(Guid studentId)
@@ -64,7 +73,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     Grade = s.Grade?.Value
                 }).AsEnumerable());
 
-
             report.ReportCreatedTime = DateTime.Now;
 
             return Response<StudentReportModel>.GetSuccess(report);
@@ -100,10 +108,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var topicsCount = report.Subjects.Values.Max(s => s.Count());
 
             var headerCells = ws.Cells[1, 1, headerRow, topicsCount + 1];
-            headerCells.Style.Font.Size = 15;
-            headerCells.Style.Font.Bold = true;
-            headerCells.AutoFitColumns();
-            headerCells.Style.Fill.SetBackground(Color.DodgerBlue);
+            ExcelStyleHelper.AddStyles(headerCells, new List<SuccessReportStyles>() { SuccessReportStyles.HeaderStyling });
 
             var successRange = ws.Cells[1, 1, 1, topicsCount + 1];
             successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
@@ -115,9 +120,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 var topicCells = ws.Cells[topicRow, i];
                 topicCells.Value = $"Topic {j + 1}";
-                topicCells.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                topicCells.Style.Fill.SetBackground(Color.Yellow);
-                topicCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                ExcelStyleHelper.AddStyles(topicCells, new List<SuccessReportStyles>() { SuccessReportStyles.TopicStyling });
                 i++;
             }
 
@@ -136,11 +139,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 {
                     var gradeCell = ws.Cells[subjRow, subjCol];
                     gradeCell.Value = topic.Grade.Value;
-                    gradeCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                    gradeCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    ExcelStyleHelper.AddStyles(gradeCell, new List<SuccessReportStyles>() { SuccessReportStyles.CenteringAndBorderThinStyling });
                     subjCol++;
                 }
-
                 subjRow++;
             }
 
@@ -172,7 +173,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.Database.OpenConnectionAsync();
 
             using var result = await command.ExecuteReaderAsync();
+            if (!result.HasRows)
+            {
+                return Response<GroupReportModel>.GetError(ErrorCode.BadRequest, "There are no data!");
+            }
             var queryResult = new List<ReportQueryModel>();
+            
             while (await result.ReadAsync())
             {
                 queryResult.Add(new ReportQueryModel()
@@ -196,6 +202,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     .ToDictionary(k => k.Key,
                         v => v.ToDictionary(k => k.Student, v => v.Grade)));
 
+
             report.ReportCreatedTime = DateTime.Now;
             return Response<GroupReportModel>.GetSuccess(report);
         }
@@ -217,30 +224,26 @@ namespace LearningManagementSystem.Core.Services.Implementation
             using var package = new ExcelPackage();
 
             var subjects = report.Subjects;
-           
+
             foreach (var subject in subjects)
             {
                 var ws = package.Workbook.Worksheets.Add($"{subject.Key.Replace(" ", "_")}");
                 ws.Cells.AutoFitColumns();
-          
+
                 //Header
                 var headerRow = 1;
                 ws.Cells[headerRow++, 1].Value = "Success report";
                 ws.Cells[headerRow, 1].Value = "Group:";
                 var collToFit = ws.Cells[headerRow++, 2];
                 collToFit.Value = report.GroupName;
-
                 ws.Cells[headerRow, 1].Value = "Course:";
                 ws.Cells[headerRow, 2].Value = report.CourseName;
 
                 var topicsCount = subject.Value.Count;
 
                 var headerCells = ws.Cells[1, 1, headerRow, topicsCount + 1];
-                headerCells.Style.Font.Size = 15;
-                headerCells.Style.Font.Bold = true;
-                headerCells.Style.Font.Color.SetColor(Color.White);
-                headerCells.AutoFitColumns();
-                headerCells.Style.Fill.SetBackground(Color.DodgerBlue);
+                ExcelStyleHelper.AddStyles(headerCells, new List<SuccessReportStyles>() { SuccessReportStyles.HeaderStyling });
+
                 var successRange = ws.Cells[1, 1, 1, topicsCount + 1];
                 successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 
@@ -271,16 +274,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 //Subject
                 var subjectNameCell = ws.Cells[subjectRow, subjectCol];
                 subjectNameCell.Value = subject.Key;
-                subjectNameCell.Style.Font.Bold = true;
-                subjectNameCell.Style.Font.Size = 13;
-
-                subjectNameCell.Style.Fill.SetBackground(Color.MediumSeaGreen);
-                subjectNameCell.AutoFitColumns();
-                subjectNameCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
                 var cellToMerge = subjectCol + subject.Value.Count - 1;
                 var subjectCells = ws.Cells[subjectRow, subjectCol, subjectRow, cellToMerge];
-                subjectCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 subjectCells.Merge = true;
+                ExcelStyleHelper.AddStyles(subjectCells, new List<SuccessReportStyles>() { SuccessReportStyles.SubjectStyling });
+
 
                 //Topics
                 foreach (var topic in subject.Value)
@@ -289,10 +287,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     var topicCol = subjectCol;
                     var topicCells = ws.Cells[topicRow, subjectCol];
                     topicCells.Value = topic.Key;
-                    topicCells.AutoFitColumns();
-                    topicCells.Style.Fill.SetBackground(Color.PaleGreen);
-                    topicCells.Style.Font.Italic = true;
-                    topicCells.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    ExcelStyleHelper.AddStyles(topicCells, new List<SuccessReportStyles>() { SuccessReportStyles.TopicStyling });
 
                     var gradeRow = topicRow + 1;
                     foreach (var grade in topic.Value)
@@ -300,9 +295,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                         var gradeCol = topicCol;
                         var gradeCell = ws.Cells[gradeRow++, gradeCol++];
                         gradeCell.Value = grade.Value == string.Empty ? "X" : grade.Value;
-                        gradeCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                        gradeCell.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        gradeCell.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        ExcelStyleHelper.AddStyles(gradeCell, new List<SuccessReportStyles>() { SuccessReportStyles.CenteringAndBorderThinStyling });
                     }
 
                     subjectCol++;
@@ -312,6 +305,58 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             return Response<(string fileName, byte[] data)>.GetSuccess(
                 (reportName, await package.GetAsByteArrayAsync()));
+        }
+
+        public async Task<Response<VisitingReport>> GetVisitingFromExcel(IFormFile visitingReport)
+        {
+            if (!visitingReport.FileName.EndsWith(".xlsx"))
+            {
+                return Response<VisitingReport>.GetError(ErrorCode.BadRequest, "File should be .xlsx type");
+            }
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using var package = new ExcelPackage();
+            await package.LoadAsync(visitingReport.OpenReadStream());
+
+            var result = new VisitingReport();
+
+            var wsFirst = package.Workbook.Worksheets.FirstOrDefault();
+            if (wsFirst is null)
+            {
+                return Response<VisitingReport>.GetError(ErrorCode.BadRequest, "Report does not contains any WorkSheets");
+            }
+
+            result.GroupName = wsFirst.Cells[vrModel.GroupCell.row, vrModel.GroupCell.col].Value?.ToString();
+            result.CourseName = wsFirst.Cells[vrModel.CourseCell.row, vrModel.CourseCell.col].Value?.ToString();
+            result.ReportCreatedTime = DateTime.Parse(wsFirst.Cells[vrModel.DateCell.row, vrModel.DateCell.col].Value?.ToString());
+
+            foreach (var ws in package.Workbook.Worksheets)
+            {
+                var subjectName = ws.Cells[vrModel.SubjectCell.row, vrModel.SubjectCell.col].Value?.ToString();
+
+                var endCol = ws.Dimension.Columns;
+                var endRow = ws.Dimension.Rows;
+                var topicsDict = new Dictionary<string, Dictionary<string, string>>();
+                for (int i = vrModel.TopicsStartCell.col; i <= endCol; i++)
+                {
+                    var topic = ws.Cells[vrModel.TopicsStartCell.row, i].Value?.ToString();
+
+                    var gradeCol = i;
+                    var studRow = vrModel.StudentsStartCell.row;
+                    var gradesDict = new Dictionary<string, string>();
+                    for (int j = vrModel.StudentsStartCell.row; j <= endRow; j++)
+                    {
+                        var student = ws.Cells[j, vrModel.StudentsStartCell.col].Value?.ToString();
+                        var grade = ws.Cells[j, gradeCol].Value?.ToString();
+                        gradesDict.Add(student, grade);
+                    }
+                    topicsDict.Add(topic, gradesDict);
+                }
+                result.Subjects.Add(subjectName, topicsDict);
+            }
+
+            return Response<VisitingReport>.GetSuccess(result);
         }
     }
 }

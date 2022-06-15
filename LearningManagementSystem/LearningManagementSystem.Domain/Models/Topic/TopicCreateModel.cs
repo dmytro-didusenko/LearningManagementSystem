@@ -1,4 +1,6 @@
-﻿namespace LearningManagementSystem.Domain.Models.Topic
+﻿using System.Runtime.Serialization;
+
+namespace LearningManagementSystem.Domain.Models.Topic
 {
     public class TopicCreateModel
     {

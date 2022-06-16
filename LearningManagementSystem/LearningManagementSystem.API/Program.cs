@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Hangfire;
 using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Domain.Models.Options;
@@ -30,6 +31,7 @@ builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR();
 builder.Services.Configure<VisitingReportOptions>(builder.Configuration.GetSection("Reports").GetSection("VisitingReport"));
 
 //configuring MassTransit
@@ -41,14 +43,14 @@ builder.Services.AddMassTransit(cfg =>
     });
 });
 //Adding Quartz
-builder.Services.AddQuartz(cfg =>
-{
-    cfg.UseMicrosoftDependencyInjectionJobFactory();
-    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
-    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
+//builder.Services.AddQuartz(cfg =>
+//{
+//    cfg.UseMicrosoftDependencyInjectionJobFactory();
+//    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
+//    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
 
-});
-builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
+//});
+//builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
@@ -68,5 +70,7 @@ app.UseAuthorization();
 app.UseHangfireDashboard();
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chat");
 
 app.Run();

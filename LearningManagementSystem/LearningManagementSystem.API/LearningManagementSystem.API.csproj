@@ -15,7 +15,6 @@
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.29" />
     <PackageReference Include="MassTransit" Version="8.0.2" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.4.0" />
     <PackageReference Include="RabbitMQ.Client" Version="6.3.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />

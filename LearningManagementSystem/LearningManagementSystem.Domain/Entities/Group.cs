@@ -8,5 +8,6 @@
         public DateTime StartEducation { get; set; }
         public DateTime EndEducation { get; set; }
         public ICollection<Student> Students { get; set; } = null!;
+        public bool IsActive { get; set; } = true;
     }
 }

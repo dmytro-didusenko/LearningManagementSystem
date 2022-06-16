@@ -35,7 +35,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new BadRequestException("Student already has a group");
             }
 
-            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
+            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId) && f.IsActive.Equals(true));
             if (group is null)
             {
                 throw new NotFoundException(groupId);
@@ -54,8 +54,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new NotFoundException(courseId);
             }
 
-            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
-            if (course is null)
+            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId) && f.IsActive.Equals(true));
+            if (group is null)
             {
                 throw new NotFoundException(groupId);
             }

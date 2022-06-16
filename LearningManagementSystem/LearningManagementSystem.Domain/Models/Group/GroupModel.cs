@@ -10,5 +10,6 @@ namespace LearningManagementSystem.Domain.Models.Group
         public DateTime EndEducation { get; set; }
         public Guid? CourseId { get; set; }
         public ICollection<StudentModel>? Students { get; set; } = null;
+        public bool IsActive { get; set; }
     }
 }

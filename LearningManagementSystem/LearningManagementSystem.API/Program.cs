@@ -9,6 +9,7 @@ using LearningManagementSystem.Domain.Models.Report;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
 using Quartz;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,7 +65,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 }
 
 app.UseMiddleware<ErrorHandlerMiddleware>();

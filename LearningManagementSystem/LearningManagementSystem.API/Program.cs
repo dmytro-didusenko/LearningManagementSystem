@@ -30,7 +30,6 @@ builder.Services.ConfigAutoMapper();
 builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddSignalR();
 builder.Services.Configure<VisitingReportOptions>(builder.Configuration.GetSection("Reports").GetSection("VisitingReport"));
 
@@ -46,8 +45,8 @@ builder.Services.AddMassTransit(cfg =>
 //builder.Services.AddQuartz(cfg =>
 //{
 //    cfg.UseMicrosoftDependencyInjectionJobFactory();
-//    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
-//    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
+//cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
+//cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
 
 //});
 //builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);

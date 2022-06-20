@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220617124440_Updated-Chat")]
+    partial class UpdatedChat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,10 +180,6 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -512,7 +510,7 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.GroupChatMessage", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Group", "Group")
-                        .WithMany("ChatMessages")
+                        .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -644,8 +642,6 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>
                 {
-                    b.Navigation("ChatMessages");
-
                     b.Navigation("Students");
                 });
 

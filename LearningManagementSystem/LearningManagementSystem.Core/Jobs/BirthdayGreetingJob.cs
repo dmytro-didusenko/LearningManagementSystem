@@ -27,7 +27,7 @@ namespace LearningManagementSystem.Core.Jobs
             var today = DateTime.Today;
             var usersToGreat = _context.Users.AsNoTracking().Where(i => i.Birthday.Day.Equals(today.Day)
                                                                    && i.Birthday.Month.Equals(today.Month))
-                                                                    .Select(s => s.FirstName + " " + s.LastName).AsEnumerable();
+                                                                    .Select(s => s.FirstName + " " + s.LastName).ToList();
 
             if (usersToGreat is not null && usersToGreat.Any())
             {

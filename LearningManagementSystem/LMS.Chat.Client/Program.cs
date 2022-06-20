@@ -13,16 +13,25 @@ public class Program
 
         await InitConnection();
         bool isExit = false;
-
+        
         Console.WriteLine("Client is starting...");
-        var ms = await hubConnection.InvokeAsync<ChatServerResponse>("Handshake", userId);
-        if (!ms.IsSuccessful)
+
+        var messages = await hubConnection.InvokeAsync<IEnumerable<ChatMessage>>("Handshake", userId);
+        if (hubConnection.State == HubConnectionState.Disconnected)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"Server response: {ms.Message}");
-            Console.WriteLine("Closing connection...");
-            Console.ResetColor();
-            Console.WriteLine(hubConnection.State);
+            return;
+        }
+
+        if (messages is not null && messages.Any())
+        {
+            foreach (var message in messages)
+            {
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"\n{message.Sender}-> {message.Text}" +
+                                  $"\n[{message.Date.ToShortDateString()}]");
+                Console.ResetColor();
+            }
         }
 
         while (!isExit)
@@ -60,6 +69,17 @@ public class Program
                               $"\n[{m.Date.ToShortDateString()}]");
             Console.ResetColor();
         });
+
+        hubConnection.On<ChatServerResponse>("Disconnect", async (response) =>
+       {
+           Console.ForegroundColor = ConsoleColor.DarkRed;
+           Console.WriteLine($"Message from server!");
+           Console.WriteLine($"->{response.Message}");
+           Console.WriteLine("Closing connection...");
+           Console.ResetColor();
+           await hubConnection.StopAsync();
+       });
+
         await hubConnection.StartAsync();
     }
 }

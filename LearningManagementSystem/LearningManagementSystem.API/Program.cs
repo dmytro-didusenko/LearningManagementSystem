@@ -1,10 +1,12 @@
 using System.Text.Json.Serialization;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Models.Report;
+using LearningManagementSystem.Domain.Validators;
 using MassTransit;
 using Quartz;
 
@@ -23,6 +25,13 @@ builder.Services.AddHangfire((provider, cfg) =>
         .UseRecommendedSerializerSettings();
 });
 builder.Services.AddHangfireServer();
+
+builder.Services.AddControllers().AddFluentValidation(cfg =>
+{
+    cfg.RegisterValidatorsFromAssemblyContaining<UserModelValidator>();
+    cfg.DisableDataAnnotationsValidation = true;
+    cfg.LocalizationEnabled = false;
+});
 
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
@@ -46,7 +55,6 @@ builder.Services.AddQuartz(cfg =>
     cfg.UseMicrosoftDependencyInjectionJobFactory();
     cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
     cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
-
 });
 builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 

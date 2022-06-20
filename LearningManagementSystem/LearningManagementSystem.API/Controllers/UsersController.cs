@@ -22,8 +22,6 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUserAsync([FromBody] UserModel user)
         {
-            ArgumentNullException.ThrowIfNull(user);
-
             var res = await _userService.AddAsync(user);
             return res.ToActionResult();
         }

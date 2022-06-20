@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using LearningManagementSystem.Domain.ChatModels;
+﻿using LearningManagementSystem.Domain.ChatModels;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
@@ -20,67 +19,96 @@ namespace LearningManagementSystem.API.Hubs
 
         public async Task MessageHandler(ChatMessage message)
         {
+            if (string.IsNullOrWhiteSpace(message.Text))
+            {
+                return;
+            }
+
             message.Date = DateTime.Now;
-            Context.Items.TryGetValue("User", out var sender);
-            message.Sender = ((Student)sender).User.UserName;
-            var senderUser = (Student)sender;
+
+            var sender = Context.Items["User"] as Student;
+
+            message.Sender = sender.User.UserName;
 
             await _db.GroupChatMessages.AddAsync(new GroupChatMessage()
             {
-                SenderId = senderUser.Id,
-                GroupId = senderUser.Group.Id,
+                SenderId = sender.Id,
+                GroupId = sender.Group.Id,
                 Text = message.Text
             });
             await _db.SaveChangesAsync();
+            var group = Context.Items["Group"] as Group;
 
-            await Clients.Group(Context.Items["Group"] as string).SendAsync("Send", message);
+            await Clients.OthersInGroup(group.Name).SendAsync("Send", message);
         }
 
-        public async Task<IEnumerable<ChatMessage>?> Handshake(string userId)
+        public async Task Handshake(string userId)
         {
+            if (!Guid.TryParse(userId, out var parsedId))
+            {
+                await CloseClientConnectionAsync("Wrong user data");
+            }
+
             var user = await _db.Students
                 .Include(i => i.Group)
                 .ThenInclude(t => t.ChatMessages)
                 .ThenInclude(t => t.Sender)
                 .Include(i => i.User)
-                .FirstOrDefaultAsync(f => f.Id.Equals(Guid.Parse(userId)));
+                .FirstOrDefaultAsync(f => f.Id.Equals(parsedId));
+
             if (user is null)
             {
-                _logger.LogCritical("Wrong user!");
-                await Clients.Caller.SendAsync("Disconnect", new ChatServerResponse()
-                {
-                    IsSuccessful = false,
-                    Message = "Wrong user data"
-                });
-                return null;
+                await CloseClientConnectionAsync("Wrong user data");
             }
-            
+
             var group = user.Group;
-
             await Groups.AddToGroupAsync(Context.ConnectionId, group.Name);
+            Context.Items.TryAdd("User", user);
+            Context.Items.TryAdd("Group", group);
+        }
 
-            var chatHistory = group.ChatMessages.Select(m => new ChatMessage()
+        public async Task<ChatHistory> GetChatHistory()
+        {
+            var group = Context.Items["Group"] as Group;
+            var user = Context.Items["User"] as Student;
+            var chatMessages = group.ChatMessages.Select(m => new ChatMessage()
             {
-                Sender = m.Sender.UserName,
+                Sender = m.Sender.UserName.Equals(user.User.UserName) ? "Me" : m.Sender.UserName,
                 Date = m.CreationDate,
                 Text = m.Text
             }).ToList();
 
-            Context.Items.TryAdd("User", user);
-            Context.Items.TryAdd("Group", group.Name);
+            var chatHistory = new ChatHistory()
+            {
+                GroupId = group.Id,
+                GroupName = group.Name,
+                ChatMessages = chatMessages
+            };
+
+            await Task.Delay(100);
             return chatHistory;
+        }
+
+        //TODO: Rewrite in more 'friendly' form
+        private async Task CloseClientConnectionAsync(string errorMessage)
+        {
+            await Clients.Caller.SendAsync("Disconnect", new ChatServerResponse()
+            {
+                IsSuccessful = false,
+                Message = errorMessage
+            });
+            Context.Abort();
         }
 
         public override Task OnConnectedAsync()
         {
-            _logger.LogCritical($"New connection to Hub: {Context.ConnectionId}" +
-                                $"\nUser identifier: {Context.UserIdentifier}");
+            _logger.LogInformation($"New connection id to Hub: [{Context.ConnectionId}]");
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            _logger.LogCritical($"Connection: {Context.ConnectionId} is disconnected");
+            _logger.LogCritical($"Connection id: [{Context.ConnectionId}] is disconnected");
             return base.OnDisconnectedAsync(exception);
         }
     }

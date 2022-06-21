@@ -41,5 +41,12 @@ namespace LearningManagementSystem.API.Controllers
             await _groupService.UpdateAsync(id, model);
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+           await _groupService.RemoveAsync(id);
+            return NoContent();
+        }
     }
 }

@@ -59,10 +59,9 @@ public class Program
         await hubConnection.SendAsync("MessageHandler", chatMessage);
 
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.WriteLine($"\n\t\t\t\tMe-> {chatMessage.Text}" +
-                          $"\n\t\t\t\t[{chatMessage.Date.ToShortDateString()}]");
+        Console.WriteLine($"\nMe-> {chatMessage.Text}" +
+                          $"\n[{chatMessage.Date.ToShortDateString()}]");
         Console.ResetColor();
-        await Task.Delay(20000);
     }
 
     public static async Task<bool> InitConnection()
@@ -75,9 +74,10 @@ public class Program
         hubConnection.On<ChatMessage>("Send", async m =>
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine($"\n{m.Sender}-> {m.Text}" +
+            Console.WriteLine($"\n\n{m.Sender}-> {m.Text}" +
                               $"\n[{m.Date.ToShortDateString()}]");
             Console.ResetColor();
+            Console.Write("Enter message: ");
             await Task.Delay(20000);
         });
 
@@ -137,8 +137,8 @@ public class Program
                 if (message.Sender.Equals("Me"))
                 {
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.WriteLine($"\n\t\t\t\t{message.Sender}-> {message.Text}" +
-                                      $"\n\t\t\t\t[{message.Date.ToShortDateString()}]");
+                    Console.WriteLine($"\n{message.Sender}-> {message.Text}" +
+                                      $"\n[{message.Date.ToShortDateString()}]");
                     Console.ResetColor();
                     continue;
                 }

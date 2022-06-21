@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LearningManagementSystem.API.Hubs
 {
+    //TODO: Make managing many connections of one user
     public class ChatHub : Hub
     {
         private readonly ILogger<ChatHub> _logger;
@@ -51,17 +52,17 @@ namespace LearningManagementSystem.API.Hubs
 
             var user = await _db.Students
                 .Include(i => i.Group)
-                .ThenInclude(t => t.ChatMessages)
-                .ThenInclude(t => t.Sender)
+                    .ThenInclude(t => t.ChatMessages)
+                    .ThenInclude(t => t.Sender)
                 .Include(i => i.User)
                 .FirstOrDefaultAsync(f => f.Id.Equals(parsedId));
 
-            if (user is null)
+            if (user is null || user.Group is null)
             {
                 await CloseClientConnectionAsync("Wrong user data");
             }
 
-            var group = user.Group;
+            var group = user!.Group;
             await Groups.AddToGroupAsync(Context.ConnectionId, group.Name);
             Context.Items.TryAdd("User", user);
             Context.Items.TryAdd("Group", group);

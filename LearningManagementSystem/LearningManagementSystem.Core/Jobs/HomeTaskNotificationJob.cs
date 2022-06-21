@@ -29,9 +29,9 @@ namespace LearningManagementSystem.Core.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            var time = DateTime.Today.AddDays(1).Date;
+            var tomorrowDate = DateTime.Today.AddDays(1).Date;
 
-            var allTasks = _context.HomeTasks.Where(x => x.DateOfExpiration.Date.Equals(time));
+            var allTasks = _context.HomeTasks.Where(x => x.DateOfExpiration.Date.Equals(tomorrowDate));
 
             var completedTaskAnswers = _context.TaskAnswers.Where(x => allTasks.Select(y => y.TopicId).Contains(x.HomeTaskId));
 

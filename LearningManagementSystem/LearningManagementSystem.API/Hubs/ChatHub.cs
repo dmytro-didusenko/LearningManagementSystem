@@ -102,13 +102,13 @@ namespace LearningManagementSystem.API.Hubs
 
         public override Task OnConnectedAsync()
         {
-            _logger.LogInformation($"New connection id to Hub: [{Context.ConnectionId}]");
+            _logger.LogInformation($"New connection with id: [{Context.ConnectionId}]");
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            _logger.LogCritical($"Connection id: [{Context.ConnectionId}] is disconnected");
+            _logger.LogInformation($"Connection id: [{Context.ConnectionId}] is disconnected");
             return base.OnDisconnectedAsync(exception);
         }
     }

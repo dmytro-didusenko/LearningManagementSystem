@@ -6,7 +6,7 @@ namespace LearningManagementSystem.Chat.Client;
 public class Program
 {
     private static HubConnection hubConnection;
-
+    private static string _dateFormat = "MM/dd/yyyy H:mm";
     public static async Task Main(string[] args)
     {
         Console.Write("Enter your user id: ");
@@ -60,7 +60,7 @@ public class Program
 
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.WriteLine($"\nMe-> {chatMessage.Text}" +
-                          $"\n[{chatMessage.Date.ToShortDateString()}]");
+                          $"\n[{chatMessage.Date.ToString(_dateFormat)}]");
         Console.ResetColor();
     }
 
@@ -75,10 +75,9 @@ public class Program
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"\n\n{m.Sender}-> {m.Text}" +
-                              $"\n[{m.Date.ToShortDateString()}]");
+                              $"\n[{m.Date}]");
             Console.ResetColor();
             Console.Write("Enter message: ");
-            await Task.Delay(20000);
         });
 
         hubConnection.On<ChatServerResponse>("Disconnect", (response) =>
@@ -88,8 +87,8 @@ public class Program
            Console.WriteLine($"->{response.Message}");
            Console.WriteLine("Closing connection...");
            Console.ResetColor();
-            //await hubConnection.StopAsync();
-        });
+           //await hubConnection.StopAsync();
+       });
 
         hubConnection.Closed += HubConnectionClosed;
         hubConnection.Reconnecting += HubConnectionReconnecting;
@@ -103,7 +102,7 @@ public class Program
         Console.WriteLine("Connection closed. Retrying...");
         Console.WriteLine(arg.Message);
         TimeSpan retryDuration = TimeSpan.FromSeconds(10);
-        DateTime retryTill = DateTime.UtcNow.Add(retryDuration);
+        DateTime retryTill = DateTime.Now.Add(retryDuration);
 
         while (DateTime.UtcNow < retryTill)
         {
@@ -133,18 +132,17 @@ public class Program
         {
             foreach (var message in history.ChatMessages)
             {
-
                 if (message.Sender.Equals("Me"))
                 {
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.WriteLine($"\n{message.Sender}-> {message.Text}" +
-                                      $"\n[{message.Date.ToShortDateString()}]");
+                                      $"\n[{message.Date.ToString(_dateFormat)}]");
                     Console.ResetColor();
                     continue;
                 }
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine($"\n{message.Sender}-> {message.Text}" +
-                                  $"\n[{message.Date.ToShortDateString()}]");
+                                  $"\n[{message.Date.ToString(_dateFormat)}]");
                 Console.ResetColor();
             }
         }

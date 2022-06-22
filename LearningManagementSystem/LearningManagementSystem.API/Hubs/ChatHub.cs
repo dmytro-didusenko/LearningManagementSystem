@@ -3,6 +3,7 @@ using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.Sorting;
 
 namespace LearningManagementSystem.API.Hubs
 {
@@ -25,8 +26,6 @@ namespace LearningManagementSystem.API.Hubs
                 return;
             }
 
-            message.Date = DateTime.Now;
-
             var sender = Context.Items["User"] as Student;
 
             message.Sender = sender.User.UserName;
@@ -35,7 +34,8 @@ namespace LearningManagementSystem.API.Hubs
             {
                 SenderId = sender.Id,
                 GroupId = sender.Group.Id,
-                Text = message.Text
+                Text = message.Text,
+                CreationDate = message.Date
             });
             await _db.SaveChangesAsync();
             var group = Context.Items["Group"] as Group;
@@ -68,7 +68,7 @@ namespace LearningManagementSystem.API.Hubs
             Context.Items.TryAdd("Group", group);
         }
 
-        public async Task<ChatHistory> GetChatHistory()
+        public Task<ChatHistory> GetChatHistory()
         {
             var group = Context.Items["Group"] as Group;
             var user = Context.Items["User"] as Student;
@@ -86,8 +86,7 @@ namespace LearningManagementSystem.API.Hubs
                 ChatMessages = chatMessages
             };
 
-            await Task.Delay(100);
-            return chatHistory;
+            return Task.FromResult(chatHistory);
         }
 
         //TODO: Rewrite in more 'friendly' form

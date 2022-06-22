@@ -7,6 +7,6 @@
         public Group Group { get; set; } = null!;
         public Guid GroupId { get; set; }
         public DateTime CreationDate { get; set; }
-        public string Text { get; set; }
+        public string Text { get; set; } = null!;
     }
 }

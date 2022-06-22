@@ -18,6 +18,7 @@ IHost host = Host.CreateDefaultBuilder(args)
 
             x.UsingRabbitMq((context, cfg) =>
             {
+                
                 cfg.ConfigureEndpoints(context);
                 cfg.Host(new Uri(configuration["RabbitMQ:Uri"]));
             });

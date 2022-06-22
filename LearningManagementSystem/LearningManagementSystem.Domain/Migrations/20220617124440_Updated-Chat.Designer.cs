@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220617124440_Updated-Chat")]
+    partial class UpdatedChat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("SubjectsId");
 
-                    b.ToTable("CourseSubject", (string)null);
+                    b.ToTable("CourseSubject");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Answer", b =>
@@ -57,7 +59,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answers", (string)null);
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Course", b =>
@@ -82,7 +84,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Document", b =>
@@ -118,7 +120,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Grade", b =>
@@ -135,7 +137,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>
@@ -150,9 +152,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Property<DateTime>("EndEducation")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -164,7 +163,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.GroupChatMessage", b =>
@@ -181,10 +180,6 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -216,7 +211,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("TopicId");
 
-                    b.ToTable("HomeTasks", (string)null);
+                    b.ToTable("HomeTasks");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Question", b =>
@@ -240,7 +235,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("Questions", (string)null);
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
@@ -259,7 +254,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.StudentAnswer", b =>
@@ -287,7 +282,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("StudentAnswers", (string)null);
+                    b.ToTable("StudentAnswers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
@@ -302,7 +297,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subjects", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
@@ -333,7 +328,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("TaskAnswers", (string)null);
+                    b.ToTable("TaskAnswers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Teacher", b =>
@@ -352,7 +347,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Test", b =>
@@ -385,7 +380,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Tests", (string)null);
+                    b.ToTable("Tests");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
@@ -412,7 +407,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Topics", (string)null);
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>
@@ -452,7 +447,7 @@ namespace LearningManagementSystem.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("CourseSubject", b =>
@@ -515,7 +510,7 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.GroupChatMessage", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.Group", "Group")
-                        .WithMany("ChatMessages")
+                        .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -647,8 +642,6 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>
                 {
-                    b.Navigation("ChatMessages");
-
                     b.Navigation("Students");
                 });
 

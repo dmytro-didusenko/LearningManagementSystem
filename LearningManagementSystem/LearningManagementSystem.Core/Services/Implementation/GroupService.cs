@@ -60,7 +60,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger.LogInformation("Group[id]:{0} has been updated", group.Id);
         }
 
-        //TODO: Implement this
         public async Task RemoveAsync(Guid id)
         {
             var group = await _context.Groups.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id) && f.IsActive.Equals(true));
@@ -73,12 +72,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             await _context.SaveChangesAsync();
             _logger.LogInformation("Group[id]:{0} has been deleted", group.Id);
-
         }
 
         public async Task<GroupModel> GetByIdAsync(Guid id)
         {
-            var group = await _context.Groups.Include(i=>i.Students).ThenInclude(t=>t.User).SingleOrDefaultAsync(s => s.Id.Equals(id) && s.IsActive.Equals(true));
+            var group = await _context.Groups.Include(i=>i.Students).ThenInclude(t=>t.User).SingleOrDefaultAsync(s => s.Id.Equals(id) && s.IsActive);
             if (group is null)
             {
                 throw new NotFoundException(id);
@@ -90,7 +88,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups
                 .Include(i=>i.Students).ThenInclude(t=>t.User)
-                .AsEnumerable().Where(a=> a.IsActive.Equals(true)));
+                //.Where(w=>w.IsActive)
+                .ToList());
         }
     }
 }

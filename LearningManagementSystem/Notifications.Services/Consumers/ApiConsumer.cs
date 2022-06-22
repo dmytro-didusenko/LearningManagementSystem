@@ -16,6 +16,9 @@ namespace Notifications.Services.Consumers
                 case MessageType.Error:
                     PrintMessageInConsole(message);
                     break;
+                default:
+                    PrintMessageInConsole(message);
+                    break;
             }
 
             return Task.CompletedTask;
@@ -23,12 +26,14 @@ namespace Notifications.Services.Consumers
 
         private void PrintMessageInConsole(ApiMessage message)
         {
+            Console.WriteLine("\n");
             Console.WriteLine(message.Subject);
             foreach (var receiver in message.Receivers)
             {
                 Console.WriteLine($"To: {receiver}");
             }
             Console.WriteLine(message.Text);
+            Console.WriteLine("\n");
         }
     }
 }

@@ -33,28 +33,30 @@ namespace LearningManagementSystem.Core.Jobs
 
             var allTasks = _context.HomeTasks.Where(x => x.DateOfExpiration.Date.Equals(tomorrowDate));
 
-            var completedTaskAnswers = _context.TaskAnswers.Where(x => allTasks.Select(y => y.TopicId).Contains(x.HomeTaskId));
-
-            var students = _context.Students.Where(x => !completedTaskAnswers.Select(y => y.StudentId).Contains(x.Id));
-
-            var users = _context.Users.Where(x => students.Select(y => y.Id).Contains(x.Id));
-
-            var activeUsers = users.Where(x => x.IsActive.Equals(true));
-
-
-
-            if (activeUsers is not null)
+            if (allTasks.Any())
             {
-                foreach (var user in activeUsers)
+                var completedTaskAnswers = _context.TaskAnswers.Where(x => allTasks.Select(y => y.TopicId).Contains(x.HomeTaskId));
+
+                var students = _context.Students.Where(x => !completedTaskAnswers.Select(y => y.StudentId).Contains(x.Id));
+
+                var users = _context.Users.Where(x => students.Select(y => y.Id).Contains(x.Id));
+
+                var activeUsers = users.Where(x => x.IsActive.Equals(true));
+
+
+                if (activeUsers is not null)
                 {
-                    await _publisher.Publish(new ApiMessage()
+                    foreach (var user in activeUsers)
                     {
-                        DeliveryMethod = DeliveryMethod.Email,
-                        MessageType = MessageType.Information,
-                        Text = $"Dear {user.LastName} {user.FirstName}, today is the last day of homework submission",
-                        Receivers = new List<string>() { user.Email }
-                    });
-                    _logger.LogInformation("Message has been successfully sent!");
+                        await _publisher.Publish(new ApiMessage()
+                        {
+                            DeliveryMethod = DeliveryMethod.Email,
+                            MessageType = MessageType.Information,
+                            Text = $"Dear {user.LastName} {user.FirstName}, today is the last day of homework submission",
+                            Receivers = new List<string>() { user.Email }
+                        });
+                        _logger.LogInformation("Message has been successfully sent!");
+                    }
                 }
             }
         }

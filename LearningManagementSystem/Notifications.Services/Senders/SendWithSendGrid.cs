@@ -11,7 +11,6 @@ namespace Notifications.Services.Senders
 {
     static internal class SendWithSendGrid
     {
-
         internal static async Task SendToEmail(ApiMessage message, IConfiguration configuration)
         {
             foreach (var item in message.Receivers)

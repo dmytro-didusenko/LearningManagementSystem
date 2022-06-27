@@ -13,17 +13,20 @@ namespace Notifications.Services.Senders
     {
         internal static async Task SendToEmail(ApiMessage message, IConfiguration configuration)
         {
+            var apiKey = configuration["SendGrid:Key"];
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(configuration["SendGrid:Email"]);
+
             foreach (var item in message.Receivers)
             {
-                var apiKey = configuration["SendGrid:Key"];
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(configuration["SendGrid:Email"]);
                 var subject = $"Subject:{message.Subject}";
                 var to = new EmailAddress($"{item}");
                 var plainTextContent = $"{message.Text}";
                 var htmlContent = string.Empty;
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
                 var response = await client.SendEmailAsync(msg);
+
+                Console.WriteLine($"Message to {item}: isSuccessStatusCode:{response.IsSuccessStatusCode}, StatusCode:{response.StatusCode}");
             }
         }
     }

@@ -12,7 +12,7 @@ namespace Notifications.Services.Consumers
             _configuration = configuration;
         }
  
-        public Task Consume(ConsumeContext<ApiMessage> context)
+        public async Task Consume(ConsumeContext<ApiMessage> context)
         {
             var message = context.Message;
             switch (message.MessageType)
@@ -30,11 +30,8 @@ namespace Notifications.Services.Consumers
 
             if (message.DeliveryMethod == DeliveryMethod.Email)
             {
-
-                SendWithSendGrid.SendToEmail(message, _configuration).Wait();
+                await SendWithSendGrid.SendToEmail(message, _configuration);
             }
-
-            return Task.CompletedTask;
         }
 
         private void PrintMessageInConsole(ApiMessage message)

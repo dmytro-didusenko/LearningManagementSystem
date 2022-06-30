@@ -1,11 +1,18 @@
 ﻿using LearningManagementSystem.Domain.MassTransitModels;
 using MassTransit;
+using Notifications.Services.Senders;
 
 namespace Notifications.Services.Consumers
 {
     public class ApiConsumer : IConsumer<ApiMessage>
     {
-        public Task Consume(ConsumeContext<ApiMessage> context)
+        IConfiguration _configuration;
+        public ApiConsumer(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+ 
+        public async Task Consume(ConsumeContext<ApiMessage> context)
         {
             var message = context.Message;
             switch (message.MessageType)
@@ -21,7 +28,10 @@ namespace Notifications.Services.Consumers
                     break;
             }
 
-            return Task.CompletedTask;
+            if (message.DeliveryMethod == DeliveryMethod.Email)
+            {
+                await SendWithSendGrid.SendToEmail(message, _configuration);
+            }
         }
 
         private void PrintMessageInConsole(ApiMessage message)

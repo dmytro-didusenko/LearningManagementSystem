@@ -21,6 +21,7 @@ namespace LearningManagementSystem.Domain.Contextes
         public DbSet<Answer> Answers { get; set; } = null!;
         public DbSet<StudentAnswer> StudentAnswers { get; set; } = null!;
         public DbSet<GroupChatMessage> GroupChatMessages { get; set; } = null!;
+        public DbSet<Certificate> Certificates { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -71,6 +72,10 @@ namespace LearningManagementSystem.Domain.Contextes
                 .WithOne()
                 .HasForeignKey<StudentAnswer>(fk => fk.AnswerId)
                 .OnDelete(DeleteBehavior.ClientNoAction);
+
+            modelBuilder.Entity<Certificate>()
+                .HasOne(c => c.Student)
+                .WithMany(s => s.Certificates);
         }
     }
 }

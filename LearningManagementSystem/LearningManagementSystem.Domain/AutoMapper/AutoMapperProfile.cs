@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Extensions;
+using LearningManagementSystem.Domain.Models.Certificate;
 using LearningManagementSystem.Domain.Models.Course;
 using LearningManagementSystem.Domain.Models.Group;
 using LearningManagementSystem.Domain.Models.HomeTask;
@@ -109,8 +110,13 @@ namespace LearningManagementSystem.Domain.AutoMapper
                     opt.MapFrom(f => f.User.Email))
                 .ForMember(m => m.About, opt =>
                     opt.MapFrom(f => f.User.About)).ReverseMap();
+            
+            CreateMap<Certificate, CertificateModel>()
+                .ForMember(cm => cm.StudentName, opts => 
+                    opts.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
+                .ForMember(cm => cm.CourseName, opts =>
+                    opts.MapFrom(src => src.Course.Name))
+                .ReverseMap();            
         }
     }
-
-
 }

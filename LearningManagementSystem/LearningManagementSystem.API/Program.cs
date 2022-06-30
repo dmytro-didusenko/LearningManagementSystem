@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using FluentValidation.AspNetCore;
 using Hangfire;
 using LearningManagementSystem.API.Extensions;
@@ -51,16 +53,20 @@ builder.Services.AddMassTransit(cfg =>
         x.Host(new Uri(builder.Configuration["RabbitMQ:Uri"]));
     });
 });
-//Adding Quartz
-//builder.Services.AddQuartz(cfg =>
-//{
-//    cfg.UseMicrosoftDependencyInjectionJobFactory();
-//    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
-//    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
-//    cfg.AddJobAndTrigger<HomeTaskNotificationJob>(builder.Configuration);
-//});
-//builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 
+//Adding Quartz
+builder.Services.AddQuartz(cfg =>
+{
+    cfg.UseMicrosoftDependencyInjectionJobFactory();
+    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
+    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
+    cfg.AddJobAndTrigger<HomeTaskNotificationJob>(builder.Configuration);
+    cfg.AddJobAndTrigger<CertificateJob>(builder.Configuration);
+});
+builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
+
+//add DinkToPdf
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 var app = builder.Build();
 
@@ -71,7 +77,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 }
 
-//app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

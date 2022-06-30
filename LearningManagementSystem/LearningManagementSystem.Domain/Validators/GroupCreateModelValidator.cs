@@ -12,12 +12,12 @@ namespace LearningManagementSystem.Domain.Validators
                 .NotEmpty()
                 .Length(3, 25);
 
-            RuleFor(r=>r.StartEducation)
+            RuleFor(r => r.StartEducation)
                 .NotNull()
                 .NotEmpty()
                 .GreaterThanOrEqualTo(DateTime.Now);
 
-            RuleFor(r=>r.EndEducation)
+            RuleFor(r => r.EndEducation)
                 .NotNull()
                 .NotEmpty()
                 .GreaterThanOrEqualTo(DateTime.Now)

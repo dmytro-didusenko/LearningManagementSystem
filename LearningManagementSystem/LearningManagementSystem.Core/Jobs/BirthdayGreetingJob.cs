@@ -45,5 +45,3 @@ namespace LearningManagementSystem.Core.Jobs
         }
     }
 }
-
-

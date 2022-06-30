@@ -45,6 +45,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<ITestingService, TestingService>();
             services.AddScoped<IGradeNotifyJob, GradeNotifyJob>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<ICertificateService, CertificateService>();
             return services;
         }
 

@@ -30,5 +30,33 @@
     {
         public bool IsSuccessful { get; set; }
         public string? Error { get; set; }
+
     }
+
+    public class ResponseApi<T>
+    {
+        public T? Data { get; set; }
+        public IEnumerable<string>? Errors { get; set; }
+        public static ResponseApi<T> GetError( string errorMessage)
+        {
+            return new ResponseApi<T>()
+            {
+                Errors = new List<string>(){errorMessage}
+            };
+        }
+    }
+
+
+    public class ResponseApi
+    {
+        public IEnumerable<string>? Errors { get; set; }
+        public static ResponseApi GetError(string errorMessage)
+        {
+            return new ResponseApi()
+            {
+                Errors = new List<string>() {errorMessage}
+            };
+        }
+    }
+
 }

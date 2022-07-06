@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using LearningManagementSystem.Core.Exceptions;
+using LearningManagementSystem.Domain.Models.Responses;
 
 namespace LearningManagementSystem.API.Middlewares
 {
@@ -35,7 +36,9 @@ namespace LearningManagementSystem.API.Middlewares
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         break;
                 }
-                var result = JsonSerializer.Serialize(new { message = error?.Message });
+
+                var responseApi = ResponseApi.GetError(error.Message);
+                var result = JsonSerializer.Serialize(responseApi);
                 await response.WriteAsync(result);
             }
         }

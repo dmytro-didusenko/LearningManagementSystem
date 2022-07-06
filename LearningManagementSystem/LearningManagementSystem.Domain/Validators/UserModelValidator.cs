@@ -8,7 +8,7 @@ namespace LearningManagementSystem.Domain.Validators
     {
         public UserModelValidator()
         {
-            var minimumUserAge = new DateTime(2004, 1, 1);
+        
             RuleFor(r => r.Email)
                 .EmailAddress();
 
@@ -16,7 +16,7 @@ namespace LearningManagementSystem.Domain.Validators
                 .IsInEnum();
 
             RuleFor(r => r.Birthday)
-                .NotNull().LessThanOrEqualTo(minimumUserAge)
+                .NotNull().LessThan(DateTime.Now)
                 .WithMessage("Your age is not valid!");
 
             RuleFor(r => r.FirstName)

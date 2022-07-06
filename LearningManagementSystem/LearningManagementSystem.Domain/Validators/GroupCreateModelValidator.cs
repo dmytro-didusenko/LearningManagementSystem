@@ -20,7 +20,7 @@ namespace LearningManagementSystem.Domain.Validators
             RuleFor(r => r.EndEducation)
                 .NotNull()
                 .NotEmpty()
-                .GreaterThanOrEqualTo(DateTime.Now)
+                .GreaterThanOrEqualTo(m=> m.StartEducation)
                 .NotEqual(h => h.StartEducation);
         }
     }

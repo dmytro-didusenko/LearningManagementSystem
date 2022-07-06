@@ -17,7 +17,7 @@ namespace LearningManagementSystem.Domain.Validators
 
             RuleFor(r => r.Birthday)
                 .NotNull().LessThan(DateTime.Now)
-                .WithMessage("Your age is not valid!");
+                .WithMessage("'Your age' is not valid!");
 
             RuleFor(r => r.FirstName)
                 .NotNull()

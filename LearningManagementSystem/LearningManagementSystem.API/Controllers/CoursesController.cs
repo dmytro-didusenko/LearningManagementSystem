@@ -18,7 +18,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCourse([FromForm] CourseModel course)
+        public async Task<IActionResult> CreateCourse([FromBody] CourseModel course)
         {
             var res = await _courseService.AddAsync(course);
             return res.ToActionResult();

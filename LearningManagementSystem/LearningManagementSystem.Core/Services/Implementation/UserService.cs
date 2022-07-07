@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -25,7 +26,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task<Response<UserModel>> AddAsync(UserModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
-
+            model.IsActive = true;
             var userExist = await _context.Users.FirstOrDefaultAsync(f =>
                 f.UserName.Equals(model.UserName) || f.Email.Equals(model.Email));
 
@@ -34,9 +35,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return Response<UserModel>.GetError(ErrorCode.Conflict, "User with such credentials is already exist!");
             }
 
-            await _context.AddAsync(_mapper.Map<User>(model));
+            var entity = _mapper.Map<User>(model);
+            await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New user has been added");
+            model.Id = entity.Id;
 
             return Response<UserModel>.GetSuccess(model);
         }
@@ -68,7 +71,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (user is null)
             {
                 _logger.LogInformation("User with id:{0} does not exist", model.Id);
-                throw new Exception("User is not exist");
+                throw new NotFoundException("User is not exist");
             }
 
             user.IsActive = false;
@@ -83,7 +86,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var entity = await _context.Users.SingleOrDefaultAsync(u => u.Id.Equals(id));
             if (entity is null)
             {
-                throw new Exception("User does not exist!");
+                throw new NotFoundException("User does not exist!");
             }
 
             var model = _mapper.Map<UserModel>(entity);

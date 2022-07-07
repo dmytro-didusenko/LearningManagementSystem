@@ -13,16 +13,8 @@ namespace LearningManagementSystem.Domain.Validators
                 .Length(3, 50);
 
             RuleFor(r => r.StartedAt)
-                .LessThan(DateTime.Now);
+                .GreaterThanOrEqualTo(DateTime.Now);
 
-            RuleForEach(f => f.Subjects)
-                .InjectValidator();
-
-            When(c => c.ImageFile is not null, () =>
-            {
-                RuleFor(r => r.ImageFile.FileName)
-                    .Must(f => f.EndsWith(".png") || f.EndsWith(".jpg"));
-            });
         }
     }
 }

@@ -33,13 +33,10 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
             var entity = _mapper.Map<Course>(model);
-            if (model.ImageFile is not null)
-            {
-                var path = await _fileHelper.UploadFileAsync(model.ImageFile);
-                entity.ImagePath = path;
-            }
+           
             await _context.Courses.AddAsync(entity);
             await _context.SaveChangesAsync();
+            model.Id = entity.Id;
             return Response<CourseModel>.GetSuccess(model);
         }
 
@@ -53,11 +50,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 return Response<CourseModel>.GetError(ErrorCode.BadRequest, "Course id:{id} does not exist!");
             }
-            if (model.ImageFile is not null)
-            {
-                var path = await _fileHelper.UploadFileAsync(model.ImageFile);
-                model.ImagePath = path;
-            }
+       
 
             var entityToUpdate = _mapper.Map<Course>(model);
             model.Id = id;
@@ -86,7 +79,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<CourseModel> GetByIdAsync(Guid id)
         {
-            var course = await _context.Courses.Include(i => i.Subjects).FirstOrDefaultAsync(f => f.Id.Equals(id));
+            var course = await _context.Courses.FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (course is null)
             {
                 throw new NotFoundException(id);
@@ -96,9 +89,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public IEnumerable<CourseModel> GetAll()
         {
-            return _mapper.Map<IEnumerable<CourseModel>>(_context.Courses
-                .Include(i => i.Subjects)
-                .ThenInclude(t => t.Teachers).ToList());
+            return _mapper.Map<IEnumerable<CourseModel>>(_context.Courses.ToList());
         }
     }
 }

@@ -9,6 +9,6 @@ namespace LearningManagementSystem.Domain.Validators
             return property.All(char.IsLetter);
         }
 
-        public static string OnlyCharactersError { get; } = "{PropertyName} should contains only characters";
+        public static string OnlyCharactersError { get; } = "'{PropertyName}' should contains only characters";
     }
 }

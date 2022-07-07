@@ -7,6 +7,7 @@ using LearningManagementSystem.Domain.Models.Certificate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+//TODO: Rewrite logic, simplify returning models
 namespace LearningManagementSystem.API.Controllers
 {
     [Route("api/[controller]")]

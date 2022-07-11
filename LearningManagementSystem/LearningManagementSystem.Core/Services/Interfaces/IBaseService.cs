@@ -6,7 +6,7 @@ namespace LearningManagementSystem.Core.Services.Interfaces
     {
         public Task<Response<TModel>> AddAsync(TModel model);
         public Task<Response<TModel>> UpdateAsync(Guid id, TModel model);
-        public Task RemoveAsync(TModel model);
+        public Task RemoveAsync(Guid id);
         public Task<TModel> GetByIdAsync(Guid id);
     }
 }

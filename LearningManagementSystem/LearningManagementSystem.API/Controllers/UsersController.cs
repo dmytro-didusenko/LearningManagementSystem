@@ -62,6 +62,13 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(await _userService.GetByFilterAsync(query));
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveUser(Guid id)
+        {
+            await _userService.RemoveAsync(id);
+            return NoContent();
+        }
+
         [HttpDelete("Documents/{id}")]
         public async Task<IActionResult> RemoveDocument(Guid id)
         {

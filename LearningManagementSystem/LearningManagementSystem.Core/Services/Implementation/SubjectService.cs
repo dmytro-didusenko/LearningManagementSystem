@@ -62,7 +62,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         }
 
         //TODO: Implement this
-        public Task RemoveAsync(SubjectModel model)
+        public Task RemoveAsync(Guid id)
         {
             throw new NotImplementedException();
         }

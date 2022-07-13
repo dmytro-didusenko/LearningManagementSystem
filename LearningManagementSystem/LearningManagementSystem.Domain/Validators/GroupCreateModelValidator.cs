@@ -15,7 +15,7 @@ namespace LearningManagementSystem.Domain.Validators
             RuleFor(r => r.StartEducation)
                 .NotNull()
                 .NotEmpty()
-                .GreaterThanOrEqualTo(DateTime.Now);
+                .GreaterThanOrEqualTo(DateTime.Today);
 
             RuleFor(r => r.EndEducation)
                 .NotNull()

@@ -60,21 +60,20 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<CourseModel>.GetSuccess(model);
         }
 
-        public async Task RemoveAsync(CourseModel model)
+        public async Task RemoveAsync(Guid id)
         {
-            ArgumentNullException.ThrowIfNull(model);
             var course = await _context.Courses.SingleOrDefaultAsync(i => i.Id.Equals(
-                model.Id));
+                id));
 
             if (course is null)
             {
-                _logger.LogInformation("Course with id:{0} does not exist", model.Id);
+                _logger.LogInformation("Course with id:{0} does not exist", id);
                 throw new Exception("Course does not exist");
             }
 
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Course {0} has been removed", model.Id);
+            _logger.LogInformation("Course {0} has been removed", id);
         }
 
         public async Task<CourseModel> GetByIdAsync(Guid id)

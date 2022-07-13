@@ -62,15 +62,14 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<UserModel>.GetSuccess(model);
         }
 
-        public async Task RemoveAsync(UserModel model)
+        public async Task RemoveAsync(Guid id)
         {
-            ArgumentNullException.ThrowIfNull(model);
             var user = await _context.Users.SingleOrDefaultAsync(i => i.Id.Equals(
-                model.Id));
+                id));
 
             if (user is null)
             {
-                _logger.LogInformation("User with id:{0} does not exist", model.Id);
+                _logger.LogInformation("User with id:{0} does not exist", id);
                 throw new NotFoundException("User is not exist");
             }
 
@@ -78,7 +77,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("User {0} has changed status to inactive", model.Id);
+            _logger.LogInformation("User {0} has changed status to inactive", id);
         }
 
         public async Task<UserModel> GetByIdAsync(Guid id)

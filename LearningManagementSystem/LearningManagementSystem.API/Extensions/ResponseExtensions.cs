@@ -8,10 +8,11 @@ namespace LearningManagementSystem.API.Extensions
         public static IActionResult ToActionResult<T>(this Response<T> response)
         {
             ArgumentNullException.ThrowIfNull(response);
-
+            var responseApi = new ResponseApi<T>();
             if (response.Error is not null)
             {
-                return new JsonResult(response.Error)
+                responseApi.Errors = new List<string>{response.Error.ErrorMessage};
+                return new JsonResult(responseApi)
                 {
                     StatusCode = (int)response.Error.ErrorCode
                 };
@@ -21,6 +22,7 @@ namespace LearningManagementSystem.API.Extensions
             {
                 return new OkResult();
             }
+           
             return new OkObjectResult(response.Data);
         }
     }

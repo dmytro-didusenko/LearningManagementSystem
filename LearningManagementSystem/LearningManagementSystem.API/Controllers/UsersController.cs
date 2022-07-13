@@ -1,4 +1,5 @@
 using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.User;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace LearningManagementSystem.API.Controllers
 
         public UsersController(IUserService userService, IDocumentService documentService)
         {
+          
             _userService = userService;
             _documentService = documentService;
         }

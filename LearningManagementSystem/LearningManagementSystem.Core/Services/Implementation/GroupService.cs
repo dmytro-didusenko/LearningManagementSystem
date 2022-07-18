@@ -23,7 +23,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _logger = logger;
         }
 
-        public async Task<Response<GroupCreateModel>> AddAsync(GroupCreateModel model)
+        public async Task<Response<GroupModel>> AddAsync(GroupCreateModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -33,13 +33,15 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (groupExist is not null)
             {
                 _logger.LogInformation("Trying to add group that already exist!");
-                return Response<GroupCreateModel>.GetError(ErrorCode.Conflict, "Group is already exist!");
+                return Response<GroupModel>.GetError(ErrorCode.Conflict, "Group with such name exists.");
             }
-            await _context.Groups.AddAsync(_mapper.Map<Group>(model));
+            var group = _mapper.Map<Group>(model);
+            await _context.Groups.AddAsync(group);
 
+            var res = _mapper.Map<GroupModel>(group);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New group has been created successfully");
-            return Response<GroupCreateModel>.GetSuccess(model);
+            return Response<GroupModel>.GetSuccess(res);
         }
 
         public async Task UpdateAsync(Guid id, GroupCreateModel model)
@@ -62,12 +64,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task RemoveAsync(Guid id)
         {
-            var group = await _context.Groups.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id) && f.IsActive.Equals(true));
+            var group = await _context.Groups.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (group is null)
             {
                 throw new Exception($"Group id:{id} does not exist!");
             }
-            group.IsActive = false;
+            group.IsActive = !group.IsActive;
             _context.Groups.Update(group);
 
             await _context.SaveChangesAsync();

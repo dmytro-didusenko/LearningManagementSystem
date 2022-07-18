@@ -33,7 +33,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (groupExist is not null)
             {
                 _logger.LogInformation("Trying to add group that already exist!");
-                return Response<GroupModel>.GetError(ErrorCode.Conflict, "Group is already exist!");
+                return Response<GroupModel>.GetError(ErrorCode.Conflict, "Group with such name exists.");
             }
             var group = _mapper.Map<Group>(model);
             await _context.Groups.AddAsync(group);
@@ -64,12 +64,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task RemoveAsync(Guid id)
         {
-            var group = await _context.Groups.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id) && f.IsActive.Equals(true));
+            var group = await _context.Groups.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (group is null)
             {
                 throw new Exception($"Group id:{id} does not exist!");
             }
-            group.IsActive = false;
+            group.IsActive = !group.IsActive;
             _context.Groups.Update(group);
 
             await _context.SaveChangesAsync();

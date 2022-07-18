@@ -14,13 +14,14 @@ namespace LearningManagementSystem.Domain.Validators
 
             RuleFor(r => r.StartEducation)
                 .NotNull()
-                .NotEmpty();
+                .NotEmpty()
+                .GreaterThanOrEqualTo(DateTime.Today);
 
             RuleFor(r => r.EndEducation)
                 .NotNull()
                 .NotEmpty()
-                .GreaterThanOrEqualTo(m=> m.StartEducation)
-                .NotEqual(h => h.StartEducation);
+                .GreaterThan(m=> m.StartEducation)
+                .WithMessage("End education date must be greater than start education date");
         }
     }
 }

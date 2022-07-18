@@ -37,6 +37,13 @@ namespace LearningManagementSystem.API.Controllers
             return res.ToActionResult();
         }
 
+         [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCourse(Guid id)
+        {
+            await _courseService.RemoveAsync(id);
+            return NoContent();
+        }
+
         [HttpGet]
         public IActionResult GetAllCourses()
         {

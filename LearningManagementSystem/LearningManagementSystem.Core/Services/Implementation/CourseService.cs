@@ -33,7 +33,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(model);
             var entity = _mapper.Map<Course>(model);
-           
+            entity.IsActive = true;
             await _context.Courses.AddAsync(entity);
             await _context.SaveChangesAsync();
             model.Id = entity.Id;
@@ -50,10 +50,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
             {
                 return Response<CourseModel>.GetError(ErrorCode.BadRequest, "Course id:{id} does not exist!");
             }
-       
 
-            var entityToUpdate = _mapper.Map<Course>(model);
             model.Id = id;
+            var entityToUpdate = _mapper.Map<Course>(model);
+            _logger.LogCritical($"{entityToUpdate.StartedAt}");
+           
             _context.Courses.Update(entityToUpdate);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Course[id]:{0} has been updated", model.Id);
@@ -70,8 +71,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 _logger.LogInformation("Course with id:{0} does not exist", id);
                 throw new Exception("Course does not exist");
             }
-
-            _context.Courses.Remove(course);
+            course.IsActive = !course.IsActive;
+            _context.Courses.Update(course);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Course {0} has been removed", id);
         }

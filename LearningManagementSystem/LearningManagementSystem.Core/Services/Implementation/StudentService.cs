@@ -65,10 +65,19 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return model;
         }
 
-        public IEnumerable<StudentModel> GetAll()
+        public async Task<IEnumerable<StudentModel>> GetAll()
         {
             _logger.LogInformation("Getting all students");
-            var res = _context.Students.Include(i => i.User).AsEnumerable();
+            var res = await _context.Students.Include(s => s.User).ToListAsync();
+            return _mapper.Map<IEnumerable<StudentModel>>(res);
+        }
+
+        public async Task<IEnumerable<StudentModel>> GetStudentsWithoutGroups()
+        {
+            _logger.LogInformation("Getting students without groups");
+            var res = await _context.Students.Include(s => s.User).Where(s => s.GroupId == null).ToListAsync();
+            if (res is null)
+                throw new NotFoundException("There are no students without groups");
             return _mapper.Map<IEnumerable<StudentModel>>(res);
         }
 

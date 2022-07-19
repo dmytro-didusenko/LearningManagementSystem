@@ -25,9 +25,15 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_studentService.GetAll());
+            return Ok(await _studentService.GetAll());
+        }
+
+        [HttpGet("withoutgroups")]
+        public async Task<IActionResult> GetStudentsWithoutGroups()
+        {
+            return Ok(await _studentService.GetStudentsWithoutGroups());
         }
 
         [HttpDelete("{id}")]

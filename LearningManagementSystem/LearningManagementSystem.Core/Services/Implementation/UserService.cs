@@ -55,6 +55,13 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return Response<UserModel>.GetError(ErrorCode.BadRequest, "User id:{id} does not exist!");
             }
 
+            if (!userExist.UserName.Equals(model.UserName) && 
+                (await _context.Users.FirstOrDefaultAsync(f=>f.UserName.Equals(model.UserName))) is not null)
+            {
+                return Response<UserModel>.GetError(ErrorCode.BadRequest,
+                    $"{model.UserName} is taken, please select another!");
+            }
+
             model.Id = id;
             _context.Users.Update(_mapper.Map<User>(model));
             await _context.SaveChangesAsync();
@@ -72,8 +79,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 _logger.LogInformation("User with id:{0} does not exist", id);
                 throw new NotFoundException("User is not exist");
             }
-
-            user.IsActive = false;
+            
+            user.IsActive = !user.IsActive;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 

@@ -2,6 +2,7 @@ using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -61,7 +62,7 @@ namespace LearningManagementSystem.API.Controllers
         {
             return Ok(await _userService.GetByFilterAsync(query));
         }
-
+ 
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveUser(Guid id)
         {

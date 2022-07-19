@@ -39,7 +39,6 @@ namespace LearningManagementSystem.API.Hubs
             });
             await _db.SaveChangesAsync();
             var group = Context.Items["Group"] as Group;
-
             await Clients.OthersInGroup(group.Name).SendAsync("Send", message);
         }
 

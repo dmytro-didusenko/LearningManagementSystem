@@ -22,6 +22,13 @@ namespace LearningManagementSystem.API.Controllers
             return Ok();
         }
 
+        [HttpPost("AddStudents/ToGroup/{groupId}")]
+        public async Task<IActionResult> AddStudentsToGroup(List<Guid> studentIds, Guid groupId)
+        {
+            await _managementService.AddStudentsToGroupAsync(studentIds, groupId);
+            return Ok();
+        }
+
         [HttpPost("AddCourse/{courseId}/ToGroup/{groupId}")]
         public async Task<IActionResult> AddCourseToGroup(Guid courseId, Guid groupId)
         {

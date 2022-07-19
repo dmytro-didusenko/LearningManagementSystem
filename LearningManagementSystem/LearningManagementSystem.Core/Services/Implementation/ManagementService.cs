@@ -35,7 +35,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new BadRequestException("Student already has a group");
             }
 
-            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId) && f.IsActive.Equals(true));
+            var group = await _context.Groups.SingleOrDefaultAsync(f => f.Id.Equals(groupId));
             if (group is null)
             {
                 throw new NotFoundException(groupId);
@@ -119,5 +119,43 @@ namespace LearningManagementSystem.Core.Services.Implementation
             _context.Update(teacher);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AddStudentsToGroupAsync(List<Guid> studentIds, Guid groupId)
+        {
+            foreach (var studentId in studentIds)
+            {
+                var student = await _context.Students.FindAsync(studentId);
+
+                if (student is null)
+                    throw new NotFoundException($"Student with id [{studentId}] was not found.");
+
+                if (student.GroupId is not null)
+                    throw new BadRequestException($"Student with id [{studentId}] already has a group.");
+                
+                var group = await _context.Groups.FindAsync(groupId);
+
+                if (group is null)
+                    throw new NotFoundException($"Group with id [{groupId}] was not found.");
+
+                student.GroupId = groupId;
+                _context.Students.Update(student);
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        //public async Task RemoveStudentFromGroupAsync(Guid studentId, Guid groupId)
+        //{
+        //    var student = await _context.Students.FindAsync(studentId);
+            
+        //    if (student is null)
+        //        throw new NotFoundException($"Student with id [{studentId}] was not found.");
+            
+        //    if (student.GroupId is null)
+        //        throw new BadRequestException($"Student with id [{studentId}] is not in a group.");
+
+        //    student.GroupId = null;
+        //    _context.Students.Update(student);
+        //    await _context.SaveChangesAsync();
+        //}
     }
 }

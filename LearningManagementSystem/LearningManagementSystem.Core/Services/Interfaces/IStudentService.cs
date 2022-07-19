@@ -7,7 +7,8 @@ namespace LearningManagementSystem.Core.Services.Interfaces
     {
         public Task<Response<StudentCreateModel>> AddAsync(StudentCreateModel model);
         public Task<StudentModel> GetByIdAsync(Guid id);
-        public IEnumerable<StudentModel> GetAll();
+        Task<IEnumerable<StudentModel>> GetAll();
+        Task<IEnumerable<StudentModel>> GetStudentsWithoutGroups();
         public Task RemoveStudentAsync(Guid id);
     }
 }

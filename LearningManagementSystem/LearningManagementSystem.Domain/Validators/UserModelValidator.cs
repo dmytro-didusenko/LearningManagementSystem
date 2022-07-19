@@ -10,9 +10,11 @@ namespace LearningManagementSystem.Domain.Validators
         {
         
             RuleFor(r => r.Email)
+                .NotNull()
                 .EmailAddress();
 
             RuleFor(r => r.Gender)
+                .NotNull()
                 .IsInEnum();
 
             RuleFor(r => r.Birthday)

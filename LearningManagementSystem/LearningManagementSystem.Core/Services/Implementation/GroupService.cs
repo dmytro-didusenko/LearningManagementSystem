@@ -76,7 +76,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         public async Task<GroupModel> GetByIdAsync(Guid id)
         {
-            var group = await _context.Groups.Include(i=>i.Students).ThenInclude(t=>t.User).SingleOrDefaultAsync(s => s.Id.Equals(id) && s.IsActive);
+            var group = await _context.Groups.Include(i=>i.Students)
+                .ThenInclude(t=>t.User)
+                .SingleOrDefaultAsync(s => s.Id.Equals(id) /*&& s.IsActive*/);
             if (group is null)
             {
                 throw new NotFoundException(id);
@@ -84,6 +86,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return _mapper.Map<GroupModel>(group);
         }
 
+        //
         public IEnumerable<GroupModel> GetAll()
         {
             return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups

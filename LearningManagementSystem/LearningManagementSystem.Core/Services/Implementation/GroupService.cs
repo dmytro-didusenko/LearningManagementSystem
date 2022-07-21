@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.Core.Exceptions;
+using LearningManagementSystem.Core.Filters;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -88,13 +89,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return _mapper.Map<GroupModel>(group);
         }
 
-        //
-        public IEnumerable<GroupModel> GetAll()
+        public async Task<PagedResponse<IEnumerable<GroupModel>>> GetAll(PaginationFilter filter)
         {
-            return _mapper.Map<IEnumerable<GroupModel>>(_context.Groups
-                .Include(i=>i.Students).ThenInclude(t=>t.User)
-                //.Where(w=>w.IsActive)
-                .ToList());
+            var groups = await _context.Groups
+                .Include(i => i.Students).ThenInclude(t => t.User)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+            var groupModels = _mapper.Map<IEnumerable<GroupModel>>(groups);
+            var totalRecords = await _context.Groups.CountAsync();
+            return new PagedResponse<IEnumerable<GroupModel>>(groupModels, filter.PageNumber,
+                                                              filter.PageSize, totalRecords);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.Core.Filters;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Group;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,9 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
         {
-            return Ok(_groupService.GetAll());
+            return Ok(await _groupService.GetAll(filter));
         }
 
         [HttpGet("{id}")]

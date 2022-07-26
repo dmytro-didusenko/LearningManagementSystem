@@ -4,6 +4,6 @@ namespace LearningManagementSystem.Core.Services.Interfaces
 {
     public interface ISubjectService : IBaseService<SubjectModel>
     {
-        public IEnumerable<SubjectModel> GetAll();
+        Task<IEnumerable<SubjectModel>> GetAll();
     }
 }

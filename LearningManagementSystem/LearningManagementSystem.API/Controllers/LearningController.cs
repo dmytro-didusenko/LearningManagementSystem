@@ -52,9 +52,9 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet("Topics/{subjectId}")]
-        public IActionResult GetTopicsBySubjectId(Guid subjectId)
+        public async Task<IActionResult> GetTopicsBySubjectId(Guid subjectId)
         {
-            return Ok(_learningService.GetTopicsBySubjectId(subjectId));
+            return Ok(await _learningService.GetTopicsBySubjectId(subjectId));
         }
 
         [HttpPut("Topics/{id}")]

@@ -232,15 +232,15 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<GradeModel>.GetSuccess(model);
         }
 
-        public IEnumerable<TopicModel> GetTopicsBySubjectId(Guid subjectId)
+        public async Task<IEnumerable<TopicModel>> GetTopicsBySubjectId(Guid subjectId)
         {
-            var subject = _context.Subjects.FirstOrDefaultAsync(f => f.Id.Equals(subjectId));
+            var subject = await _context.Subjects.FirstOrDefaultAsync(f => f.Id.Equals(subjectId));
             if (subject is null)
             {
                 throw new NotFoundException(subjectId);
             }
-            var topics = _context.Topics.Include(i => i.HomeTask)
-                .Where(i => i.SubjectId.Equals(subjectId)).AsEnumerable();
+            var topics = await _context.Topics
+                .Where(i => i.SubjectId.Equals(subjectId)).ToListAsync();
             return _mapper.Map<IEnumerable<TopicModel>>(topics);
         }
 

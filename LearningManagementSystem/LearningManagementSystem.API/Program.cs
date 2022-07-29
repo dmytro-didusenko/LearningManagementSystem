@@ -43,17 +43,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.Configure<VisitingReportOptions>(builder.Configuration.GetSection("Reports").GetSection("VisitingReport"));
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
 
-//builder.Services.AddMvc(options =>
-//{
-//    options.Filters.Add(new ValidationFilter());
-//}).AddFluentValidation(cfg =>
-//{
-//    cfg.RegisterValidatorsFromAssemblyContaining<UserModelValidator>();
-//    cfg.DisableDataAnnotationsValidation = true;
-//    cfg.LocalizationEnabled = false;
-//});
 
 builder.Services.AddControllers();
 builder.Services.AddMvc(options =>
@@ -115,7 +116,7 @@ app.UseAuthorization();
 
 app.UseHangfireDashboard();
 
-app.UseCors(b => b.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+app.UseCors();
 
 app.MapControllers();
 

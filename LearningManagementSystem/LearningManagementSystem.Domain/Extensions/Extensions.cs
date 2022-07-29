@@ -15,19 +15,5 @@ namespace LearningManagementSystem.Domain.Extensions
             return (l, r);
         }
 
-        public static IMappingExpression<TSource, TDestination> MapStringInTuple<TSource, TDestination>(
-            this IMappingExpression<TSource, TDestination> expression, string splitter)
-        {
-            var sourceType = typeof(TSource);
-            foreach (var property in sourceType.GetProperties())
-            {
-                if (property is string)
-                {
-                    expression.ForMember(property.Name, opt =>
-                       opt.MapFrom(f => f.ToString().ToTuple(splitter)));
-                }
-            }
-            return expression;
-        }
     }
 }

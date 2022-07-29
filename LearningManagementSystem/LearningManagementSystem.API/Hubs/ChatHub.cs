@@ -7,6 +7,7 @@ using OfficeOpenXml.Sorting;
 
 namespace LearningManagementSystem.API.Hubs
 {
+
     //TODO: Make managing many connections of one user
     public class ChatHub : Hub
     {
@@ -15,6 +16,7 @@ namespace LearningManagementSystem.API.Hubs
 
         public ChatHub(ILogger<ChatHub> logger, AppDbContext db)
         {
+
             _logger = logger;
             _db = db;
         }
@@ -25,11 +27,11 @@ namespace LearningManagementSystem.API.Hubs
             {
                 return;
             }
-
             var sender = Context.Items["User"] as Student;
 
             message.Sender = sender.User.UserName;
-
+            message.Date = DateTime.Now;
+            
             await _db.GroupChatMessages.AddAsync(new GroupChatMessage()
             {
                 SenderId = sender.Id,
@@ -38,8 +40,13 @@ namespace LearningManagementSystem.API.Hubs
                 CreationDate = message.Date
             });
             await _db.SaveChangesAsync();
+
             var group = Context.Items["Group"] as Group;
-            await Clients.OthersInGroup(group.Name).SendAsync("Send", message);
+
+            //TODO: Rewrite 
+            await Clients.Group(group.Name).SendAsync("ReceiveMessage", message);
+            
+            //await Clients.OthersInGroup(group.Name).SendAsync("ReceiveMessage", message);
         }
 
         public async Task Handshake(string userId)
@@ -59,8 +66,9 @@ namespace LearningManagementSystem.API.Hubs
             if (user is null || user.Group is null)
             {
                 await CloseClientConnectionAsync("Wrong user data");
+                return;
             }
-
+            
             var group = user!.Group;
             await Groups.AddToGroupAsync(Context.ConnectionId, group.Name);
             Context.Items.TryAdd("User", user);
@@ -71,15 +79,18 @@ namespace LearningManagementSystem.API.Hubs
         {
             var group = Context.Items["Group"] as Group;
             var user = Context.Items["User"] as Student;
+
             var chatMessages = group.ChatMessages.Select(m => new ChatMessage()
             {
-                Sender = m.Sender.UserName.Equals(user.User.UserName) ? "Me" : m.Sender.UserName,
+                Sender = m.Sender.UserName,
                 Date = m.CreationDate,
                 Text = m.Text
             }).ToList();
 
             var chatHistory = new ChatHistory()
             {
+                UserName = user.User.UserName,
+                UserId = user.Id,
                 GroupId = group.Id,
                 GroupName = group.Name,
                 ChatMessages = chatMessages
@@ -91,11 +102,11 @@ namespace LearningManagementSystem.API.Hubs
         //TODO: Rewrite in more 'friendly' form
         private async Task CloseClientConnectionAsync(string errorMessage)
         {
-            await Clients.Caller.SendAsync("Disconnect", new ChatServerResponse()
-            {
-                IsSuccessful = false,
-                Message = errorMessage
-            });
+            //await Clients.Caller.SendAsync("Disconnect", new ChatServerResponse()
+            //{
+            //    IsSuccessful = false,
+            //    Message = errorMessage
+            //});
             Context.Abort();
         }
 
@@ -107,7 +118,8 @@ namespace LearningManagementSystem.API.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            _logger.LogInformation($"Connection id: [{Context.ConnectionId}] is disconnected");
+            Console.WriteLine("\n\n\n");
+            _logger.LogCritical($"Connection id: [{Context.ConnectionId}] is disconnected");
             return base.OnDisconnectedAsync(exception);
         }
     }

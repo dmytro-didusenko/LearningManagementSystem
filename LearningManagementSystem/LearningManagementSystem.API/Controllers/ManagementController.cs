@@ -1,8 +1,12 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.API.Hubs;
+using LearningManagementSystem.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace LearningManagementSystem.API.Controllers
 {
+
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]

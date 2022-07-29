@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using LearningManagementSystem.API.Hubs;
+using LearningManagementSystem.API.SignalRServices;
 using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Implementation;
@@ -49,7 +49,11 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IGradeNotifyJob, GradeNotifyJob>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<ICertificateService, CertificateService>();
+            services.AddSingleton<IUserConnectionService, UserConnectionService>();
+            services.AddHostedService(sp => (SignalRNotificationService)sp.GetService<INotificationSink>());
+            services.AddSingleton<INotificationSink, SignalRNotificationService>();
             return services;
+
         }
 
         public static void AddJobAndTrigger<T>(

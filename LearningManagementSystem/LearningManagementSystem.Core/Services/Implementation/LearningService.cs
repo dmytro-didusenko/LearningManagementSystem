@@ -71,7 +71,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             return Response<HomeTaskCreateModel>.GetSuccess(model);
         }
-
         public async Task<Response<HomeTaskModel>> UpdateHomeTaskAsync(Guid id, HomeTaskModel model)
         {
             ArgumentNullException.ThrowIfNull(model);

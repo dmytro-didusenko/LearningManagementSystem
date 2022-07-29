@@ -32,8 +32,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
         public async Task<Response<CourseModel>> AddAsync(CourseModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
+            model.IsActive = true;
             var entity = _mapper.Map<Course>(model);
-            entity.IsActive = true;
             await _context.Courses.AddAsync(entity);
             await _context.SaveChangesAsync();
             model.Id = entity.Id;

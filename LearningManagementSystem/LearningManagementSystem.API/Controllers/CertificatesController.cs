@@ -24,7 +24,7 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Certificate>>> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync()
         { 
             var certificates = await _certificateService.GetAllAsync();
             return Ok(certificates);

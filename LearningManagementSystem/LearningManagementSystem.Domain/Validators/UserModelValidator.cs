@@ -25,7 +25,6 @@ namespace LearningManagementSystem.Domain.Validators
                 .NotNull()
                 .NotEmpty()
                 .Length(2, 15).WithMessage("Invalid name length")
-                .Length(2, 15).WithMessage("Invalid name length")
                 .Must(ValidatorHelper.OnlyCharacters).WithMessage(ValidatorHelper.OnlyCharactersError);
 
             RuleFor(r => r.UserName)

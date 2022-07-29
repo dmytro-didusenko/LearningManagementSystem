@@ -2,6 +2,8 @@
 using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
+using LearningManagementSystem.Domain.Entities;
+using LearningManagementSystem.Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -120,11 +122,12 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddStudentsToGroupAsync(List<Guid> studentIds, Guid groupId)
+        public async Task<IEnumerable<StudentModel>> AddStudentsToGroupAsync(List<Guid> studentIds, Guid groupId)
         {
+            var students = new List<Student>();
             foreach (var studentId in studentIds)
             {
-                var student = await _context.Students.FindAsync(studentId);
+                var student = await _context.Students.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == studentId);
 
                 if (student is null)
                     throw new NotFoundException($"Student with id [{studentId}] was not found.");
@@ -138,9 +141,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     throw new NotFoundException($"Group with id [{groupId}] was not found.");
 
                 student.GroupId = groupId;
-                _context.Students.Update(student);
+                students.Add(student);
             }
+            _context.Students.UpdateRange(students);
             await _context.SaveChangesAsync();
+            return _mapper.Map<IEnumerable<StudentModel>>(students);
         }
 
         //public async Task RemoveStudentFromGroupAsync(Guid studentId, Guid groupId)

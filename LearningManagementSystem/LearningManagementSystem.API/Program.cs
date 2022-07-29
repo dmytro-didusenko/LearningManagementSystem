@@ -55,15 +55,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-//builder.Services.AddMvc(options =>
-//{
-//    options.Filters.Add(new ValidationFilter());
-//}).AddFluentValidation(cfg =>
-//{
-//    cfg.RegisterValidatorsFromAssemblyContaining<UserModelValidator>();
-//    cfg.DisableDataAnnotationsValidation = true;
-//    cfg.LocalizationEnabled = false;
-//});
 
 builder.Services.AddControllers();
 builder.Services.AddMvc(options =>

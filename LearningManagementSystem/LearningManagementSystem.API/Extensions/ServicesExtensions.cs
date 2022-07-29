@@ -6,6 +6,7 @@ using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.AutoMapper;
 using LearningManagementSystem.Domain.Contextes;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 
@@ -13,6 +14,7 @@ namespace LearningManagementSystem.API.Extensions
 {
     public static class ServicesExtensions
     {
+    
         public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration cfg)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(cfg.GetConnectionString("DefaultConnection")));

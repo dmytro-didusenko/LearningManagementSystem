@@ -81,11 +81,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return _mapper.Map<SubjectModel>(subject);
         }
 
-        public IEnumerable<SubjectModel> GetAll()
+        public async Task<IEnumerable<SubjectModel>> GetAll()
         {
-            var subjects = _context.Subjects.Include(i => i.Courses)
+            var subjects = await _context.Subjects.Include(i => i.Courses)
                 .Include(i => i.Teachers)
-                .Include(i => i.Topics).AsEnumerable();
+                .Include(i => i.Topics).ToListAsync();
             return _mapper.Map<IEnumerable<SubjectModel>>(subjects);
         }
     }

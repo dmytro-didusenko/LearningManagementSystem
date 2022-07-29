@@ -25,9 +25,9 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllSubjects()
+        public async Task<IActionResult> GetAllSubjects()
         {
-            return Ok(_subjectService.GetAll());
+            return Ok(await _subjectService.GetAll());
         }
 
         [HttpGet("{id}")]

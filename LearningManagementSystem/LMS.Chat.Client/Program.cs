@@ -71,7 +71,7 @@ public class Program
             .WithAutomaticReconnect()
             .Build();
 
-        hubConnection.On<ChatMessage>("Send", async m =>
+        hubConnection.On<ChatMessage>("ReceiveMessage", async m =>
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"\n\n{m.Sender}-> {m.Text}" +

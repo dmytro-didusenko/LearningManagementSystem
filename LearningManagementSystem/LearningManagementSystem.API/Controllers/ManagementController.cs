@@ -1,8 +1,12 @@
-﻿using LearningManagementSystem.Core.Services.Interfaces;
+﻿using LearningManagementSystem.API.Extensions;
+using LearningManagementSystem.API.Hubs;
+using LearningManagementSystem.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace LearningManagementSystem.API.Controllers
 {
+
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
@@ -23,10 +27,9 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpPost("AddStudents/ToGroup/{groupId}")]
-        public async Task<IActionResult> AddStudentsToGroup(List<Guid> studentIds, Guid groupId)
+        public async Task<IActionResult> AddStudentsToGroup([FromBody]List<Guid> studentIds, [FromRoute]Guid groupId)
         {
-            await _managementService.AddStudentsToGroupAsync(studentIds, groupId);
-            return Ok();
+            return Ok(await _managementService.AddStudentsToGroupAsync(studentIds, groupId));
         }
 
         [HttpPost("AddCourse/{courseId}/ToGroup/{groupId}")]

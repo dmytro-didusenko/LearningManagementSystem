@@ -7,7 +7,7 @@ namespace LearningManagementSystem.Core.Services.Interfaces
     public interface ILearningService
     {
         public Task<Response<TopicCreateModel>> CreateTopicAsync(TopicCreateModel model);
-        public IEnumerable<TopicModel> GetTopicsBySubjectId(Guid subjectId);
+        public Task<IEnumerable<TopicModel>> GetTopicsBySubjectId(Guid subjectId);
         public Task<Response<TopicModel>> UpdateTopicAsync(Guid id, TopicModel model);
         public Task<Response<HomeTaskCreateModel>> CreateHomeTaskAsync(HomeTaskCreateModel model);
         public Task<Response<HomeTaskModel>> UpdateHomeTaskAsync(Guid id, HomeTaskModel model);

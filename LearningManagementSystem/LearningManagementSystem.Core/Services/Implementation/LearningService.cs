@@ -8,6 +8,7 @@ using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models.HomeTask;
 using LearningManagementSystem.Domain.Models.Responses;
 using LearningManagementSystem.Domain.Models.Topic;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -211,7 +212,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<TaskAnswerModel>.GetSuccess(_mapper.Map<TaskAnswerModel>(taskAnswer));
         }
 
-        public async Task<Response<GradeModel>> AddGradeAsync(Guid taskAnswerId, GradeModel model)
+        public async Task<Response<GradeModel>> AddGradeAsync(Guid taskAnswerId, GradeModel model )
         {
             ArgumentNullException.ThrowIfNull(model);
             var taskAnswer = await _context.TaskAnswers.FirstOrDefaultAsync(f => f.Id.Equals(taskAnswerId));
@@ -220,26 +221,26 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return Response<GradeModel>.GetError(ErrorCode.NotFound, "Task answer does not exist");
             }
 
-            //Running background task
-            _jobClient.Enqueue<IGradeNotifyJob>(gradeJob => gradeJob.SendNotification(taskAnswer.StudentId));
-
             var entity = _mapper.Map<Grade>(model);
             entity.Id = taskAnswerId;
             await _context.Grades.AddAsync(entity);
             await _context.SaveChangesAsync();
 
+            //Running background task
+            _jobClient.Enqueue<IGradeNotifyJob>(gradeJob => gradeJob.SendNotification(taskAnswer.StudentId));
+
             return Response<GradeModel>.GetSuccess(model);
         }
 
-        public IEnumerable<TopicModel> GetTopicsBySubjectId(Guid subjectId)
+        public async Task<IEnumerable<TopicModel>> GetTopicsBySubjectId(Guid subjectId)
         {
-            var subject = _context.Subjects.FirstOrDefaultAsync(f => f.Id.Equals(subjectId));
+            var subject = await _context.Subjects.FirstOrDefaultAsync(f => f.Id.Equals(subjectId));
             if (subject is null)
             {
                 throw new NotFoundException(subjectId);
             }
-            var topics = _context.Topics.Include(i => i.HomeTask)
-                .Where(i => i.SubjectId.Equals(subjectId)).AsEnumerable();
+            var topics = await _context.Topics
+                .Where(i => i.SubjectId.Equals(subjectId)).ToListAsync();
             return _mapper.Map<IEnumerable<TopicModel>>(topics);
         }
 

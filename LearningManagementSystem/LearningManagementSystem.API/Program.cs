@@ -43,7 +43,17 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.Configure<VisitingReportOptions>(builder.Configuration.GetSection("Reports").GetSection("VisitingReport"));
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
 
 //builder.Services.AddMvc(options =>
 //{
@@ -115,10 +125,13 @@ app.UseAuthorization();
 
 app.UseHangfireDashboard();
 
-app.UseCors(b => b.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+app.UseCors();
 
 app.MapControllers();
 
 app.MapHub<ChatHub>("/chat");
+
+app.MapHub<NotificationHub>("/notification");
+
 
 app.Run();

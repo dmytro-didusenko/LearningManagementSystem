@@ -3,6 +3,7 @@ using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml.Sorting;
 
 namespace LearningManagementSystem.API.Hubs

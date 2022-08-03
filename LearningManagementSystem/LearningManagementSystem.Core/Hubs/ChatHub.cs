@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.Domain.ChatModels;
+﻿using LearningManagementSystem.Core.Filters;
+using LearningManagementSystem.Domain.ChatModels;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
@@ -32,7 +33,7 @@ namespace LearningManagementSystem.API.Hubs
 
             message.Sender = sender.User.UserName;
             message.Date = DateTime.Now;
-            
+
             await _db.GroupChatMessages.AddAsync(new GroupChatMessage()
             {
                 SenderId = sender.Id,
@@ -44,10 +45,7 @@ namespace LearningManagementSystem.API.Hubs
 
             var group = Context.Items["Group"] as Group;
 
-            //TODO: Rewrite 
             await Clients.Group(group.Name).SendAsync("ReceiveMessage", message);
-            
-            //await Clients.OthersInGroup(group.Name).SendAsync("ReceiveMessage", message);
         }
 
         public async Task Handshake(string userId)
@@ -59,8 +57,7 @@ namespace LearningManagementSystem.API.Hubs
 
             var user = await _db.Students
                 .Include(i => i.Group)
-                    .ThenInclude(t => t.ChatMessages)
-                    .ThenInclude(t => t.Sender)
+
                 .Include(i => i.User)
                 .FirstOrDefaultAsync(f => f.Id.Equals(parsedId));
 
@@ -69,24 +66,45 @@ namespace LearningManagementSystem.API.Hubs
                 await CloseClientConnectionAsync("Wrong user data");
                 return;
             }
-            
+
             var group = user!.Group;
             await Groups.AddToGroupAsync(Context.ConnectionId, group.Name);
             Context.Items.TryAdd("User", user);
             Context.Items.TryAdd("Group", group);
         }
 
-        public Task<ChatHistory> GetChatHistory()
+        public async Task<GroupInfo> GetGroupInfo()
         {
             var group = Context.Items["Group"] as Group;
             var user = Context.Items["User"] as Student;
 
-            var chatMessages = group.ChatMessages.Select(m => new ChatMessage()
+            var chatHistory = new GroupInfo
             {
-                Sender = m.Sender.UserName,
-                Date = m.CreationDate,
-                Text = m.Text
-            }).ToList();
+                UserName = user.User.UserName,
+                UserId = user.Id,
+                GroupId = group.Id,
+                GroupName = group.Name
+            };
+
+            return await Task.FromResult(chatHistory);
+        }
+
+        public async Task<ChatHistory> GetChatHistory(PaginationFilter filter)
+        {
+            var group = Context.Items["Group"] as Group;
+            var user = Context.Items["User"] as Student;
+
+            var chatMessages = await _db.GroupChatMessages
+                .OrderByDescending(o => o.CreationDate)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Where(w => w.GroupId.Equals(group.Id))
+                .Select(m => new ChatMessage()
+                {
+                    Sender = m.Sender.UserName,
+                    Date = m.CreationDate,
+                    Text = m.Text
+                }).Reverse().ToListAsync();
 
             var chatHistory = new ChatHistory()
             {
@@ -97,7 +115,7 @@ namespace LearningManagementSystem.API.Hubs
                 ChatMessages = chatMessages
             };
 
-            return Task.FromResult(chatHistory);
+            return chatHistory;
         }
 
         //TODO: Rewrite in more 'friendly' form
@@ -123,5 +141,13 @@ namespace LearningManagementSystem.API.Hubs
             _logger.LogCritical($"Connection id: [{Context.ConnectionId}] is disconnected");
             return base.OnDisconnectedAsync(exception);
         }
+    }
+
+    public class GroupInfo
+    {
+        public string UserName { get; set; } = string.Empty;
+        public Guid UserId { get; set; } 
+        public Guid GroupId { get; set; } 
+        public string GroupName { get; set; } = string.Empty;
     }
 }

@@ -22,20 +22,12 @@ namespace LearningManagementSystem.Domain.Contextes
         public DbSet<StudentAnswer> StudentAnswers { get; set; } = null!;
         public DbSet<GroupChatMessage> GroupChatMessages { get; set; } = null!;
         public DbSet<Certificate> Certificates { get; set; } = null!;
+        public DbSet<Role> Roles { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<User>()
-                .Property(p => p.UserName)
-                .IsRequired()
-                .HasMaxLength(60);
-
-            modelBuilder.Entity<User>()
-                .Property(p => p.Email)
-                .IsRequired();
 
             modelBuilder.Entity<Student>()
                 .HasOne(o => o.Group)

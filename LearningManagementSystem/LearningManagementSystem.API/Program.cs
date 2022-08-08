@@ -8,15 +8,14 @@ using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
-using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Domain.Models.Options;
-using LearningManagementSystem.Domain.Models.Report;
-using LearningManagementSystem.Domain.Models.User;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 using Swashbuckle.AspNetCore.SwaggerUI;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +33,7 @@ builder.Services.AddHangfire((provider, cfg) =>
 });
 builder.Services.AddHangfireServer();
 
+builder.Services.AddSwagger();
 
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
@@ -41,7 +41,10 @@ builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+
+//Options
 builder.Services.Configure<VisitingReportOptions>(builder.Configuration.GetSection("Reports").GetSection("VisitingReport"));
+builder.Services.Configure<JwtSettingsOptions>(builder.Configuration.GetSection("JWTSettings"));
 
 builder.Services.AddCors(options =>
 {
@@ -54,7 +57,6 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
         });
 });
-
 
 builder.Services.AddControllers();
 builder.Services.AddMvc(options =>
@@ -71,10 +73,8 @@ builder.Services.AddFluentValidation(cfg =>
     cfg.RegisterValidatorsFromAssemblyContaining<UserModelValidator>();
     cfg.DisableDataAnnotationsValidation = true;
     cfg.LocalizationEnabled = false;
-
-    //cfg.AutomaticValidationEnabled = false;
-
 });
+
 
 //configuring MassTransit
 builder.Services.AddMassTransit(cfg =>
@@ -84,6 +84,7 @@ builder.Services.AddMassTransit(cfg =>
         x.Host(new Uri(builder.Configuration["RabbitMQ:Uri"]));
     });
 });
+
 
 //Adding Quartz
 //builder.Services.AddQuartz(cfg =>
@@ -99,6 +100,7 @@ builder.Services.AddMassTransit(cfg =>
 //add DinkToPdf
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -111,6 +113,12 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.Use(async(ctx, next) =>
+{
+    Console.WriteLine("\n\n MIDDLEWARE \n\n");
+    await next(ctx);
+});
 
 app.UseAuthorization();
 

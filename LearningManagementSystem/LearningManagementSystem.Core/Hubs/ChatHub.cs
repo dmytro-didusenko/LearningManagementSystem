@@ -89,22 +89,19 @@ namespace LearningManagementSystem.API.Hubs
             return await Task.FromResult(chatHistory);
         }
 
-        public async Task<ChatHistory> GetChatHistory(PaginationFilter filter)
+        public async Task<ChatHistory> GetChatHistory()
         {
             var group = Context.Items["Group"] as Group;
             var user = Context.Items["User"] as Student;
 
             var chatMessages = await _db.GroupChatMessages
-                .OrderByDescending(o => o.CreationDate)
-                .Skip((filter.PageNumber - 1) * filter.PageSize)
-                .Take(filter.PageSize)
                 .Where(w => w.GroupId.Equals(group.Id))
                 .Select(m => new ChatMessage()
                 {
                     Sender = m.Sender.UserName,
                     Date = m.CreationDate,
                     Text = m.Text
-                }).Reverse().ToListAsync();
+                }).ToListAsync();
 
             var chatHistory = new ChatHistory()
             {
@@ -137,7 +134,6 @@ namespace LearningManagementSystem.API.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            Console.WriteLine("\n\n\n");
             _logger.LogCritical($"Connection id: [{Context.ConnectionId}] is disconnected");
             return base.OnDisconnectedAsync(exception);
         }

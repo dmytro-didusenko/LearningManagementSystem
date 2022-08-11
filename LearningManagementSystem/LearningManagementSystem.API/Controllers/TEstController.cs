@@ -1,12 +1,7 @@
 ﻿using Hangfire;
 using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Services.Implementation;
-using LearningManagementSystem.Domain.Models.NotificationMessage;
-using LearningManagementSystem.Domain.Models.Options;
-using MassTransit.Configuration;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace LearningManagementSystem.API.Controllers
 {
@@ -22,13 +17,10 @@ namespace LearningManagementSystem.API.Controllers
             this.notificationSink = notificationSink;
             this.jobClient = jobClient;
         }
-
-
         [HttpGet("id")]
         public async Task<IActionResult> Get(Guid id)
         {
-
-            jobClient.Enqueue<IGradeNotifyJob>(job =>job.SendNotification(id));
+            jobClient.Enqueue<IGradeNotifyJob>(job => job.SendNotification(id));
             return Ok();
         }
 

@@ -11,6 +11,7 @@ using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
@@ -84,8 +85,6 @@ builder.Services.AddMassTransit(cfg =>
         x.Host(new Uri(builder.Configuration["RabbitMQ:Uri"]));
     });
 });
-
-
 //Adding Quartz
 //builder.Services.AddQuartz(cfg =>
 //{
@@ -110,17 +109,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 }
 
-app.UseMiddleware<ErrorHandlerMiddleware>();
+//app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.Use(async(ctx, next) =>
-{
-    Console.WriteLine("\n\n MIDDLEWARE \n\n");
-    await next(ctx);
-});
-
-app.UseAuthorization();
+app.UseMiddleware<AuthMiddleware>();
 
 app.UseHangfireDashboard();
 
@@ -128,8 +121,9 @@ app.UseCors();
 
 app.MapControllers();
 
-app.MapHub<ChatHub>("/chat");
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapHub<NotificationHub>("/notification");
 
 app.Run();
+

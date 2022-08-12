@@ -57,7 +57,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [Authorized()]
+        [Authorized("Student")]
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {

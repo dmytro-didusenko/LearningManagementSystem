@@ -8,6 +8,7 @@ using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
+using LearningManagementSystem.Core.Hubs;
 using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Models.Report;
@@ -108,7 +109,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 }
 
-app.UseMiddleware<ErrorHandlerMiddleware>();
+//app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
@@ -121,6 +122,8 @@ app.UseCors();
 app.MapControllers();
 
 app.MapHub<ChatHub>("/chat");
+
+app.MapHub<StaffChatHub>("/staffChat");
 
 app.MapHub<NotificationHub>("/notification");
 

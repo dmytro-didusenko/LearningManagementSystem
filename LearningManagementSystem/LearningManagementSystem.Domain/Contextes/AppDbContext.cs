@@ -22,6 +22,7 @@ namespace LearningManagementSystem.Domain.Contextes
         public DbSet<StudentAnswer> StudentAnswers { get; set; } = null!;
         public DbSet<GroupChatMessage> GroupChatMessages { get; set; } = null!;
         public DbSet<Certificate> Certificates { get; set; } = null!;
+        public DbSet<StaffChatMessage> StaffChatMessages { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

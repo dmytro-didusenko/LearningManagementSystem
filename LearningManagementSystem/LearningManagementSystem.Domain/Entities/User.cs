@@ -11,7 +11,6 @@
         public bool IsActive { get; set; } = true;
         public Gender Gender { get; set; }
         public ICollection<Document>? Document { get; set; }
-        public ICollection<GroupChatMessage> ChatMessages { get; set; }
     }
 
     public enum Gender

@@ -96,7 +96,6 @@ namespace LearningManagementSystem.Core.AuthServices
             return new AuthUserModel()
             {
                 Id = user.Id,
-                Email = user.Email,
                 UserName = user.UserName,
                 Role = user.Role.RoleName
             };

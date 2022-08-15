@@ -6,7 +6,7 @@ namespace LearningManagementSystem.API.Middlewares
     public class AuthMiddleware
     {
         private readonly RequestDelegate _next;
-        
+
         public AuthMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -15,7 +15,7 @@ namespace LearningManagementSystem.API.Middlewares
         public async Task Invoke(HttpContext context, IUserManager userManager, JwtHandler jwtHandler)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            
+
             if (string.IsNullOrEmpty(token))
             {
                 var accessToken = context.Request.Query["access_token"];
@@ -27,10 +27,10 @@ namespace LearningManagementSystem.API.Middlewares
                     token = accessToken;
                 }
             }
-            var userId = jwtHandler.ValidateToken(token);
-            if (userId != null)
+            var user = jwtHandler.ValidateToken(token);
+            if (user != null)
             {
-                context.Items["User"] = await userManager.GetUserById(userId.Value);
+                context.Items["User"] = user;
             }
 
             await _next(context);

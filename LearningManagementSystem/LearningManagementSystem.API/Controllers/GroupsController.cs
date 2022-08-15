@@ -1,4 +1,5 @@
-﻿using LearningManagementSystem.API.Extensions;
+﻿using LearningManagementSystem.API.Attributes;
+using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Filters;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.Group;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
 {
+    [Authorized]
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
@@ -29,7 +31,8 @@ namespace LearningManagementSystem.API.Controllers
         {
             return Ok(await _groupService.GetAll(filter));
         }
-
+      
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

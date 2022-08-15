@@ -14,8 +14,10 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Quartz;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using AllowAnonymousAttribute = LearningManagementSystem.API.Attributes.AllowAnonymousAttribute;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +65,7 @@ builder.Services.AddControllers();
 builder.Services.AddMvc(options =>
     {
         options.Filters.Add<ValidationFilter>(1);
+        options.Filters.Add<AllowAnonymousAttribute>();
     });
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>

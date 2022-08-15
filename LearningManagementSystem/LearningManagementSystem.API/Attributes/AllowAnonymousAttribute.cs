@@ -1,6 +1,9 @@
-﻿namespace LearningManagementSystem.API.Attributes
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+
+namespace LearningManagementSystem.API.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class AllowAnonymousAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class AllowAnonymousAttribute : Attribute, IAllowAnonymousFilter
     { }
 }

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using LearningManagementSystem.Domain.Entities;
+using LearningManagementSystem.Domain.Models.Auth;
 using LearningManagementSystem.Domain.Models.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -45,7 +46,7 @@ public class JwtHandler
         return tokenHandler.WriteToken(token);
     }
 
-    public Guid? ValidateToken(string token)
+    public AuthUserModel? ValidateToken(string token)
     {
         if (string.IsNullOrEmpty(token))
             return null;
@@ -66,20 +67,28 @@ public class JwtHandler
             }, out SecurityToken validatedToken);
 
             var jwtToken = validatedToken as JwtSecurityToken;
-            var claim = jwtToken?.Claims.FirstOrDefault(x => x.Type.Equals("nameid"));
-            var validate = Guid.TryParse(claim?.Value, out var userId);
 
-            if (!validate)
+            var claimId = jwtToken?.Claims.FirstOrDefault(x => x.Type.Equals("nameid"));
+            var validate = Guid.TryParse(claimId?.Value, out var userId);
+            var userName = jwtToken?.Claims.FirstOrDefault(f => f.Type.Equals("name"))?.Value;
+            var role = jwtToken?.Claims.FirstOrDefault(f => f.Type.Equals("role"))?.Value;
+
+            if (!validate || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(role))
             {
                 return null;
             }
-            return userId;
+
+            return new AuthUserModel()
+            {
+                Id = userId,
+                Role = role,
+                UserName = userName
+            };
         }
         catch (Exception e)
         {
             _logger.LogInformation($"--Error in validating: {e.Message}");
             return null;
         }
-
     }
 }

@@ -15,7 +15,6 @@ namespace LearningManagementSystem.Domain.Validators
                 .NotNull()
                 .EmailAddress();
 
-            //TODO: Validation for password
             RuleFor(r => r.Password)
                 .Must(ValidatorHelper.PasswordValidator)
                 .WithMessage("Wrong password");

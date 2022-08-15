@@ -49,7 +49,7 @@ namespace LearningManagementSystem.API.Controllers
             var res = await _documentService.AddDocumentAsync(model);
             return res.ToActionResult();
         }
-
+      
         [HttpGet("Documents")]
         public async Task<IActionResult> GetDocumentByFilter([FromQuery] DocumentQueryModel? query = null)
         {
@@ -57,7 +57,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [Authorized("Student")]
+        [Authorized("Admin")]
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {

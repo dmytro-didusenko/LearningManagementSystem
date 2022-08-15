@@ -17,7 +17,7 @@ namespace LearningManagementSystem.API.Attributes
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var allowAnonymous = context.Filters.OfType<IAllowAnonymousFilter>().Any();
+            var allowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any();
             if (allowAnonymous)
                 return;
 
@@ -27,7 +27,7 @@ namespace LearningManagementSystem.API.Attributes
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
                 return;
             }
-
+            
             if ((_roles.Any() && !_roles.Contains(user?.Role)))
             {
                 context.Result = new JsonResult(new { message = "Forbidden access" }) { StatusCode = StatusCodes.Status403Forbidden };

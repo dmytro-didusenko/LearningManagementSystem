@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220803094507_StaffChatMessages")]
+    partial class StaffChatMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -350,14 +352,7 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TestId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TestId")
-                        .IsUnique()
-                        .HasFilter("[TestId] IS NOT NULL");
 
                     b.ToTable("Subjects");
                 });
@@ -428,14 +423,19 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DurationInMinutes")
-                        .HasColumnType("int");
+                    b.Property<TimeSpan?>("Duration")
+                        .HasColumnType("time");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Tests");
                 });
@@ -669,15 +669,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Answer");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Test", "Test")
-                        .WithOne("Subject")
-                        .HasForeignKey("LearningManagementSystem.Domain.Entities.Subject", "TestId");
-
-                    b.Navigation("Test");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
                 {
                     b.HasOne("LearningManagementSystem.Domain.Entities.HomeTask", "HomeTask")
@@ -712,6 +703,17 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Subject");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Test", b =>
+                {
+                    b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
+                        .WithMany("Tests")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
@@ -753,6 +755,8 @@ namespace LearningManagementSystem.Domain.Migrations
                 {
                     b.Navigation("Teachers");
 
+                    b.Navigation("Tests");
+
                     b.Navigation("Topics");
                 });
 
@@ -766,9 +770,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("StudentAnswers");
-
-                    b.Navigation("Subject")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>

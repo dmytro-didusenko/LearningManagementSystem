@@ -33,12 +33,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             }
 
             var entity = _mapper.Map<Test>(model);
-            if (model.DurationInHours is not null)
-            {
-                entity.Duration = new TimeSpan(model.DurationInHours!.Value, 0, 0);
-            }
-
-            await _context.Tests.AddAsync(entity);
+            subject.Test = entity;
             await _context.SaveChangesAsync();
             _logger.LogInformation("New test has been successfully added!");
             model.Id = entity.Id;

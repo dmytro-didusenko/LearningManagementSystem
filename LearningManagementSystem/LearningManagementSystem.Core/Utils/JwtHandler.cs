@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace LearningManagementSystem.API.Utils;
+namespace LearningManagementSystem.Core.Utils;
 
-public class JwtHandler
+public class JwtHandler : IJwtHandler
 {
     private readonly ILogger<JwtHandler> _logger;
     private readonly JwtSettingsOptions _jwtSettings;

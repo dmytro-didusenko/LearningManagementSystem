@@ -5,8 +5,8 @@ using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using BCrypt.Net;
-using LearningManagementSystem.API.Utils;
 using LearningManagementSystem.Core.Exceptions;
+using LearningManagementSystem.Core.Utils;
 
 namespace LearningManagementSystem.Core.AuthServices
 {
@@ -14,9 +14,9 @@ namespace LearningManagementSystem.Core.AuthServices
     {
         private readonly AppDbContext _db;
         private readonly ILogger<UserManager> _logger;
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
 
-        public UserManager(AppDbContext db, ILogger<UserManager> logger, JwtHandler jwtHandler)
+        public UserManager(AppDbContext db, ILogger<UserManager> logger, IJwtHandler jwtHandler)
         {
             _db = db;
             _logger = logger;
@@ -51,7 +51,6 @@ namespace LearningManagementSystem.Core.AuthServices
             return Response<bool>.GetSuccess(true);
         }
 
-
         public async Task<Response<AuthResponse>> SignInAsync(SignInModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
@@ -61,7 +60,7 @@ namespace LearningManagementSystem.Core.AuthServices
                 .FirstOrDefaultAsync(f => f.UserName.Equals(model.UserName));
 
             var isCorrectPassword = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
-         
+
             if (user is null || !isCorrectPassword)
             {
                 return Response<AuthResponse>.GetError(ErrorCode.BadRequest, "Wrong username or password!");
@@ -92,7 +91,7 @@ namespace LearningManagementSystem.Core.AuthServices
 
         public async Task<AuthUserModel> GetUserById(Guid id)
         {
-            var user = await _db.Users.Include(i=>i.Role).FirstOrDefaultAsync(f => f.Id.Equals(id));
+            var user = await _db.Users.Include(i => i.Role).FirstOrDefaultAsync(f => f.Id.Equals(id));
             return new AuthUserModel()
             {
                 Id = user.Id,

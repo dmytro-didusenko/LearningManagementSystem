@@ -1,5 +1,5 @@
-﻿using LearningManagementSystem.API.Utils;
-using LearningManagementSystem.Core.AuthServices;
+﻿using LearningManagementSystem.Core.AuthServices;
+using LearningManagementSystem.Core.Utils;
 
 namespace LearningManagementSystem.API.Middlewares
 {
@@ -12,7 +12,7 @@ namespace LearningManagementSystem.API.Middlewares
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IUserManager userManager, JwtHandler jwtHandler)
+        public async Task Invoke(HttpContext context, IUserManager userManager, IJwtHandler jwtHandler)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 

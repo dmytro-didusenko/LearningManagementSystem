@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.API.SignalRServices;
-using LearningManagementSystem.API.Utils;
 using LearningManagementSystem.Core.AuthServices;
 using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Core.Utils;
 using LearningManagementSystem.Domain.AutoMapper;
 using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +86,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddSingleton<IUserConnectionService, UserConnectionService>();
             services.AddHostedService(sp => (SignalRNotificationService)sp.GetService<INotificationSink>());
             services.AddSingleton<INotificationSink, SignalRNotificationService>();
-            services.AddScoped<JwtHandler>();
+            services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IRoleManager, RoleManager>();
 

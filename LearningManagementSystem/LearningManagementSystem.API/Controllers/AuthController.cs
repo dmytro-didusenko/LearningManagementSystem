@@ -17,7 +17,6 @@ namespace LearningManagementSystem.API.Controllers
             _userManager = userManager;
         }
 
-
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
@@ -31,5 +30,6 @@ namespace LearningManagementSystem.API.Controllers
             var res =await _userManager.SignInAsync(signInModel);
             return res.ToActionResult();
         }
+        
     }
 }

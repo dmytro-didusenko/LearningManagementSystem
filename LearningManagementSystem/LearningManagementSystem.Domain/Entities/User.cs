@@ -15,9 +15,8 @@ namespace LearningManagementSystem.Domain.Entities
         public ICollection<Document>? Document { get; set; }
         public Guid? RoleId { get; set; }
         public Role? Role { get; set; } = null!;
-
-        [JsonIgnore]
-        public string PasswordHash { get; set; } = string.Empty!;
+        [JsonIgnore] public string PasswordHash { get; set; } = string.Empty!;
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = null!;
     }
 
     public enum Gender

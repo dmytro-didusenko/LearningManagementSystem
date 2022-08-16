@@ -6,7 +6,7 @@ namespace LearningManagementSystem.Core.Utils
     public interface IJwtHandler
     {
         public string GenerateToken(User user);
-
         public AuthUserModel? ValidateToken(string token);
+        
     }
 }

@@ -8,6 +8,6 @@
         public string Description { get; set; } = string.Empty;
         public DateTime DateOfStart { get; set; }
         public DateTime DateOfExpiration { get; set; }
-        public int? DurationInHours { get; set; }
+        public int DurationInMinutes { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220815121822_Update_Tests")]
+    partial class Update_Tests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -474,20 +476,12 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -577,7 +571,7 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired();
 
                     b.HasOne("LearningManagementSystem.Domain.Entities.User", "Sender")
-                        .WithMany()
+                        .WithMany("ChatMessages")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -607,17 +601,6 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Test");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.StaffChatMessage", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
@@ -710,65 +693,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId");
-
-                    b.OwnsMany("LearningManagementSystem.Domain.Entities.RefreshToken", "RefreshTokens", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedByIp")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime>("Expires")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("ReasonRevoked")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("ReplacedByToken")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime?>("Revoked")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("RevokedByIp")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Token")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("UserId", "Id");
-
-                            b1.ToTable("RefreshToken");
-
-                            b1.WithOwner("User")
-                                .HasForeignKey("UserId");
-
-                            b1.Navigation("User");
-                        });
-
-                    b.Navigation("RefreshTokens");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Group", b =>
                 {
                     b.Navigation("ChatMessages");
@@ -784,11 +708,6 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Question", b =>
                 {
                     b.Navigation("Answers");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
@@ -827,6 +746,8 @@ namespace LearningManagementSystem.Domain.Migrations
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>
                 {
+                    b.Navigation("ChatMessages");
+
                     b.Navigation("Document");
                 });
 #pragma warning restore 612, 618

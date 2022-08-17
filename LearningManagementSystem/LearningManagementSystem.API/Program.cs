@@ -8,6 +8,7 @@ using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
+
 using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
@@ -127,6 +128,8 @@ app.UseCors();
 app.MapControllers();
 
 app.MapHub<ChatHub>("/hubs/chat");
+
+app.MapHub<StaffChatHub>("/staffChat");
 
 app.MapHub<NotificationHub>("/notification");
 

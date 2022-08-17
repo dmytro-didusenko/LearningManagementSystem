@@ -12,7 +12,7 @@ namespace LearningManagementSystem.API.Middlewares
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IUserManager userManager, IJwtHandler jwtHandler)
+        public async Task Invoke(HttpContext context, IAuthManager authManager, IJwtHandler jwtHandler)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 

@@ -10,13 +10,13 @@ using LearningManagementSystem.Core.Utils;
 
 namespace LearningManagementSystem.Core.AuthServices
 {
-    public class UserManager : IUserManager
+    public class AuthManager : IAuthManager
     {
         private readonly AppDbContext _db;
-        private readonly ILogger<UserManager> _logger;
+        private readonly ILogger<AuthManager> _logger;
         private readonly IJwtHandler _jwtHandler;
 
-        public UserManager(AppDbContext db, ILogger<UserManager> logger, IJwtHandler jwtHandler)
+        public AuthManager(AppDbContext db, ILogger<AuthManager> logger, IJwtHandler jwtHandler)
         {
             _db = db;
             _logger = logger;
@@ -74,6 +74,16 @@ namespace LearningManagementSystem.Core.AuthServices
                 Username = user.UserName,
                 Role = user.Role.RoleName
             });
+        }
+
+        public Task<AuthResponse> RefreshTokenAsync(string token, string ipAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RevokeToken(string token, string ipAddress)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task AddToRoleAsync(User user, string roleName)

@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models.Auth;
 using LearningManagementSystem.Domain.Models.Options;
@@ -13,11 +14,15 @@ namespace LearningManagementSystem.Core.Utils;
 public class JwtHandler : IJwtHandler
 {
     private readonly ILogger<JwtHandler> _logger;
+    private readonly AppDbContext _db;
     private readonly JwtSettingsOptions _jwtSettings;
 
-    public JwtHandler(IOptions<JwtSettingsOptions> jwtSettingsOptions, ILogger<JwtHandler> logger)
+    public JwtHandler(IOptions<JwtSettingsOptions> jwtSettingsOptions,
+        ILogger<JwtHandler> logger,
+        AppDbContext db)
     {
         _logger = logger;
+        _db = db;
         _jwtSettings = jwtSettingsOptions.Value;
     }
 
@@ -90,5 +95,10 @@ public class JwtHandler : IJwtHandler
             _logger.LogInformation($"--Error in validating: {e.Message}");
             return null;
         }
+    }
+
+    public RefreshTokenModel GenerateRefreshTokenModel(string ipAddress)
+    {
+        throw new NotImplementedException();
     }
 }

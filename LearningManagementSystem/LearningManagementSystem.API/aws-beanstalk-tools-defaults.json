@@ -1,0 +1,20 @@
+
+{
+    "region" : "us-east-1",
+    "configuration" : "Debug",
+    "framework"     : "net6.0",
+    "self-contained" : false,
+    "application"    : "LearningManagementSystemAPI",
+    "environment"    : "LearningManagementSystemAPI-dev",
+    "enable-xray"    : false,
+    "enhanced-health-type" : "basic",
+    "additional-options"   : "\"aws:autoscaling:launchconfiguration,SecurityGroups\"=\"sg-0769d910d225053be,sg-0b49289317bd55fb8\";\"aws:ec2:vpc,Subnets\"=\"subnet-06c9a33941d0cab50,subnet-01bd1e806de095f72\"",
+    "solution-stack"       : "64bit Amazon Linux 2 v2.3.4 running .NET Core",
+    "environment-type"     : "SingleInstance",
+    "cname"                : "learningmanagementsystemapi-dev",
+    "instance-type"        : "t2.micro",
+    "key-pair"             : "",
+    "instance-profile"     : "aws-elasticbeanstalk-ec2-role",
+    "service-role"         : "aws-elasticbeanstalk-service-role",
+    "proxy-server"         : "nginx"
+}

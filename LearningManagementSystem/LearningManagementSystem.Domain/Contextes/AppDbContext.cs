@@ -34,6 +34,8 @@ namespace LearningManagementSystem.Domain.Contextes
                 .WithMany(m => m.Students)
                 .HasForeignKey(f => f.GroupId);
 
+            modelBuilder.Entity<User>().OwnsMany<RefreshToken>(o=>o.RefreshTokens);
+
             modelBuilder.Entity<HomeTask>()
                 .HasKey(k => k.TopicId);
 

@@ -7,6 +7,6 @@ namespace LearningManagementSystem.Core.Utils
     {
         public string GenerateToken(User user);
         public AuthUserModel? ValidateToken(string token);
-        
+        public RefreshTokenModel GenerateRefreshTokenModel(string ipAddress);
     }
 }

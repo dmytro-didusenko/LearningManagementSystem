@@ -54,7 +54,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000")
+            builder.SetIsOriginAllowed((host) => true)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -111,6 +111,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 }
+app.UseSwagger();
+app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 
 //app.UseMiddleware<ErrorHandlerMiddleware>();
 
@@ -118,7 +120,7 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<AuthMiddleware>();
 
-app.UseHangfireDashboard();
+//app.UseHangfireDashboard();
 
 app.UseCors();
 

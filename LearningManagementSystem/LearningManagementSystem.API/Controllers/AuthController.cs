@@ -1,7 +1,6 @@
 ﻿using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.AuthServices;
 using LearningManagementSystem.Domain.Models.Auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -10,26 +9,43 @@ namespace LearningManagementSystem.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IAuthManager _authManager;
 
-        public AuthController(IUserManager userManager)
+        public AuthController(IAuthManager authManager)
         {
-            _userManager = userManager;
+            _authManager = authManager;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
-            await _userManager.RegisterAsync(registerModel);
+            await _authManager.RegisterAsync(registerModel);
             return Ok();
         }
 
         [HttpPost("signin")]
         public async Task<IActionResult> Register(SignInModel signInModel)
         {
-            var res =await _userManager.SignInAsync(signInModel);
+            var res = await _authManager.SignInAsync(signInModel);
             return res.ToActionResult();
         }
-        
+
+        private void SettTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
+
+        private string? GetIpAddress()
+        {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+
+            return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+        }
     }
 }

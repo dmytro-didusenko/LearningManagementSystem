@@ -87,7 +87,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddHostedService(sp => (SignalRNotificationService)sp.GetService<INotificationSink>());
             services.AddSingleton<INotificationSink, SignalRNotificationService>();
             services.AddScoped<IJwtHandler, JwtHandler>();
-            services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IRoleManager, RoleManager>();
 
             return services;

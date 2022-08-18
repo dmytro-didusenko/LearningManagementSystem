@@ -4,9 +4,10 @@ using LearningManagementSystem.Domain.Models.Auth;
 using LearningManagementSystem.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using BCrypt.Net;
 using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Core.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace LearningManagementSystem.Core.AuthServices
 {
@@ -15,12 +16,17 @@ namespace LearningManagementSystem.Core.AuthServices
         private readonly AppDbContext _db;
         private readonly ILogger<AuthManager> _logger;
         private readonly IJwtHandler _jwtHandler;
+        private readonly IConfiguration _cfg;
 
-        public AuthManager(AppDbContext db, ILogger<AuthManager> logger, IJwtHandler jwtHandler)
+        public AuthManager(AppDbContext db,
+            ILogger<AuthManager> logger,
+            IJwtHandler jwtHandler,
+            IConfiguration cfg)
         {
             _db = db;
             _logger = logger;
             _jwtHandler = jwtHandler;
+            _cfg = cfg;
         }
 
         public async Task<Response<bool>> RegisterAsync(RegisterModel model)
@@ -78,12 +84,47 @@ namespace LearningManagementSystem.Core.AuthServices
 
         public Task<AuthResponse> RefreshTokenAsync(string token, string ipAddress)
         {
-            throw new NotImplementedException();
+            var user = GetUserByRefreshToken(token);
+            var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+
+            if (refreshToken.IsRevoked)
+            {
+                RevokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
+                _db.Update(user);
+                _db.SaveChanges();
+            }
+
+            if (!refreshToken.IsActive)
+                throw new Exception("Invalid token");
+
+            var newRefreshToken = RotateRefreshToken(refreshToken, ipAddress);
+            user.RefreshTokens.Add(newRefreshToken);
+            RemoveOldRefreshTokens(user);
+
+            _db.Update(user);
+            _db.SaveChanges();
+
+            var jwtToken = _jwtHandler.GenerateToken(user);
+
+            return Task.FromResult(new AuthResponse
+            {
+                Id = user.Id,
+                Token = jwtToken,
+                RefreshToken = newRefreshToken.Token
+            });
         }
 
         public void RevokeToken(string token, string ipAddress)
         {
-            throw new NotImplementedException();
+            var user = GetUserByRefreshToken(token);
+            var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+
+            if (!refreshToken.IsActive)
+                throw new Exception("Invalid token");
+
+            RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
+            _db.Update(user);
+            _db.SaveChanges();
         }
 
         public async Task AddToRoleAsync(User user, string roleName)
@@ -109,5 +150,53 @@ namespace LearningManagementSystem.Core.AuthServices
                 Role = user.Role.RoleName
             };
         }
+
+        #region Helpers
+
+        private User GetUserByRefreshToken(string token)
+        {
+            var user = _db.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+                throw new Exception("Invalid token");
+
+            return user;
+        }
+
+        private RefreshToken RotateRefreshToken(RefreshToken refreshToken, string ipAddress)
+        {
+            var newRefreshToken = _jwtHandler.GenerateRefreshToken(ipAddress);
+            RevokeRefreshToken(refreshToken, ipAddress, "Replaced by new token", newRefreshToken.Token);
+            return newRefreshToken;
+        }
+
+        private void RemoveOldRefreshTokens(User user)
+        {
+            var ttl = double.Parse(_cfg["RefreshTokenTTL"]);
+            user.RefreshTokens.RemoveAll(x =>
+                !x.IsActive &&
+                x.Created.AddDays(ttl) <= DateTime.UtcNow);
+        }
+
+        private void RevokeDescendantRefreshTokens(RefreshToken refreshToken, User user, string ipAddress, string reason)
+        {
+            if (!string.IsNullOrEmpty(refreshToken.ReplacedByToken))
+            {
+                var childToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken.ReplacedByToken);
+                if (childToken.IsActive)
+                    RevokeRefreshToken(childToken, ipAddress, reason);
+                else
+                    RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
+            }
+        }
+
+        private void RevokeRefreshToken(RefreshToken token, string ipAddress, string reason = null, string replacedByToken = null)
+        {
+            token.Revoked = DateTime.UtcNow;
+            token.RevokedByIp = ipAddress;
+            token.ReasonRevoked = reason;
+            token.ReplacedByToken = replacedByToken;
+        }
+        #endregion
     }
 }

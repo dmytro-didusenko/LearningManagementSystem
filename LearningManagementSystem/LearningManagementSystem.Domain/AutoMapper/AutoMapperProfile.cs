@@ -40,9 +40,6 @@ namespace LearningManagementSystem.Domain.AutoMapper
                 .ForMember(m => m.TopicsStartCell, opt =>
                     opt.MapFrom(f => f.TopicsStartCell.ToTuple(splitter)));
 
-
-            CreateMap<RefreshToken, RefreshTokenModel>();
-
             CreateMap<StudentAnswer, StudentAnswerModel>().ReverseMap();
 
             CreateMap<Question, QuestionPassingModel>().ReverseMap();

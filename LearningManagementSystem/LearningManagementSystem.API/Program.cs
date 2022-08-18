@@ -8,15 +8,11 @@ using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
-
+using LearningManagementSystem.Core.Hubs;
 using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Quartz;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using AllowAnonymousAttribute = LearningManagementSystem.API.Attributes.AllowAnonymousAttribute;
 
@@ -29,13 +25,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-builder.Services.AddHangfire((provider, cfg) =>
-{
-    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
-    cfg.UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings();
-});
-builder.Services.AddHangfireServer();
+//builder.Services.AddHangfire((provider, cfg) =>
+//{
+//    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
+//    cfg.UseSimpleAssemblyNameTypeSerializer()
+//        .UseRecommendedSerializerSettings();
+//});
+//builder.Services.AddHangfireServer();
 
 builder.Services.AddSwagger();
 

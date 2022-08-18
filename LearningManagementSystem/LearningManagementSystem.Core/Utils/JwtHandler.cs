@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
@@ -97,8 +98,26 @@ public class JwtHandler : IJwtHandler
         }
     }
 
-    public RefreshTokenModel GenerateRefreshTokenModel(string ipAddress)
+    public RefreshToken GenerateRefreshToken(string ipAddress)
     {
-        throw new NotImplementedException();
+        var refreshToken = new RefreshToken
+        {
+            Token = GetUniqueToken(),
+            // token is valid for 7 days
+            Expires = DateTime.UtcNow.AddDays(7),
+            Created = DateTime.UtcNow,
+            CreatedByIp = ipAddress
+        };
+        return refreshToken;
+    }
+
+    private string GetUniqueToken()
+    {
+        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var tokenIsUnique = !_db.Users.Any(u => u.RefreshTokens.Any(t => t.Token == token));
+        if (!tokenIsUnique)
+            return GetUniqueToken();
+
+        return token;
     }
 }

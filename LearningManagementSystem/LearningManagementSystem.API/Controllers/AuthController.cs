@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace LearningManagementSystem.API.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IAuthManager _authManager;
 
@@ -27,10 +28,32 @@ namespace LearningManagementSystem.API.Controllers
         public async Task<IActionResult> Register(SignInModel signInModel)
         {
             var res = await _authManager.SignInAsync(signInModel);
+            SetTokenCookie(res?.Data.RefreshToken);
             return res.ToActionResult();
         }
 
-        private void SettTokenCookie(string token)
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            var response = await _authManager.RefreshTokenAsync(refreshToken, GetIpAddress());
+            SetTokenCookie(response.RefreshToken);
+            return Ok(response);
+        }
+
+        [HttpPost("revoke-token")]
+        public IActionResult RevokeToken(RevokeTokenRequest? model)
+        {
+            var token = model?.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new { message = "Token is required" });
+
+            _authManager.RevokeToken(token, GetIpAddress());
+            return Ok(new { message = "Token revoked" });
+        }
+
+        private void SetTokenCookie(string token)
         {
             var cookieOptions = new CookieOptions
             {
@@ -44,7 +67,7 @@ namespace LearningManagementSystem.API.Controllers
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];
-
+                         
             return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
         }
     }

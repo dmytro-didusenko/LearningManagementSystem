@@ -19,17 +19,17 @@ namespace LearningManagementSystem.Core.Services.Implementation
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<LearningService> _logger;
-        private readonly IBackgroundJobClient _jobClient;
+        //private readonly IBackgroundJobClient _jobClient;
 
         public LearningService(AppDbContext context, 
             IMapper mapper, 
-            ILogger<LearningService> logger,
-            IBackgroundJobClient jobClient)
+            ILogger<LearningService> logger
+           )
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
-            _jobClient = jobClient;
+            //_jobClient = jobClient;
         }
 
         public async Task<Response<TopicCreateModel>> CreateTopicAsync(TopicCreateModel model)
@@ -227,7 +227,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
 
             //Running background task
-            _jobClient.Enqueue<IGradeNotifyJob>(gradeJob => gradeJob.SendNotification(taskAnswer.StudentId));
+            //_jobClient.Enqueue<IGradeNotifyJob>(gradeJob => gradeJob.SendNotification(taskAnswer.StudentId));
 
             return Response<GradeModel>.GetSuccess(model);
         }

@@ -1,3 +1,4 @@
+using LearningManagementSystem.API.Attributes;
 using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.User;
@@ -54,6 +55,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
+        [Authorized]
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {

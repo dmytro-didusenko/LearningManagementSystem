@@ -32,6 +32,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new NotFoundException(studentId);
             }
 
+
             if (student.GroupId is not null)
             {
                 throw new BadRequestException("Student already has a group");

@@ -1,4 +1,6 @@
-﻿namespace LearningManagementSystem.Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace LearningManagementSystem.Domain.Entities
 {
     public class User : BaseEntity
     {
@@ -11,6 +13,10 @@
         public bool IsActive { get; set; } = true;
         public Gender Gender { get; set; }
         public ICollection<Document>? Document { get; set; }
+        public Guid? RoleId { get; set; }
+        public Role? Role { get; set; } = null!;
+        [JsonIgnore] public string PasswordHash { get; set; } = string.Empty!;
+        public List<RefreshToken> RefreshTokens { get; set; } = null!;
     }
 
     public enum Gender

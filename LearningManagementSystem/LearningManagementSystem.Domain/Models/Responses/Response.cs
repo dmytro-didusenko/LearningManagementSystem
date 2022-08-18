@@ -31,6 +31,14 @@
         public bool IsSuccessful { get; set; }
         public string? Error { get; set; }
 
+        public static Response GetError(string errorMessage)
+        {
+            return new Response()
+            {
+                Error = errorMessage
+            };
+        }
+
     }
 
     public class ResponseApi<T>
@@ -45,7 +53,6 @@
             };
         }
     }
-
 
     public class ResponseApi
     {

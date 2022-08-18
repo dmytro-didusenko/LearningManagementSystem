@@ -9,15 +9,13 @@ using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Hubs;
-using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Domain.Models.Options;
-using LearningManagementSystem.Domain.Models.Report;
-using LearningManagementSystem.Domain.Models.User;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using Quartz;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using AllowAnonymousAttribute = LearningManagementSystem.API.Attributes.AllowAnonymousAttribute;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,14 +25,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-builder.Services.AddHangfire((provider, cfg) =>
-{
-    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
-    cfg.UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings();
-});
-builder.Services.AddHangfireServer();
+//builder.Services.AddHangfire((provider, cfg) =>
+//{
+//    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
+//    cfg.UseSimpleAssemblyNameTypeSerializer()
+//        .UseRecommendedSerializerSettings();
+//});
+//builder.Services.AddHangfireServer();
 
+builder.Services.AddSwagger();
 
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.ConfigAutoMapper();
@@ -42,25 +41,28 @@ builder.Services.AddServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+
+//Options
 builder.Services.Configure<VisitingReportOptions>(builder.Configuration.GetSection("Reports").GetSection("VisitingReport"));
+builder.Services.Configure<JwtSettingsOptions>(builder.Configuration.GetSection("JWTSettings"));
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000")
+            builder.SetIsOriginAllowed((host) => true)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
         });
 });
 
-
 builder.Services.AddControllers();
 builder.Services.AddMvc(options =>
     {
         options.Filters.Add<ValidationFilter>(1);
+        options.Filters.Add<AllowAnonymousAttribute>();
     });
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -72,10 +74,8 @@ builder.Services.AddFluentValidation(cfg =>
     cfg.RegisterValidatorsFromAssemblyContaining<UserModelValidator>();
     cfg.DisableDataAnnotationsValidation = true;
     cfg.LocalizationEnabled = false;
-
-    //cfg.AutomaticValidationEnabled = false;
-
 });
+
 
 //configuring MassTransit
 builder.Services.AddMassTransit(cfg =>
@@ -85,7 +85,6 @@ builder.Services.AddMassTransit(cfg =>
         x.Host(new Uri(builder.Configuration["RabbitMQ:Uri"]));
     });
 });
-
 //Adding Quartz
 //builder.Services.AddQuartz(cfg =>
 //{
@@ -100,6 +99,7 @@ builder.Services.AddMassTransit(cfg =>
 //add DinkToPdf
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -108,24 +108,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 }
+app.UseSwagger();
+app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 
 //app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseMiddleware<AuthMiddleware>();
 
-app.UseHangfireDashboard();
+//app.UseHangfireDashboard();
 
 app.UseCors();
 
 app.MapControllers();
 
-app.MapHub<ChatHub>("/chat");
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapHub<StaffChatHub>("/staffChat");
 
 app.MapHub<NotificationHub>("/notification");
 
-
 app.Run();
+

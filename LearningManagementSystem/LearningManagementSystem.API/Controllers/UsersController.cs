@@ -1,8 +1,7 @@
+using LearningManagementSystem.API.Attributes;
 using LearningManagementSystem.API.Extensions;
-using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.User;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningManagementSystem.API.Controllers
@@ -10,14 +9,13 @@ namespace LearningManagementSystem.API.Controllers
     [ApiController]
     [Produces("application/json")]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseController
     {
         private readonly IUserService _userService;
         private readonly IDocumentService _documentService;
 
         public UsersController(IUserService userService, IDocumentService documentService)
         {
-          
             _userService = userService;
             _documentService = documentService;
         }
@@ -49,7 +47,7 @@ namespace LearningManagementSystem.API.Controllers
             var res = await _documentService.AddDocumentAsync(model);
             return res.ToActionResult();
         }
-
+      
         [HttpGet("Documents")]
         public async Task<IActionResult> GetDocumentByFilter([FromQuery] DocumentQueryModel? query = null)
         {
@@ -57,6 +55,7 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
+        [Authorized]
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {

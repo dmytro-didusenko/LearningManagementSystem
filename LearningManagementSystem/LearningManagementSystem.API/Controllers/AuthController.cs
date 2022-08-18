@@ -27,7 +27,7 @@ namespace LearningManagementSystem.API.Controllers
         [HttpPost("signin")]
         public async Task<IActionResult> Register(SignInModel signInModel)
         {
-            var res = await _authManager.SignInAsync(signInModel);
+            var res = await _authManager.SignInAsync(signInModel, GetIpAddress());
             SetTokenCookie(res?.Data.RefreshToken);
             return res.ToActionResult();
         }

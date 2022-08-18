@@ -57,7 +57,7 @@ namespace LearningManagementSystem.Core.AuthServices
             return Response<bool>.GetSuccess(true);
         }
 
-        public async Task<Response<AuthResponse>> SignInAsync(SignInModel model)
+        public async Task<Response<AuthResponse>> SignInAsync(SignInModel model, string ipAddress)
         {
             ArgumentNullException.ThrowIfNull(model);
 
@@ -72,13 +72,24 @@ namespace LearningManagementSystem.Core.AuthServices
                 return Response<AuthResponse>.GetError(ErrorCode.BadRequest, "Wrong username or password!");
             }
 
+            var refreshToken = _jwtHandler.GenerateRefreshToken(ipAddress);
+            user.RefreshTokens.Add(refreshToken);
+
+            // remove old refresh tokens from user
+            RemoveOldRefreshTokens(user);
+
+            // save changes to db
+            _db.Update(user);
+            _db.SaveChanges();
+
             var token = _jwtHandler.GenerateToken(user);
             return Response<AuthResponse>.GetSuccess(new AuthResponse
             {
                 Id = user.Id,
                 Token = token,
                 Username = user.UserName,
-                Role = user.Role.RoleName
+                Role = user.Role.RoleName,
+                RefreshToken = refreshToken.Token
             });
         }
 

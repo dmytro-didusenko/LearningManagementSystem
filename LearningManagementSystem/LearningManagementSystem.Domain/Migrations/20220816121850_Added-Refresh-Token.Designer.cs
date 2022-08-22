@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220816121850_Added-Refresh-Token")]
+    partial class AddedRefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -270,6 +272,51 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReasonRevoked")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReplacedByToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedByIp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
+                });
+
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -283,29 +330,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.StaffChatMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("StaffChatMessages");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
@@ -365,14 +389,7 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TestId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TestId")
-                        .IsUnique()
-                        .HasFilter("[TestId] IS NOT NULL");
 
                     b.ToTable("Subjects");
                 });
@@ -443,49 +460,21 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DurationInMinutes")
-                        .HasColumnType("int");
+                    b.Property<TimeSpan?>("Duration")
+                        .HasColumnType("time");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Tests");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TestResult", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CorrectAnswers")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PassingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TotalAnswers")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalQuestions")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TestId");
-
-                    b.ToTable("TestResults");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
@@ -680,15 +669,11 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Test");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.StaffChatMessage", b =>
+            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Sender");
+                    b.HasOne("LearningManagementSystem.Domain.Entities.User", null)
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Student", b =>
@@ -723,15 +708,6 @@ namespace LearningManagementSystem.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Answer");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Subject", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Test", "Test")
-                        .WithOne("Subject")
-                        .HasForeignKey("LearningManagementSystem.Domain.Entities.Subject", "TestId");
-
-                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TaskAnswer", b =>
@@ -770,23 +746,15 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TestResult", b =>
+            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Test", b =>
                 {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
+                    b.HasOne("LearningManagementSystem.Domain.Entities.Subject", "Subject")
+                        .WithMany("Tests")
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Test", "Test")
-                        .WithMany()
-                        .HasForeignKey("TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-
-                    b.Navigation("Test");
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
@@ -805,56 +773,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.HasOne("LearningManagementSystem.Domain.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
-
-                    b.OwnsMany("LearningManagementSystem.Domain.Entities.RefreshToken", "RefreshTokens", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime>("Created")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("CreatedByIp")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime>("Expires")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("ReasonRevoked")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("ReplacedByToken")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime?>("Revoked")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("RevokedByIp")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Token")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("UserId", "Id");
-
-                            b1.ToTable("RefreshToken");
-
-                            b1.WithOwner("User")
-                                .HasForeignKey("UserId");
-
-                            b1.Navigation("User");
-                        });
-
-                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Role");
                 });
@@ -892,6 +810,8 @@ namespace LearningManagementSystem.Domain.Migrations
                 {
                     b.Navigation("Teachers");
 
+                    b.Navigation("Tests");
+
                     b.Navigation("Topics");
                 });
 
@@ -905,9 +825,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("StudentAnswers");
-
-                    b.Navigation("Subject")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
@@ -918,6 +835,8 @@ namespace LearningManagementSystem.Domain.Migrations
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.User", b =>
                 {
                     b.Navigation("Document");
+
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

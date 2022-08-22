@@ -1,20 +1,21 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.API.SignalRServices;
+using LearningManagementSystem.Core.AuthServices;
 using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Helpers;
 using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
+using LearningManagementSystem.Core.Utils;
 using LearningManagementSystem.Domain.AutoMapper;
 using LearningManagementSystem.Domain.Contextes;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Quartz;
 
 namespace LearningManagementSystem.API.Extensions
 {
     public static class ServicesExtensions
     {
-    
         public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration cfg)
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(cfg.GetConnectionString("DefaultConnection")));
@@ -30,6 +31,39 @@ namespace LearningManagementSystem.API.Extensions
             });
             IMapper mapper = mappperCfg.CreateMapper();
             services.AddSingleton(mapper);
+            return services;
+        }
+
+        public static IServiceCollection AddSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "LMS",
+                    Version = "v1"
+                });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    //Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
             return services;
         }
 
@@ -52,10 +86,12 @@ namespace LearningManagementSystem.API.Extensions
             services.AddSingleton<IUserConnectionService, UserConnectionService>();
             services.AddHostedService(sp => (SignalRNotificationService)sp.GetService<INotificationSink>());
             services.AddSingleton<INotificationSink, SignalRNotificationService>();
+            services.AddScoped<IJwtHandler, JwtHandler>();
+            services.AddScoped<IAuthManager, AuthManager>();
+            services.AddScoped<IRoleManager, RoleManager>();
+
             return services;
-
         }
-
         public static void AddJobAndTrigger<T>(
             this IServiceCollectionQuartzConfigurator quartz,
             IConfiguration config)

@@ -39,8 +39,6 @@ namespace LearningManagementSystem.API.SignalRServices
             }
         }
 
-
-
         public void RemoveUserConnection(string connectionId)
         {
        

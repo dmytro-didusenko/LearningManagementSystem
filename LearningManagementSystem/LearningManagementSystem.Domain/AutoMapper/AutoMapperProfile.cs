@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Extensions;
+using LearningManagementSystem.Domain.Models.Auth;
 using LearningManagementSystem.Domain.Models.Certificate;
 using LearningManagementSystem.Domain.Models.Course;
 using LearningManagementSystem.Domain.Models.Group;
@@ -39,7 +40,6 @@ namespace LearningManagementSystem.Domain.AutoMapper
                 .ForMember(m => m.TopicsStartCell, opt =>
                     opt.MapFrom(f => f.TopicsStartCell.ToTuple(splitter)));
 
-
             CreateMap<StudentAnswer, StudentAnswerModel>().ReverseMap();
 
             CreateMap<Question, QuestionPassingModel>().ReverseMap();
@@ -47,8 +47,8 @@ namespace LearningManagementSystem.Domain.AutoMapper
 
             CreateMap<Test, TestModel>().ReverseMap();
             CreateMap<Question, QuestionCreateModel>()
-                .ForMember(m=>m.Answers, opt=>
-                    opt.MapFrom(f=>f.Answers)).ReverseMap();
+                .ForMember(m => m.Answers, opt =>
+                      opt.MapFrom(f => f.Answers)).ReverseMap();
             CreateMap<Answer, AnswerCreateModel>().ReverseMap();
 
             CreateMap<Topic, TopicCreateModel>().ReverseMap();
@@ -56,23 +56,23 @@ namespace LearningManagementSystem.Domain.AutoMapper
             CreateMap<Grade, GradeModel>().ReverseMap();
 
             CreateMap<Topic, TopicModel>()
-                .ForMember(m=>m.HomeTaskModel, opt=>
-                    opt.MapFrom(f=>f.HomeTask)).ReverseMap();
+                .ForMember(m => m.HomeTaskModel, opt =>
+                      opt.MapFrom(f => f.HomeTask)).ReverseMap();
 
             CreateMap<HomeTask, HomeTaskModel>()
                 .ForMember(m => m.TaskAnswersIds, opt =>
                     opt.MapFrom(f => f.TaskAnswers.Select(s => s.Id))).ReverseMap();
 
             CreateMap<HomeTask, HomeTaskCreateModel>()
-                .ForMember(m=>m.TopicId, opt=>
-                    opt.MapFrom(f=>f.TopicId)).ReverseMap();
+                .ForMember(m => m.TopicId, opt =>
+                      opt.MapFrom(f => f.TopicId)).ReverseMap();
 
             CreateMap<Course, CourseModel>()
                .ReverseMap();
 
             CreateMap<TeacherCreateModel, Teacher>()
-                .ForMember(m=>m.Id, opt=>
-                    opt.MapFrom(f=>f.UserId)).ReverseMap();
+                .ForMember(m => m.Id, opt =>
+                      opt.MapFrom(f => f.UserId)).ReverseMap();
 
             CreateMap<Teacher, TeacherModel>()
                 .ForMember(m => m.UserName, opt =>
@@ -93,8 +93,8 @@ namespace LearningManagementSystem.Domain.AutoMapper
                     opt.MapFrom(f => f.Courses.Select(s => s.Id)))
                 .ForMember(m => m.TeachersIds, opt =>
                     opt.MapFrom(f => f.Teachers.Select(s => s.Id)))
-                .ForMember(m=>m.TopicsIds, opt=>
-                    opt.MapFrom(f=>f.Topics.Select(s=>s.Id)))
+                .ForMember(m => m.TopicsIds, opt =>
+                      opt.MapFrom(f => f.Topics.Select(s => s.Id)))
                 .ReverseMap();
 
             CreateMap<Student, StudentModel>()
@@ -112,7 +112,7 @@ namespace LearningManagementSystem.Domain.AutoMapper
                     opt.MapFrom(f => f.User.About)).ReverseMap();
 
             CreateMap<Certificate, CertificateModel>()
-                .ForMember(cm => cm.StudentName, opts => 
+                .ForMember(cm => cm.StudentName, opts =>
                     opts.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
                 .ForMember(cm => cm.CourseName, opts =>
                     opts.MapFrom(src => src.Course.Name))

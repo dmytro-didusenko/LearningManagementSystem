@@ -4,6 +4,7 @@ using LearningManagementSystem.Domain.Contextes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningManagementSystem.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220817133348_Fixed-Bugs")]
+    partial class FixedBugs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -455,39 +457,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.ToTable("Tests");
                 });
 
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TestResult", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CorrectAnswers")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PassingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TotalAnswers")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalQuestions")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TestId");
-
-                    b.ToTable("TestResults");
-                });
-
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>
                 {
                     b.Property<Guid>("Id")
@@ -768,25 +737,6 @@ namespace LearningManagementSystem.Domain.Migrations
                     b.Navigation("Subject");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LearningManagementSystem.Domain.Entities.TestResult", b =>
-                {
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LearningManagementSystem.Domain.Entities.Test", "Test")
-                        .WithMany()
-                        .HasForeignKey("TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-
-                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("LearningManagementSystem.Domain.Entities.Topic", b =>

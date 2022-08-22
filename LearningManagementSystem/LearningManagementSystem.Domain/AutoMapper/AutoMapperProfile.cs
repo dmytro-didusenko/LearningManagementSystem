@@ -110,13 +110,17 @@ namespace LearningManagementSystem.Domain.AutoMapper
                     opt.MapFrom(f => f.User.Email))
                 .ForMember(m => m.About, opt =>
                     opt.MapFrom(f => f.User.About)).ReverseMap();
-            
+
             CreateMap<Certificate, CertificateModel>()
                 .ForMember(cm => cm.StudentName, opts => 
                     opts.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
                 .ForMember(cm => cm.CourseName, opts =>
                     opts.MapFrom(src => src.Course.Name))
-                .ReverseMap();            
+                .ReverseMap();
+
+            CreateMap<TestResult, TestResultModel>()
+                .ForMember(trm => trm.Name, opts =>
+                opts.MapFrom(tr => tr.Test.Name)).ReverseMap();
         }
     }
 }

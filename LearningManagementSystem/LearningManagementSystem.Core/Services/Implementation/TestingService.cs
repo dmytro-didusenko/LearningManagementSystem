@@ -101,37 +101,88 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return _mapper.Map<IEnumerable<QuestionCreateModel>>(questions);
         }
 
-        public IEnumerable<QuestionPassingModel> GetQuestionsForPassing(Guid testId)
+        public async Task<QuestionPassingModel> GetQuestionsForPassing(Guid testId)
         {
+            var test = await GetTestByIdAsync(testId);
+
+            if (test is null)
+                throw new ArgumentNullException(nameof(test),
+                    $"Test with id {testId} does not exist");
+
             var questions = _context.Questions
                 .Include(i => i.Answers)
                 .Where(i => i.TestId.Equals(testId)).AsEnumerable();
-            return _mapper.Map<IEnumerable<QuestionPassingModel>>(questions);
+
+            var passingModel = new QuestionPassingModel()
+            {
+                DurationInMinutes = test.DurationInMinutes,
+                Questions = _mapper.Map<ICollection<QuestionCreateModel>>(questions)
+            };
+
+            return passingModel;
         }
 
-        public async Task<Response<IEnumerable<StudentAnswerModel>>> AddStudentAnswersAsync(IEnumerable<StudentAnswerModel> models)
+        public async Task<Response<TestResultModel>> PassTest(IEnumerable<StudentAnswerModel> models)
         {
             ArgumentNullException.ThrowIfNull(models);
-            var answers = _mapper.Map<IEnumerable<StudentAnswer>>(models);
-            await _context.StudentAnswers.AddRangeAsync(answers);
+
+            int CorrectAnswerCounter = 0;
+
+            foreach (var model in models)
+            {
+                var entity = await _context.Answers.FindAsync(model.AnswerId);
+
+                if (entity != null && entity.IsCorrect)
+                    CorrectAnswerCounter++;
+            }
+
+            var firstModel = models.First();
+            var test = await _context.Tests.Include(t => t.Questions).FirstAsync(t => t.Id == firstModel.TestId);
+
+            if (test is null)
+                throw new ArgumentNullException(nameof(test),
+                    $"Test with id {firstModel.TestId} does not exists");
+
+            var TotalQuestions = test.Questions.Count();
+
+            var result = new TestResult()
+            {
+                TestId = firstModel.TestId,
+                StudentId = firstModel.StudentId,
+                PassingDate = DateTime.Now,
+                TotalAnswers = models.Count(),
+                CorrectAnswers = CorrectAnswerCounter,
+                TotalQuestions = TotalQuestions
+            };
+
+            await _context.TestResults.AddAsync(result);
             await _context.SaveChangesAsync();
 
-            return Response<IEnumerable<StudentAnswerModel>>.GetSuccess(models);
+            var resultModel = _mapper.Map<TestResultModel>(result);
+
+            return Response<TestResultModel>.GetSuccess(resultModel);
         }
 
         public async Task<TestResultModel> GetTestingResultAsync(Guid testId, Guid studentId)
         {
-            var test = await _context.Tests.FirstOrDefaultAsync(f => f.Id.Equals(testId));
+            var test = await _context.Tests.FindAsync(testId);
+
+            if (test is null)
+                throw new ArgumentNullException(nameof(test),
+                    $"Test with id[{testId}] does not exist.");
+
             var result = new TestResultModel()
             {
                 TestId = testId,
                 Name = test.Name,
             };
+
             var answers = _context.StudentAnswers
                 .Include(i=>i.Answer)
                 .Where(i => i.StudentId.Equals(studentId) && i.TestId.Equals(testId));
             result.TotalAnswers = answers.Count();
             result.CorrectAnswers = answers.Count(w => w.Answer.IsCorrect);
+            result.StudentId = studentId;
 
             return result;
         }

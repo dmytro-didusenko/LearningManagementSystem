@@ -1,14 +1,14 @@
-﻿namespace LearningManagementSystem.Domain.Models.Testing
+﻿namespace LearningManagementSystem.Domain.Entities
 {
-    public class TestResultModel
+    public class TestResult : BaseEntity
     {
-        public Guid Id { get; set; }
         public Guid TestId { get; set; }
         public Guid StudentId { get; set; }
-        public string Name { get; set; } = string.Empty;
         public DateTime PassingDate { get; set; }
         public int TotalQuestions { get; set; }
         public int TotalAnswers { get; set; }
         public int CorrectAnswers { get; set; }
+        public Test Test { get; set; } = null!;
+        public Student Student { get; set; } = null!;
     }
 }

@@ -55,15 +55,15 @@ namespace LearningManagementSystem.API.Controllers
 
 
         [HttpGet("Questions/Passing/{testId}")]
-        public IActionResult GetQuestionsForPassing(Guid testId)
+        public async Task<IActionResult> GetQuestionsForPassing(Guid testId)
         {
-            return Ok(_testingService.GetQuestionsForPassing(testId));
+            return Ok(await _testingService.GetQuestionsForPassing(testId));
         }
 
         [HttpPost("Tests/Passing")]
         public async Task<IActionResult> PassTest([FromBody] IEnumerable<StudentAnswerModel> model)
         {
-            var res =  await _testingService.AddStudentAnswersAsync(model);
+            var res =  await _testingService.PassTest(model);
             return res.ToActionResult();
         }
 

@@ -11,8 +11,8 @@ namespace LearningManagementSystem.Core.Services.Interfaces
             IEnumerable<AnswerCreateModel> answers);
         public Task<TestModel?> GetTestByIdAsync(Guid testId);
         public IEnumerable<QuestionCreateModel>? GetQuestionsByTestId(Guid testId);
-        public IEnumerable<QuestionPassingModel> GetQuestionsForPassing(Guid testId);
-        public Task<Response<IEnumerable<StudentAnswerModel>>> AddStudentAnswersAsync(IEnumerable<StudentAnswerModel> models);
+        public Task<QuestionPassingModel> GetQuestionsForPassing(Guid testId);
+        public Task<Response<TestResultModel>> PassTest(IEnumerable<StudentAnswerModel> models);
         public Task<TestResultModel> GetTestingResultAsync(Guid testId, Guid studentId);
     }
 }

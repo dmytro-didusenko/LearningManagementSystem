@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using AutoMapper;
-
-namespace LearningManagementSystem.Domain.Extensions
+﻿namespace LearningManagementSystem.Domain.Extensions
 {
     public static class Extensions
     {

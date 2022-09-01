@@ -1,6 +1,5 @@
 using MassTransit;
 using Notifications.Services.Consumers;
-using Notifications.Services.Senders;
 
 IConfiguration configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -11,8 +10,6 @@ IConfiguration configuration = new ConfigurationBuilder()
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-
-
         services.AddMassTransit(x =>
         {
             x.AddConsumer<ApiConsumer>();

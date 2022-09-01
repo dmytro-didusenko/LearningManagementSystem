@@ -2,7 +2,6 @@
 using LearningManagementSystem.Domain.MassTransitModels;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
@@ -14,8 +13,7 @@ namespace LearningManagementSystem.Core.Jobs
         private readonly IPublishEndpoint _publisher;
         private readonly AppDbContext _context;
 
-        public BirthdayGreetingJob(AppDbContext context, ILogger<BirthdayGreetingJob> logger,
-            IConfiguration configuration, IPublishEndpoint publisher)
+        public BirthdayGreetingJob(AppDbContext context, ILogger<BirthdayGreetingJob> logger, IPublishEndpoint publisher)
         {
             _logger = logger;
             _publisher = publisher;

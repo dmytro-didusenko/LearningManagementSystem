@@ -54,7 +54,7 @@ namespace LearningManagementSystem.Core.Hubs
 
             await _context.StaffChatMessages.AddAsync(new StaffChatMessage()
             {
-                SenderId = sender.Id,
+                SenderId = sender!.Id,
                 CreationDate = message.Date,
                 Text = message.Text,
             });

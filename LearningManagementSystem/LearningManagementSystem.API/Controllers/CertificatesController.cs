@@ -1,13 +1,8 @@
-﻿using DinkToPdf;
-using DinkToPdf.Contracts;
-using LearningManagementSystem.Core.Helpers;
+﻿using DinkToPdf.Contracts;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models.Certificate;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-//TODO: Rewrite logic, simplify returning models
 namespace LearningManagementSystem.API.Controllers
 {
     [Route("api/[controller]")]
@@ -52,7 +47,7 @@ namespace LearningManagementSystem.API.Controllers
             {
                 return BadRequest(response.Error.ErrorMessage);
             }
-            return File(response.Data.data, "application/pdf", response.Data.fileName);     //to download
+            return File(response.Data.data, "application/pdf", response.Data.fileName);
         }
 
         [HttpGet("{id}/pdf")]
@@ -64,14 +59,6 @@ namespace LearningManagementSystem.API.Controllers
                 return BadRequest(response.Error.ErrorMessage);
             }
             return File(response.Data.data, "application/pdf");
-        }
-
-        //for test purposes only
-        [HttpPost]
-        public async Task<IActionResult> AddCertificateAsync([FromBody] CertificateModel certificateModel)
-        {
-            var certificate = await _certificateService.AddAsync(certificateModel);
-            return CreatedAtAction(nameof(AddCertificateAsync), certificate);
         }
 
         [HttpPut("{id}")]

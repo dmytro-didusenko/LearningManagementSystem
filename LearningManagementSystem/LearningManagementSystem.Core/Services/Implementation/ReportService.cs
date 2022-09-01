@@ -105,7 +105,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             ws.Cells[headerRow, 1].Value = "Course:";
             ws.Cells[headerRow, 2].Value = report.CourseName;
 
-            var topicsCount = report.Subjects.Values.Max(s => s.Count());
+            var topicsCount = report.Subjects!.Values.Max(s => s.Count());
 
             var headerCells = ws.Cells[1, 1, headerRow, topicsCount + 1];
             ExcelStyleHelper.AddStyles(headerCells, new List<SuccessReportStyles>() { SuccessReportStyles.HeaderStyling });
@@ -114,7 +114,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
             successRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
 
             var topicRow = headerRow + 1;
-            var topicCol = 1;
 
             for (int j = 0, i = 2; j < topicsCount; j++)
             {
@@ -138,7 +137,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 foreach (var topic in subject.Value)
                 {
                     var gradeCell = ws.Cells[subjRow, subjCol];
-                    gradeCell.Value = topic.Grade.Value;
+                    gradeCell.Value = topic.Grade!.Value;
                     ExcelStyleHelper.AddStyles(gradeCell, new List<SuccessReportStyles>() { SuccessReportStyles.CenteringAndBorderThinStyling });
                     subjCol++;
                 }
@@ -148,7 +147,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<(string fileName, byte[] data)>.GetSuccess(
                 (reportName, await package.GetAsByteArrayAsync()));
         }
-
 
         public async Task<Response<GroupReportModel>> GetReportForGroup(Guid groupId)
         {
@@ -201,7 +199,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 .ToDictionary(k => k.Key, v => v.GroupBy(g => g.Topic)
                     .ToDictionary(k => k.Key,
                         v => v.ToDictionary(k => k.Student, v => v.Grade)));
-
 
             report.ReportCreatedTime = DateTime.Now;
             return Response<GroupReportModel>.GetSuccess(report);
@@ -327,9 +324,9 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 return Response<VisitingReport>.GetError(ErrorCode.BadRequest, "Report does not contains any WorkSheets");
             }
 
-            result.GroupName = wsFirst.Cells[vrModel.GroupCell.row, vrModel.GroupCell.col].Value?.ToString();
-            result.CourseName = wsFirst.Cells[vrModel.CourseCell.row, vrModel.CourseCell.col].Value?.ToString();
-            result.ReportCreatedTime = DateTime.Parse(wsFirst.Cells[vrModel.DateCell.row, vrModel.DateCell.col].Value?.ToString());
+            result.GroupName = wsFirst.Cells[vrModel.GroupCell.row, vrModel.GroupCell.col].Value?.ToString()!;
+            result.CourseName = wsFirst.Cells[vrModel.CourseCell.row, vrModel.CourseCell.col].Value?.ToString()!;
+            result.ReportCreatedTime = DateTime.Parse(wsFirst.Cells[vrModel.DateCell.row, vrModel.DateCell.col].Value?.ToString()!);
 
             foreach (var ws in package.Workbook.Worksheets)
             {
@@ -349,11 +346,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
                     {
                         var student = ws.Cells[j, vrModel.StudentsStartCell.col].Value?.ToString();
                         var grade = ws.Cells[j, gradeCol].Value?.ToString();
-                        gradesDict.Add(student, grade);
+                        gradesDict.Add(student!, grade!);
                     }
-                    topicsDict.Add(topic, gradesDict);
+                    topicsDict.Add(topic!, gradesDict);
                 }
-                result.Subjects.Add(subjectName, topicsDict);
+                result.Subjects.Add(subjectName!, topicsDict);
             }
 
             return Response<VisitingReport>.GetSuccess(result);

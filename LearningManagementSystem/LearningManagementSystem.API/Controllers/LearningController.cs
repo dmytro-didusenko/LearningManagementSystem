@@ -103,11 +103,5 @@ namespace LearningManagementSystem.API.Controllers
             var res = await _learningService.GetStudentGrades(studentId);
             return Ok(res);
         }
-
-        [HttpGet("Grades/Subject/{subjectId}/Student/{studentId}")]
-        public IActionResult GetStudentGradesBySubject(Guid subjectId, Guid studentId)
-        {
-            return Ok(_learningService.GetStudentGradesBySubjectId(studentId, subjectId));
-        }
     }
 }

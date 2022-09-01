@@ -15,7 +15,6 @@ namespace LearningManagementSystem.API.Filters
                     .Select(v => v.ErrorMessage)
                     .ToList();
 
-
                 var responseApi = new ResponseApi()
                 {
                     Errors = errors
@@ -24,13 +23,8 @@ namespace LearningManagementSystem.API.Filters
                 context.Result = new JsonResult(responseApi)
                 {
                     StatusCode = 400
-                };
-            
+                };            
             }
-        }
-
-        public override void OnActionExecuted(ActionExecutedContext context)
-        {
         }
     }
 }

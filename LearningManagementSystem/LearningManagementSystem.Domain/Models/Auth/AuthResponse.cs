@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using LearningManagementSystem.Domain.Entities;
 
 namespace LearningManagementSystem.Domain.Models.Auth
 {
@@ -10,7 +9,7 @@ namespace LearningManagementSystem.Domain.Models.Auth
         public string Role { get; set; } = null!;
         public string Token { get; set; } = string.Empty;
 
-        [JsonIgnore] //returns in http only cookie
+        [JsonIgnore]
         public string RefreshToken { get; set; } = string.Empty;
     }
 }

@@ -1,10 +1,7 @@
 ﻿using LearningManagementSystem.API.SignalRServices;
 using LearningManagementSystem.Domain.Contextes;
-using LearningManagementSystem.Domain.MassTransitModels;
-using LearningManagementSystem.Domain.Models.NotificationMessage;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
 
 
 namespace LearningManagementSystem.API.Hubs
@@ -19,22 +16,6 @@ namespace LearningManagementSystem.API.Hubs
             _db = db;
             this.userConnections = userConnections;
         }
-
-
-
-
-        //public async Task SendMessage(Guid userId, NotificationMessage message)
-        //{
-        //    var userConnectionIds = connectionUsers[userId];
-        //    if (userConnectionIds is not null)
-        //    {
-        //        foreach (var ConnectionId in userConnectionIds)
-        //        {
-        //            await Clients.User(ConnectionId).SendAsync("ShowNotification", message);
-        //        }
-        //    }
-        //}
-
 
         public async Task AddUser(string userStringId)
         {
@@ -54,10 +35,7 @@ namespace LearningManagementSystem.API.Hubs
             {
                 Context.Abort();
             }
-
         }
-
-
 
         public override async Task OnConnectedAsync()
         {
@@ -73,4 +51,3 @@ namespace LearningManagementSystem.API.Hubs
         }
     }
 }
-

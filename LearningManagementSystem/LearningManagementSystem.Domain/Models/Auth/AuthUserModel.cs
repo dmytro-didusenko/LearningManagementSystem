@@ -1,5 +1,4 @@
-﻿
-namespace LearningManagementSystem.Domain.Models.Auth
+﻿namespace LearningManagementSystem.Domain.Models.Auth
 {
     public class AuthUserModel
     {

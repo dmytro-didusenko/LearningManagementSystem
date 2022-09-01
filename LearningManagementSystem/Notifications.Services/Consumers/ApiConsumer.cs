@@ -28,10 +28,10 @@ namespace Notifications.Services.Consumers
                     break;
             }
 
-            //if (message.DeliveryMethod == DeliveryMethod.Email)
-            //{
-            //    await SendWithSendGrid.SendToEmail(message, _configuration);
-            //}
+            if (message.DeliveryMethod == DeliveryMethod.Email)
+            {
+                await SendWithSendGrid.SendToEmail(message, _configuration);
+            }
         }
 
         private void PrintMessageInConsole(ApiMessage message)

@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using Hangfire;
 using LearningManagementSystem.Core.Exceptions;
-using LearningManagementSystem.Core.HangfireJobs;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using LearningManagementSystem.Domain.Models.HomeTask;
 using LearningManagementSystem.Domain.Models.Responses;
 using LearningManagementSystem.Domain.Models.Topic;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -19,17 +17,18 @@ namespace LearningManagementSystem.Core.Services.Implementation
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<LearningService> _logger;
-        //private readonly IBackgroundJobClient _jobClient;
+        private readonly IBackgroundJobClient _jobClient;
 
         public LearningService(AppDbContext context, 
             IMapper mapper, 
-            ILogger<LearningService> logger
+            ILogger<LearningService> logger,
+            IBackgroundJobClient jobClient
            )
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
-            //_jobClient = jobClient;
+            _jobClient = jobClient;
         }
 
         public async Task<Response<TopicCreateModel>> CreateTopicAsync(TopicCreateModel model)
@@ -138,7 +137,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
 
             return Response<TaskAnswerModel>.GetSuccess(model);
-
         }
 
         public async Task<IEnumerable<GradeModel>> GetStudentGrades(Guid studentId)
@@ -155,24 +153,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 .AsEnumerable();
 
             return _mapper.Map<IEnumerable<GradeModel>>(grades);
-        }
-
-        //TODO: Rewrite logic
-        public IEnumerable<GradeModel>? GetStudentGradesBySubjectId(Guid studentId, Guid subjectId)
-        {
-            var grades = _context.Topics
-                .Include(i => i.HomeTask)
-                .ThenInclude(t => t.TaskAnswers)
-                .ThenInclude(t => t.Grade)
-                .Where(i => i.SubjectId.Equals(subjectId))
-                .Select(s => s.HomeTask)
-                .SelectMany(s => s.TaskAnswers)
-                .Where(i => i.StudentId.Equals(studentId))
-                .Select(s => s.Grade)
-                .ToListAsync().Result;
-
-            var mapped = _mapper.Map<IEnumerable<GradeModel>>(grades);
-            return mapped;
         }
 
         public IEnumerable<TaskAnswerModel>? GetTaskAnswersByHomeTaskId(Guid homeTaskId)

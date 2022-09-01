@@ -61,12 +61,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<SubjectModel>.GetSuccess(model);
         }
 
-        //TODO: Implement this
-        public Task RemoveAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<SubjectModel> GetByIdAsync(Guid id)
         {
             var subject = await _context.Subjects

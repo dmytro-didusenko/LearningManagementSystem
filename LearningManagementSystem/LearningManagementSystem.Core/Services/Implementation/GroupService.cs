@@ -53,7 +53,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
             if (group is null)
             {
-                throw new Exception($"Group id:{id} does not exist!");
+                throw new NotFoundException($"Group id:{id} does not exist!");
             }
 
             model.Id = id;
@@ -68,7 +68,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var group = await _context.Groups.AsNoTracking().FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (group is null)
             {
-                throw new Exception($"Group id:{id} does not exist!");
+                throw new NotFoundException($"Group id:{id} does not exist!");
             }
             group.IsActive = !group.IsActive;
             _context.Groups.Update(group);
@@ -81,7 +81,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
         {
             var group = await _context.Groups.Include(i=>i.Students)
                 .ThenInclude(t=>t.User)
-                .SingleOrDefaultAsync(s => s.Id.Equals(id) /*&& s.IsActive*/);
+                .SingleOrDefaultAsync(s => s.Id.Equals(id));
             if (group is null)
             {
                 throw new NotFoundException(id);

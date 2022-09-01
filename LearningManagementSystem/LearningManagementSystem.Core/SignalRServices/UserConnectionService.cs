@@ -4,7 +4,6 @@ namespace LearningManagementSystem.API.SignalRServices
 {
     public class UserConnectionService : IUserConnectionService
     {
-
         private ConcurrentDictionary<Guid, List<string>> _userConnections = new();
 
         public void AddUserConnection(Guid userID, string connectionId)
@@ -18,15 +17,13 @@ namespace LearningManagementSystem.API.SignalRServices
         }
 
         public List<string> GetUserConnections(Guid userID)
-        {
-            
+        {            
             if (UserIsConnected(userID))
             {
                return _userConnections[userID];
             }
 
             return Array.Empty<string>().ToList();
-
         }
 
         public void RemoveAllUserConnection(Guid userID)
@@ -40,20 +37,17 @@ namespace LearningManagementSystem.API.SignalRServices
         }
 
         public void RemoveUserConnection(string connectionId)
-        {
-       
+        {       
             var userIDByConnectionId = _userConnections.FirstOrDefault(u => u.Value.Contains(connectionId));
             if (userIDByConnectionId.Value is not null && userIDByConnectionId.Value.Any())
             {
                 _userConnections[userIDByConnectionId.Key].Remove(connectionId);
-
             }
         }
 
         public bool UserIsConnected(Guid userID)
         {
             return _userConnections.ContainsKey(userID);
-           
         }
     }
 }

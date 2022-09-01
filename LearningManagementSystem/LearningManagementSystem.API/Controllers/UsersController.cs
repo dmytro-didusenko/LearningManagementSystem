@@ -9,7 +9,7 @@ namespace LearningManagementSystem.API.Controllers
     [ApiController]
     [Produces("application/json")]
     [Route("api/[controller]")]
-    public class UsersController : BaseController
+    public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly IDocumentService _documentService;
@@ -55,7 +55,6 @@ namespace LearningManagementSystem.API.Controllers
             return Ok(res);
         }
 
-        [Authorized]
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync([FromQuery] UserQueryModel? query = null)
         {

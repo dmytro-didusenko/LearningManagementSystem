@@ -9,7 +9,6 @@ using OfficeOpenXml.Sorting;
 
 namespace LearningManagementSystem.API.Hubs
 {
-
     //TODO: Make managing many connections of one user
     public class ChatHub : Hub
     {

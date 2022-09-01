@@ -77,7 +77,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             if (query.DateOfExpiration.HasValue)
             {
                 queryable = queryable.Where(i => i.DateOfExpiration != null).Where(i =>
-                      i.DateOfExpiration.Value.Equals(query.DateOfExpiration!.Value));
+                      i.DateOfExpiration!.Value.Equals(query.DateOfExpiration!.Value));
             }
 
             if (query.DocumentType.HasValue)
@@ -94,7 +94,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
             var document = await _context.Documents.FirstOrDefaultAsync(f => f.Id.Equals(id));
             if (document == null)
             {
-                throw new Exception("Document does not exist");
+                throw new NotFoundException("Document does not exist");
             }
 
             _context.Documents.Remove(document);

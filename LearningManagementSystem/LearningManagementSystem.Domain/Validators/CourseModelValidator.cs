@@ -14,7 +14,6 @@ namespace LearningManagementSystem.Domain.Validators
 
             RuleFor(r => r.StartedAt)
                 .GreaterThanOrEqualTo(DateTime.Now);
-
         }
     }
 }

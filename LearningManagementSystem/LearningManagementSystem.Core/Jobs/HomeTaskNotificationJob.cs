@@ -5,11 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LearningManagementSystem.Core.Jobs
 {
@@ -41,10 +36,9 @@ namespace LearningManagementSystem.Core.Jobs
 
                 var users = _context.Users.Where(x => students.Select(y => y.Id).Contains(x.Id));
 
-                var activeUsers = users.Where(x => x.IsActive.Equals(true));
+                var activeUsers = users.Where(x => x.IsActive);
 
-
-                if (activeUsers is not null)
+                if (activeUsers != null)
                 {
                     foreach (var user in activeUsers)
                     {
@@ -61,5 +55,4 @@ namespace LearningManagementSystem.Core.Jobs
             }
         }
     }
-}
-     
+}     

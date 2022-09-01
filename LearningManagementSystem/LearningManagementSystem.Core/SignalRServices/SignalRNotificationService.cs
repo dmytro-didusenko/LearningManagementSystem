@@ -1,17 +1,11 @@
 ﻿using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.SignalRServices;
-using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.Models.NotificationMessage;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace LearningManagementSystem.Core.Services.Implementation
 {
@@ -53,7 +47,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
                         return;
                     }
 
-
                     var message = await _channel.Reader.ReadAsync(stoppingToken);
 
                     using var scope = _serviceProvider.CreateScope();
@@ -62,7 +55,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
                     var userConnections = _userConnectionService.GetUserConnections(message.UserId);
 
-                    _logger.LogInformation($"Sending channel notification '{message.Text}' to ");
+                    _logger.LogInformation($"Sending notification '{message.Text}' to {message.UserId}");
 
                     await hub.Clients.Clients(userConnections).SendAsync("ShowNotification", message, stoppingToken);
 

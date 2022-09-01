@@ -9,10 +9,12 @@ using LearningManagementSystem.API.Filters;
 using LearningManagementSystem.API.Hubs;
 using LearningManagementSystem.API.Middlewares;
 using LearningManagementSystem.Core.Hubs;
+using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Domain.Models.Options;
 using LearningManagementSystem.Domain.Validators;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using AllowAnonymousAttribute = LearningManagementSystem.API.Attributes.AllowAnonymousAttribute;
 
@@ -25,13 +27,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-//builder.Services.AddHangfire((provider, cfg) =>
-//{
-//    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
-//    cfg.UseSimpleAssemblyNameTypeSerializer()
-//        .UseRecommendedSerializerSettings();
-//});
-//builder.Services.AddHangfireServer();
+builder.Services.AddHangfire((provider, cfg) =>
+{
+    cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireConnection"));
+    cfg.UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings();
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddSwagger();
 
@@ -58,17 +60,17 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers();
-builder.Services.AddMvc(options =>
-    {
-        options.Filters.Add<ValidationFilter>(1);
-        options.Filters.Add<AllowAnonymousAttribute>();
-    });
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>(1);
+    options.Filters.Add<AllowAnonymousAttribute>();
+});
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
+
 builder.Services.AddFluentValidation(cfg =>
 {
     cfg.RegisterValidatorsFromAssemblyContaining<UserModelValidator>();
@@ -76,8 +78,6 @@ builder.Services.AddFluentValidation(cfg =>
     cfg.LocalizationEnabled = false;
 });
 
-
-//configuring MassTransit
 builder.Services.AddMassTransit(cfg =>
 {
     cfg.UsingRabbitMq((context, x) =>
@@ -85,20 +85,20 @@ builder.Services.AddMassTransit(cfg =>
         x.Host(new Uri(builder.Configuration["RabbitMQ:Uri"]));
     });
 });
-//Adding Quartz
-//builder.Services.AddQuartz(cfg =>
-//{
-//    cfg.UseMicrosoftDependencyInjectionJobFactory();
-//    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
-//    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
-//    cfg.AddJobAndTrigger<HomeTaskNotificationJob>(builder.Configuration);
-//    cfg.AddJobAndTrigger<CertificateJob>(builder.Configuration);
-//});
-//builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
+
+builder.Services.AddQuartz(cfg =>
+{
+    cfg.UseMicrosoftDependencyInjectionJobFactory();
+    cfg.AddJobAndTrigger<BirthdayGreetingJob>(builder.Configuration);
+    cfg.AddJobAndTrigger<HomeTaskNotificationJob>(builder.Configuration);
+    cfg.AddJobAndTrigger<CertificateJob>(builder.Configuration);
+    cfg.AddJobAndTrigger<CourseStartingJob>(builder.Configuration);
+});
+
+builder.Services.AddQuartzHostedService(cfg => cfg.WaitForJobsToComplete = true);
 
 //add DinkToPdf
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-
 
 var app = builder.Build();
 
@@ -111,23 +111,22 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI(x => x.DocExpansion(DocExpansion.None));
 
-//app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
 app.UseMiddleware<AuthMiddleware>();
 
-//app.UseHangfireDashboard();
+app.UseHangfireDashboard();
 
 app.UseCors();
 
 app.MapControllers();
 
-app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<ChatHub>("/chat");
 
 app.MapHub<StaffChatHub>("/staffChat");
 
 app.MapHub<NotificationHub>("/notification");
 
 app.Run();
-

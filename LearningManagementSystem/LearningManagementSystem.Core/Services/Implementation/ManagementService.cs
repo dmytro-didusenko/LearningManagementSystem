@@ -32,7 +32,6 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new NotFoundException(studentId);
             }
 
-
             if (student.GroupId is not null)
             {
                 throw new BadRequestException("Student already has a group");
@@ -89,7 +88,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                 throw new NotFoundException(courseId);
             }
 
-            if (subject.Courses.Contains(course))
+            if (subject.Courses!.Contains(course))
             {
                 throw new BadRequestException("Course already has a subject");
             }
@@ -148,20 +147,5 @@ namespace LearningManagementSystem.Core.Services.Implementation
             await _context.SaveChangesAsync();
             return _mapper.Map<IEnumerable<StudentModel>>(students);
         }
-
-        //public async Task RemoveStudentFromGroupAsync(Guid studentId, Guid groupId)
-        //{
-        //    var student = await _context.Students.FindAsync(studentId);
-            
-        //    if (student is null)
-        //        throw new NotFoundException($"Student with id [{studentId}] was not found.");
-            
-        //    if (student.GroupId is null)
-        //        throw new BadRequestException($"Student with id [{studentId}] is not in a group.");
-
-        //    student.GroupId = null;
-        //    _context.Students.Update(student);
-        //    await _context.SaveChangesAsync();
-        //}
     }
 }

@@ -48,9 +48,9 @@ namespace LearningManagementSystem.API.Controllers
         }
 
         [HttpGet("Questions/{testId}")]
-        public IActionResult GetQuestionsByTestId(Guid testId)
+        public async Task<IActionResult> GetQuestionsByTestId(Guid testId)
         {
-            return Ok(_testingService.GetQuestionsByTestId(testId));
+            return Ok(await _testingService.GetQuestionsByTestId(testId));
         }
 
 

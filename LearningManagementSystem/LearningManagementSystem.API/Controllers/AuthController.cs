@@ -8,7 +8,7 @@ namespace LearningManagementSystem.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class AuthController : BaseController
+    public class AuthController : ControllerBase
     {
         private readonly IAuthManager _authManager;
 

@@ -40,7 +40,8 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return Response<TestModel>.GetSuccess(model);
         }
 
-        public async Task<Response<QuestionCreateModel>> AddQuestionAsync(Guid testId, QuestionCreateModel questionModel)
+        public async Task<Response<QuestionCreateModel>> AddQuestionAsync(Guid testId,
+                                                                          QuestionCreateModel questionModel)
         {
             var test = await _context.Tests.FirstOrDefaultAsync(f => f.Id.Equals(testId));
             if (test is null)
@@ -93,11 +94,11 @@ namespace LearningManagementSystem.Core.Services.Implementation
             return _mapper.Map<TestModel>(test);
         }
 
-        public IEnumerable<QuestionCreateModel>? GetQuestionsByTestId(Guid testId)
+        public async Task<IEnumerable<QuestionCreateModel>?> GetQuestionsByTestId(Guid testId)
         {
-            var questions = _context.Questions
+            var questions = await _context.Questions
                 .Include(i => i.Answers)
-                .Where(i => i.TestId.Equals(testId)).AsEnumerable();
+                .Where(i => i.TestId.Equals(testId)).ToListAsync();
             return _mapper.Map<IEnumerable<QuestionCreateModel>>(questions);
         }
 

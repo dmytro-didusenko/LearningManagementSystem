@@ -45,7 +45,6 @@ namespace LearningManagementSystem.API.Extensions
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
-                    //Type = SecuritySchemeType.ApiKey,
                     Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
@@ -73,7 +72,6 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IGroupService, GroupService>();
-            services.AddScoped<IFileHelper, FileHelper>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ITeacherService, TeacherService>();
@@ -84,7 +82,7 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<ICertificateService, CertificateService>();
             services.AddSingleton<IUserConnectionService, UserConnectionService>();
-            services.AddHostedService(sp => (SignalRNotificationService)sp.GetService<INotificationSink>());
+            services.AddHostedService(sp => (SignalRNotificationService?)sp.GetService<INotificationSink>());
             services.AddSingleton<INotificationSink, SignalRNotificationService>();
             services.AddScoped<IJwtHandler, JwtHandler>();
             services.AddScoped<IAuthManager, AuthManager>();

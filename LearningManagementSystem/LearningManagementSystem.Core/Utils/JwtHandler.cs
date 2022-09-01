@@ -35,7 +35,7 @@ public class JwtHandler : IJwtHandler
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, user.Role?.RoleName)
+            new Claim(ClaimTypes.Role, user.Role!.RoleName)
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor

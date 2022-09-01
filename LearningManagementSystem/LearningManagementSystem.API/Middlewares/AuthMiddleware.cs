@@ -22,7 +22,7 @@ namespace LearningManagementSystem.API.Middlewares
                 //If request is to signalR hubs
                 var path = context.Request.Path;
                 if (!string.IsNullOrEmpty(accessToken) &&
-                    (path.StartsWithSegments("/hubs")))
+                    path.StartsWithSegments("/hubs"))
                 {
                     token = accessToken;
                 }

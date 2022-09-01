@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using LearningManagementSystem.API.Extensions;
+﻿using LearningManagementSystem.API.Extensions;
 using LearningManagementSystem.Core.Services.Interfaces;
-using LearningManagementSystem.Domain.Extensions;
-using LearningManagementSystem.Domain.Models.Options;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace LearningManagementSystem.API.Controllers
 {

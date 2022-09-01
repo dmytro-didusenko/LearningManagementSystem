@@ -1,6 +1,5 @@
 ﻿using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
-using LearningManagementSystem.Domain.Models;
 using LearningManagementSystem.Domain.MassTransitModels;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -21,10 +20,12 @@ namespace LearningManagementSystem.Core.Jobs
             _publisher = publisher;
             _context = context;
         }
+
+        //create certificate for students whose course ended previous day and passed at least 60% of tasks
         public async Task Execute(IJobExecutionContext context)
         {
             var today = DateTime.Today;
-            var yesterday = today.AddDays(-1); //previous day with time component set to 00:00:00
+            var yesterday = today.AddDays(-1);
 
             List<Student> students = _context.Groups
                 .Include(g => g.Course)
@@ -32,7 +33,7 @@ namespace LearningManagementSystem.Core.Jobs
                     .ThenInclude(s => s.Group)
                 .Include(g => g.Students)
                     .ThenInclude(s => s.User)
-                .Where(g => g.EndEducation < today && g.EndEducation >= yesterday) //date value within yesterday
+                .Where(g => g.EndEducation < today && g.EndEducation >= yesterday)
                 .SelectMany(g => g.Students)
                 .ToList();
 
@@ -45,7 +46,8 @@ namespace LearningManagementSystem.Core.Jobs
                         .Include(t => t.HomeTask)
                         .Include(t => t.Subject)
                             .ThenInclude(s => s.Courses)
-                        .Where(t => t.Subject.Courses.FirstOrDefault(c => c.Id.Equals(student.Group.CourseId)) != null)
+                        .Where(t => t.Subject.Courses
+                            .FirstOrDefault(c => c.Id.Equals(student.Group.CourseId)) != null)
                         .Count(t => t.HomeTask != null);
 
                     if ((double)studentTasksAnswers / (double)totalTasks >= 0.6)

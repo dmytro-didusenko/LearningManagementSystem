@@ -27,7 +27,7 @@ namespace Notifications.Services.Consumers
                     PrintMessageInConsole(message);
                     break;
             }
-
+            
             if (message.DeliveryMethod == DeliveryMethod.Email)
             {
                 await SendWithSendGrid.SendToEmail(message, _configuration);

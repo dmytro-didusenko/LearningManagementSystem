@@ -2,7 +2,7 @@
 using LearningManagementSystem.API.SignalRServices;
 using LearningManagementSystem.Core.AuthServices;
 using LearningManagementSystem.Core.HangfireJobs;
-using LearningManagementSystem.Core.Helpers;
+using LearningManagementSystem.Core.Jobs;
 using LearningManagementSystem.Core.Services.Implementation;
 using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Core.Utils;
@@ -89,6 +89,18 @@ namespace LearningManagementSystem.API.Extensions
             services.AddScoped<IRoleManager, RoleManager>();
 
             return services;
+        }
+
+        public static void AddQuartzJobs(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddQuartz(cfg =>
+            {
+                cfg.UseMicrosoftDependencyInjectionJobFactory();
+                cfg.AddJobAndTrigger<BirthdayGreetingJob>(configuration);
+                cfg.AddJobAndTrigger<HomeTaskNotificationJob>(configuration);
+                cfg.AddJobAndTrigger<CertificateJob>(configuration);
+                cfg.AddJobAndTrigger<CourseStartingJob>(configuration);
+            });
         }
         public static void AddJobAndTrigger<T>(
             this IServiceCollectionQuartzConfigurator quartz,

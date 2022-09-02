@@ -41,7 +41,7 @@ namespace LearningManagementSystem.API.Attributes
                 return;
             }
 
-            if ((_roles.Any() && !_roles.Contains(user?.Role)))
+            if ((_roles.Any() && !_roles.Contains(user!.Role)))
             {
                 context.Result = new JsonResult(new { message = "Forbidden access" }) { StatusCode = StatusCodes.Status403Forbidden };
             }

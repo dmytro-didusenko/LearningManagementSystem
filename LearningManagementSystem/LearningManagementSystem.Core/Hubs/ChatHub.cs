@@ -1,50 +1,44 @@
-﻿using LearningManagementSystem.Core.Filters;
+﻿using LearningManagementSystem.Core.Exceptions;
 using LearningManagementSystem.Domain.ChatModels;
 using LearningManagementSystem.Domain.Contextes;
 using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OfficeOpenXml.Sorting;
 
-namespace LearningManagementSystem.API.Hubs
+namespace LearningManagementSystem.Core.Hubs
 {
-    //TODO: Make managing many connections of one user
     public class ChatHub : Hub
     {
         private readonly ILogger<ChatHub> _logger;
         private readonly AppDbContext _db;
-
         public ChatHub(ILogger<ChatHub> logger, AppDbContext db)
         {
-
             _logger = logger;
             _db = db;
         }
 
         public async Task MessageHandler(ChatMessage message)
         {
+            ArgumentNullException.ThrowIfNull(message);
             if (string.IsNullOrWhiteSpace(message.Text))
             {
                 return;
             }
-            var sender = Context.Items["User"] as Student;
 
-            message.Sender = sender.User.UserName;
-            message.Date = DateTime.Now;
+            var user = GetCurrentUser();
 
+            message.Sender = user.UserName;
             await _db.GroupChatMessages.AddAsync(new GroupChatMessage()
             {
-                SenderId = sender.Id,
-                GroupId = sender.Group.Id,
+                SenderId = user.UserId,
+                GroupId = user.GroupId,
                 Text = message.Text,
                 CreationDate = message.Date
             });
             await _db.SaveChangesAsync();
 
-            var group = Context.Items["Group"] as Group;
-
-            await Clients.Group(group.Name).SendAsync("ReceiveMessage", message);
+            await Clients.Group(user.GroupName).SendAsync("ReceiveMessage", message);
         }
 
         public async Task Handshake(string userId)
@@ -56,7 +50,6 @@ namespace LearningManagementSystem.API.Hubs
 
             var user = await _db.Students
                 .Include(i => i.Group)
-
                 .Include(i => i.User)
                 .FirstOrDefaultAsync(f => f.Id.Equals(parsedId));
 
@@ -66,23 +59,28 @@ namespace LearningManagementSystem.API.Hubs
                 return;
             }
 
+            var userModel = new ChatUserModel()
+            {
+                GroupId = user.Group.Id,
+                GroupName = user.Group.Name,
+                UserId = user.Id,
+                UserName = user.User.UserName
+            };
             var group = user!.Group;
             await Groups.AddToGroupAsync(Context.ConnectionId, group.Name);
-            Context.Items.TryAdd("User", user);
-            Context.Items.TryAdd("Group", group);
+            Context.Items.TryAdd("User", userModel);
         }
 
-        public async Task<GroupInfo> GetGroupInfo()
+        public async Task<ChatUserModel> GetChatInfo()
         {
-            var group = Context.Items["Group"] as Group;
-            var user = Context.Items["User"] as Student;
+            var user = GetCurrentUser();
 
-            var chatHistory = new GroupInfo
+            var chatHistory = new ChatUserModel
             {
-                UserName = user.User.UserName,
-                UserId = user.Id,
-                GroupId = group.Id,
-                GroupName = group.Name
+                UserName = user.UserName,
+                UserId = user.UserId,
+                GroupId = user.GroupId,
+                GroupName = user.GroupName
             };
 
             return await Task.FromResult(chatHistory);
@@ -90,11 +88,10 @@ namespace LearningManagementSystem.API.Hubs
 
         public async Task<ChatHistory> GetChatHistory()
         {
-            var group = Context.Items["Group"] as Group;
-            var user = Context.Items["User"] as Student;
+            var user = GetCurrentUser();
 
             var chatMessages = await _db.GroupChatMessages
-                .Where(w => w.GroupId.Equals(group.Id))
+                .Where(w => w.GroupId.Equals(user.GroupId))
                 .Select(m => new ChatMessage()
                 {
                     Sender = m.Sender.UserName,
@@ -104,45 +101,34 @@ namespace LearningManagementSystem.API.Hubs
 
             var chatHistory = new ChatHistory()
             {
-                UserName = user.User.UserName,
-                UserId = user.Id,
-                GroupId = group.Id,
-                GroupName = group.Name,
+                UserName = user.UserName,
+                UserId = user.UserId,
+                GroupId = user.GroupId,
+                GroupName = user.GroupName,
                 ChatMessages = chatMessages
             };
 
             return chatHistory;
         }
 
-        //TODO: Rewrite in more 'friendly' form
         private async Task CloseClientConnectionAsync(string errorMessage)
         {
-            //await Clients.Caller.SendAsync("Disconnect", new ChatServerResponse()
-            //{
-            //    IsSuccessful = false,
-            //    Message = errorMessage
-            //});
-            Context.Abort();
+            await Clients.Caller.SendAsync("Disconnect", new ChatServerResponse()
+            {
+                IsSuccessful = false,
+                Message = errorMessage
+            });
         }
 
-        public override Task OnConnectedAsync()
+        private ChatUserModel GetCurrentUser()
         {
-            _logger.LogInformation($"New connection with id: [{Context.ConnectionId}]");
-            return base.OnConnectedAsync();
-        }
+            var user = Context.Items["User"] as ChatUserModel;
+            if (user is null)
+            {
+                throw new BadRequestException("No user data!");
+            }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
-        {
-            _logger.LogCritical($"Connection id: [{Context.ConnectionId}] is disconnected");
-            return base.OnDisconnectedAsync(exception);
+            return user;
         }
-    }
-
-    public class GroupInfo
-    {
-        public string UserName { get; set; } = string.Empty;
-        public Guid UserId { get; set; } 
-        public Guid GroupId { get; set; } 
-        public string GroupName { get; set; } = string.Empty;
     }
 }

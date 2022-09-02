@@ -4,9 +4,9 @@ using SendGrid.Helpers.Mail;
 
 namespace Notifications.Services.Senders
 {
-    static internal class SendWithSendGrid
+    public static class SendWithSendGrid
     {
-        internal static async Task SendToEmail(ApiMessage message, IConfiguration configuration)
+        public static async Task SendToEmail(ApiMessage message, IConfiguration configuration)
         {
             var apiKey = configuration["SendGrid:Key"];
             var client = new SendGridClient(apiKey);

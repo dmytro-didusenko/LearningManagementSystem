@@ -37,8 +37,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // Local
-            while (true)
+            while (_channel.Reader.TryRead(out var message))
             {
                 try
                 {
@@ -47,7 +46,7 @@ namespace LearningManagementSystem.Core.Services.Implementation
                         return;
                     }
 
-                    var message = await _channel.Reader.ReadAsync(stoppingToken);
+                    //var message = await _channel.Reader.ReadAsync(stoppingToken);
 
                     using var scope = _serviceProvider.CreateScope();
 

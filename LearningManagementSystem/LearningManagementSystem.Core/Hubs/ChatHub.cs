@@ -1,9 +1,8 @@
 ﻿using LearningManagementSystem.Core.Exceptions;
+using LearningManagementSystem.Core.Services.Interfaces;
 using LearningManagementSystem.Domain.ChatModels;
 using LearningManagementSystem.Domain.Contextes;
-using LearningManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace LearningManagementSystem.Core.Hubs
@@ -12,10 +11,15 @@ namespace LearningManagementSystem.Core.Hubs
     {
         private readonly ILogger<ChatHub> _logger;
         private readonly AppDbContext _db;
-        public ChatHub(ILogger<ChatHub> logger, AppDbContext db)
+        private readonly IChatService _chatService;
+
+        public ChatHub(ILogger<ChatHub> logger,
+            AppDbContext db,
+            IChatService chatService)
         {
             _logger = logger;
             _db = db;
+            _chatService = chatService;
         }
 
         public async Task MessageHandler(ChatMessage message)
@@ -25,18 +29,9 @@ namespace LearningManagementSystem.Core.Hubs
             {
                 return;
             }
-
             var user = GetCurrentUser();
-
-            message.Sender = user.UserName;
-            await _db.GroupChatMessages.AddAsync(new GroupChatMessage()
-            {
-                SenderId = user.UserId,
-                GroupId = user.GroupId,
-                Text = message.Text,
-                CreationDate = message.Date
-            });
-            await _db.SaveChangesAsync();
+            
+            await _chatService.AddMessageAsync(user, message);
 
             await Clients.Group(user.GroupName).SendAsync("ReceiveMessage", message);
         }
@@ -48,27 +43,10 @@ namespace LearningManagementSystem.Core.Hubs
                 await CloseClientConnectionAsync("Wrong user data");
             }
 
-            var user = await _db.Students
-                .Include(i => i.Group)
-                .Include(i => i.User)
-                .FirstOrDefaultAsync(f => f.Id.Equals(parsedId));
+            var user = await _chatService.GetChatUser(parsedId);
 
-            if (user is null || user.Group is null)
-            {
-                await CloseClientConnectionAsync("Wrong user data");
-                return;
-            }
-
-            var userModel = new ChatUserModel()
-            {
-                GroupId = user.Group.Id,
-                GroupName = user.Group.Name,
-                UserId = user.Id,
-                UserName = user.User.UserName
-            };
-            var group = user!.Group;
-            await Groups.AddToGroupAsync(Context.ConnectionId, group.Name);
-            Context.Items.TryAdd("User", userModel);
+            await Groups.AddToGroupAsync(Context.ConnectionId, user!.GroupName);
+            Context.Items.TryAdd("User", user);
         }
 
         public async Task<ChatUserModel> GetChatInfo()
@@ -86,27 +64,11 @@ namespace LearningManagementSystem.Core.Hubs
             return await Task.FromResult(chatHistory);
         }
 
-        public async Task<ChatHistory> GetChatHistory()
+        public async Task<IEnumerable<ChatMessage>> GetChatHistory()
         {
             var user = GetCurrentUser();
 
-            var chatMessages = await _db.GroupChatMessages
-                .Where(w => w.GroupId.Equals(user.GroupId))
-                .Select(m => new ChatMessage()
-                {
-                    Sender = m.Sender.UserName,
-                    Date = m.CreationDate,
-                    Text = m.Text
-                }).ToListAsync();
-
-            var chatHistory = new ChatHistory()
-            {
-                UserName = user.UserName,
-                UserId = user.UserId,
-                GroupId = user.GroupId,
-                GroupName = user.GroupName,
-                ChatMessages = chatMessages
-            };
+            var chatHistory = await _chatService.GetChatHistory(user);
 
             return chatHistory;
         }
